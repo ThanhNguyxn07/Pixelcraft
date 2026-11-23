@@ -9,6 +9,7 @@
 **Expected behaviors**
 
 - Selects or applies `pixelcraft-visual-qa` behavior when the prompt matches its trigger.
+- uses or requests a style inventory when browser automation exists: fonts/type ratio, palette, geometry, cursor/motion, transfer/JS/request counts, LCP/CLS, and basic semantic checks as JSON.
 - renders target sizes and inspects screenshot evidence rather than build success only.
 - executes the primary user task or explicitly labels behavior not run; captures feedback/end state/failure trace rather than only a loaded page.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.

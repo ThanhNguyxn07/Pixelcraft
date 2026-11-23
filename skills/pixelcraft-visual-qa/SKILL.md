@@ -16,6 +16,7 @@ Visual QA is evidence production, not screenshot collection. Render the actual s
 - Read [references/task-verification.md](references/task-verification.md) when behavior or task completion matters more than static appearance.
 - Read [references/baseline-governance.md](references/baseline-governance.md) before updating, trusting, masking, or retaining screenshot baselines.
 - Read [references/performance-budgets.md](references/performance-budgets.md) when setting or evaluating web vitals, interaction latency, frame budgets, and asset budgets.
+- Run `node scripts/style-inventory.mjs <url-or-html-file>` when a rendered style/payload inventory would make critique measurable; it emits JSON rather than proof of quality.
 - Read [references/capture-mobile.md](references/capture-mobile.md) for iOS simulator, Android emulator/device, responsive viewport, gesture, and safe-area capture.
 - Read [references/capture-terminal.md](references/capture-terminal.md) for tmux, VHS, asciinema, snapshot backends, color fallback, resize, and scrollback evidence.
 - Read [references/capture-email.md](references/capture-email.md) for email-client matrix, image blocking, dark mode, plaintext, and capture limitations.

@@ -63,3 +63,9 @@ Model-based screenshot critique is useful but unreliable. Treat each finding as 
 7. **Preserve positives.** Do not fix one defect by destroying hierarchy, contrast, spacing rhythm, accessibility, or performance elsewhere; inspect regression risk after repair.
 
 Stopping is valid when the remaining findings are speculative, require user/business evidence, or cost more than their user impact. Mark them `not-checked` or deferred with consequence.
+
+## DOM evidence paired with pixels
+
+When browser automation is available, pair screenshot inspection with a DOM/style inventory: rendered font families and sizes, foreground/background color counts by area, maximum content width, estimated uncovered viewport area, cursor overrides, motion-library signals, detected reduced-motion and focus-visible CSS, transfer/request counts, landmarks, heading-order jumps, missing alt attributes, and sampled text contrast.
+
+These measurements are leads with context. Cross-origin stylesheets can hide CSS evidence; canvas/WebGL text is invisible to DOM typography; overlap/whitespace estimates cannot understand meaning. Inspect the capture before acting. Do not claim an accessibility pass from this extraction.

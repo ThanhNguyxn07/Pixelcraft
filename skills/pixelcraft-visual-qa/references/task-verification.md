@@ -75,3 +75,7 @@ Strongest evidence for behavior:
 5. model screenshot interpretation (`model-judgment`).
 
 Never escalate a screenshot reading into task-completion evidence.
+
+## Lightweight two-width evidence floor
+
+Even when the full device matrix is out of scope, capture at least one desktop width and one narrow mobile width such as 390 px for web-responsive work. Compare hierarchy, measure, navigation availability, clipping, touch target spacing, and whether the signature composition survives or intentionally degrades. If only one width is captured, mark responsive behavior `not-checked` rather than inferring it.

@@ -49,3 +49,13 @@ Fonts: subset and limit families/weights; use `font-display` appropriate to cont
 3. fix the largest causal cost (blocking work, payload, layout instability, memory pressure);
 4. remeasure the same surface;
 5. report before/after numbers or `not-checked` honestly.
+
+## Rendered payload inventory
+
+For web surfaces, record total compressed transfer, JavaScript transfer, CSS/media/font cost where available, request count, LCP, CLS, and whether the measurement was cold, warm, cached, throttled, or emulation. Separate requests/bytes initiated before document load from deferred or idle work so a heavy initial payload cannot hide inside a lazy-loading total. In the live corpus of high-end marketing, portfolio, product, editorial, and gallery pages, the desktop median was approximately **3.1 MB compressed transfer and 103 requests**; the upper quartile reached **6.1 MB and 137 requests**, and the worst decile approached **9.9 MB and 217 requests**. Treat those numbers as calibration for how costly polished work can become, not as acceptable budgets.
+
+Keep the mode budgets above as defaults. If a Persuade/Experience direction requires more payload, record the user-facing reason, the expected network/device cost, what is deferred or adaptive, and the explicit waiver owner. Never use visual ambition itself as the waiver.
+
+## Style inventory evidence
+
+Use `scripts/style-inventory.mjs` when a browser runtime is available. Its JSON output separates typography, palette, layout geometry, cursor/motion signals, initial/deferred payload and resource-type breakdowns, and basic semantic checks so critique starts from measurements rather than taste adjectives.
