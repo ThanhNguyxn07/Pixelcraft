@@ -34,6 +34,88 @@ function walk(dir, out = []) {
 }
 function lineOf(text, index) { return text.slice(0, index).split(/\r?\n/).length; }
 
+function maskCssComments(text) {
+  const chars = text.split('');
+  let quote = '';
+  for (let i = 0; i < text.length; i += 1) {
+    const c = text[i];
+    if (quote) {
+      if (c === '\\') i += 1;
+      else if (c === quote) quote = '';
+    } else if (c === '"' || c === "'") quote = c;
+    else if (c === '/' && text[i + 1] === '*') {
+      chars[i] = chars[i + 1] = ' ';
+      i += 2;
+      for (; i < text.length; i += 1) {
+        if (text[i] === '*' && text[i + 1] === '/') {
+          chars[i] = chars[i + 1] = ' ';
+          i += 1;
+          break;
+        }
+        if (text[i] !== '\n' && text[i] !== '\r') chars[i] = ' ';
+      }
+    }
+  }
+  return chars.join('');
+}
+
+function blankRange(chars, start, end) {
+  for (let i = start; i <= end && i < chars.length; i += 1) {
+    if (chars[i] !== '\n' && chars[i] !== '\r') chars[i] = ' ';
+  }
+}
+
+function findBraceEnd(text, open) {
+  let depth = 1, quote = '';
+  for (let i = open + 1; i < text.length; i += 1) {
+    const c = text[i];
+    if (quote) {
+      if (c === '\\') i += 1;
+      else if (c === quote) quote = '';
+    } else if (c === '"' || c === "'") quote = c;
+    else if (c === '{') depth += 1;
+    else if (c === '}') {
+      depth -= 1;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
+function extractNestedBlocks(body) {
+  const declarationChars = body.split('');
+  const nested = [];
+  let chunkStart = 0, depth = 0, quote = '';
+  for (let i = 0; i < body.length; i += 1) {
+    const c = body[i];
+    if (quote) {
+      if (c === '\\') i += 1;
+      else if (c === quote) quote = '';
+    } else if (c === '"' || c === "'") quote = c;
+    else if (c === '(' || c === '[') depth += 1;
+    else if (c === ')' || c === ']') depth = Math.max(0, depth - 1);
+    else if (c === ';' && depth === 0) chunkStart = i + 1;
+    else if (c === '{' && depth === 0) {
+      const end = findBraceEnd(body, i);
+      if (end < 0) break;
+      const rawPrelude = body.slice(chunkStart, i);
+      const prelude = rawPrelude.trim();
+      if (prelude) {
+        nested.push({
+          prelude,
+          body: body.slice(i + 1, end),
+          selectorIndex: chunkStart + rawPrelude.length - rawPrelude.trimStart().length,
+          bodyIndex: i + 1
+        });
+      }
+      blankRange(declarationChars, chunkStart, end);
+      chunkStart = end + 1;
+      i = end;
+    }
+  }
+  return { declarationText: declarationChars.join(''), nested };
+}
+
 function skipComment(text, i) {
   const end = text.indexOf('*/', i + 2);
   return end < 0 ? text.length : end + 2;
@@ -104,16 +186,27 @@ function stripNotContents(selector) {
   return out;
 }
 
-function focusPseudo(selector) {
+function selectorFocusState(selector) {
   const stripped = stripNotContents(selector);
-  if (/:focus-visible\b/i.test(stripped)) return true;
-  if (/:focus\b/i.test(stripped)) {
-    // `:focus:not(:focus-visible)` intentionally suppresses the mouse-focus ring;
-    // keyboard visibility must be handled by a separate `:focus-visible` rule.
-    if (/:not\(\s*:focus-visible\s*\)/i.test(selector)) return false;
-    return true;
+  return {
+    positive: /:focus-visible(?![-_a-z0-9])/i.test(stripped) || /:focus(?![-_a-z0-9])/i.test(stripped),
+    excludesFocusVisible: /:not\(\s*:focus-visible\s*\)/i.test(selector)
+  };
+}
+
+function selectorContexts(selectorText, inherited) {
+  const contexts = [];
+  const parents = inherited.length ? inherited : [{ positive: false, excludesFocusVisible: false }];
+  for (const parent of parents) {
+    for (const selector of splitSelectorList(selectorText)) {
+      const own = selectorFocusState(selector);
+      const sameElement = selector.includes('&');
+      const positive = own.positive || (sameElement && parent.positive);
+      const excludesFocusVisible = own.excludesFocusVisible || (sameElement && parent.excludesFocusVisible);
+      contexts.push({ positive, excludesFocusVisible, relevant: positive && !excludesFocusVisible });
+    }
   }
-  return false;
+  return contexts;
 }
 
 function declarations(body) {
@@ -138,71 +231,183 @@ function declarations(body) {
   return out;
 }
 
-function visibleReplacement(decls) {
+const visibleOutlineStyles = new Set(['auto', 'dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']);
+const invisibleOutlineStyles = new Set(['none', 'hidden']);
+const visibleBorderStyles = new Set(['dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']);
+const textDecorationLines = new Set(['underline', 'overline', 'line-through', 'blink', 'spelling-error', 'grammar-error']);
+
+function cleanValue(value) {
+  return value.replace(/\s*!important\s*$/, '').trim();
+}
+
+function splitValueTokens(value) {
+  const out = [];
+  let start = 0, depth = 0, quote = '';
+  const push = (end) => {
+    const token = value.slice(start, end).trim();
+    if (token) out.push(token);
+  };
+  for (let i = 0; i < value.length; i += 1) {
+    const c = value[i];
+    if (quote) {
+      if (c === '\\') i += 1;
+      else if (c === quote) quote = '';
+    } else if (c === '"' || c === "'") quote = c;
+    else if (c === '(') depth += 1;
+    else if (c === ')') depth = Math.max(0, depth - 1);
+    else if (/\s/.test(c) && depth === 0) {
+      push(i);
+      start = i + 1;
+    }
+  }
+  push(value.length);
+  return out;
+}
+
+function isZeroWidth(token) {
+  return /^-?0(?:\.0+)?(?:[a-z%]+)?$/.test(token);
+}
+
+function isNonzeroNumericWidth(token) {
+  const match = /^(-?(?:\d+|\d*\.\d+))(?:[a-z%]+)?$/.exec(token);
+  return match !== null && Number(match[1]) !== 0;
+}
+
+function isVisibleWidth(token) {
+  return token === 'thin' || token === 'medium' || token === 'thick' || isNonzeroNumericWidth(token);
+}
+
+function parseOutlineShorthand(value) {
+  const parsed = { style: 'none', width: 'medium', removes: false };
+  for (const token of splitValueTokens(cleanValue(value))) {
+    if (invisibleOutlineStyles.has(token)) {
+      parsed.style = token;
+      parsed.removes = true;
+    } else if (visibleOutlineStyles.has(token)) parsed.style = token;
+    else if (isZeroWidth(token)) {
+      parsed.width = token;
+      parsed.removes = true;
+    } else if (isVisibleWidth(token)) parsed.width = token;
+  }
+  return parsed;
+}
+
+function analyzeOutline(decls) {
+  let style = 'none', width = 'medium', removal = null;
+  for (const decl of decls) {
+    const value = cleanValue(decl.value);
+    if (decl.prop === 'outline') {
+      const parsed = parseOutlineShorthand(value);
+      style = parsed.style;
+      width = parsed.width;
+      if (parsed.removes && !removal) removal = decl;
+    } else if (decl.prop === 'outline-style') style = value;
+    else if (decl.prop === 'outline-width') width = value;
+  }
+  return { removal, visible: visibleOutlineStyles.has(style) && isVisibleWidth(width) };
+}
+
+function borderShorthandProp(prop) {
+  return prop === 'border' || /^border-(?:top|right|bottom|left|inline|block)(?:-(?:start|end))?$/.test(prop);
+}
+
+function borderColorProp(prop) {
+  return prop === 'border-color' || /^border-(?:top|right|bottom|left|inline|block)(?:-(?:start|end))?-color$/.test(prop);
+}
+
+function visibleBorder(value) {
+  let styled = false, zero = false, invisible = false;
+  for (const token of splitValueTokens(cleanValue(value))) {
+    if (isZeroWidth(token)) zero = true;
+    else if (visibleBorderStyles.has(token)) styled = true;
+    else if (token === 'none' || token === 'hidden') invisible = true;
+  }
+  return styled && !zero && !invisible;
+}
+
+function visibleTextDecoration(value) {
+  return splitValueTokens(cleanValue(value)).some((token) => textDecorationLines.has(token));
+}
+
+function visibleReplacement(decls, outline) {
+  if (outline.visible) return true;
   return decls.some(({ prop, value }) => {
-    const clean = value.replace(/\s*!important\s*$/, '').trim();
+    const clean = cleanValue(value);
     if (prop === 'box-shadow') return clean !== 'none';
-    if (prop === 'outline') return !/^(none|0)\b/.test(clean);
-    if (prop === 'outline-style') return clean !== 'none' && clean !== 'hidden';
-    if (prop === 'outline-width') return !/^0(?:\.0+)?(?:px|em|rem)?\b/.test(clean);
-    if (prop === 'border' || prop === 'border-color' || prop === 'border-width' || prop === 'border-style') return clean !== 'none' && !/^0(?:\.0+)?(?:px)?\s*$/.test(clean);
-    if (/^border-(top|right|bottom|left|inline|block)(?:-(?:start|end))?(?:-color|-width|-style)?$/.test(prop)) return clean !== 'none' && !/^0(?:\.0+)?(?:px)?\s*$/.test(clean);
-    if (prop.startsWith('text-decoration')) return clean !== 'none';
+    if (borderShorthandProp(prop)) return visibleBorder(clean);
+    if (borderColorProp(prop)) return clean !== 'none' && clean !== 'transparent';
+    if (prop === 'text-decoration' || prop === 'text-decoration-line') return visibleTextDecoration(clean);
     return false;
   });
 }
 
-function scanRules(segment, baseOffset, sourceText, visit) {
+function scanRuleList(text, baseOffset, sourceText, visit, inherited) {
   let i = 0;
-  const text = segment.text;
   while (i < text.length) {
-    while (i < text.length && (/\s/.test(text[i]) || (text[i] === '/' && text[i + 1] === '*'))) {
-      i = text[i] === '/' ? skipComment(text, i) : i + 1;
-    }
+    while (i < text.length && /\s/.test(text[i])) i += 1;
     if (i >= text.length) break;
-    const selectorStart = i;
-    let quote = '', depth = 0;
+    const start = i;
+    let quote = '', depth = 0, terminator = '';
     for (; i < text.length; i += 1) {
       const c = text[i];
-      if (c === '/' && text[i + 1] === '*') { i = skipComment(text, i) - 1; continue; }
       if (quote) {
         if (c === '\\') i += 1;
         else if (c === quote) quote = '';
       } else if (c === '"' || c === "'") quote = c;
       else if (c === '(' || c === '[') depth += 1;
       else if (c === ')' || c === ']') depth = Math.max(0, depth - 1);
-      else if (c === '{' && depth === 0) break;
-    }
-    if (i >= text.length) break;
-    const selector = text.slice(selectorStart, i).trim();
-    const bodyStart = i + 1;
-    let braceDepth = 1;
-    quote = '';
-    for (i += 1; i < text.length; i += 1) {
-      const c = text[i];
-      if (c === '/' && text[i + 1] === '*') { i = skipComment(text, i) - 1; continue; }
-      if (quote) {
-        if (c === '\\') i += 1;
-        else if (c === quote) quote = '';
-      } else if (c === '"' || c === "'") quote = c;
-      else if (c === '{') braceDepth += 1;
-      else if (c === '}') {
-        braceDepth -= 1;
-        if (braceDepth === 0) break;
+      else if ((c === '{' || c === ';') && depth === 0) {
+        terminator = c;
+        break;
       }
     }
-    if (!selector || i >= text.length) break;
-    visit(selector, text.slice(bodyStart, i), {
-      selectorIndex: baseOffset + selectorStart,
-      bodyIndex: baseOffset + bodyStart,
-      sourceText
-    });
-    i += 1;
+    if (terminator === ';') {
+      i += 1;
+      continue;
+    }
+    if (terminator !== '{') break;
+    const rawPrelude = text.slice(start, i);
+    const end = findBraceEnd(text, i);
+    if (end < 0) break;
+    scanRule({
+      prelude: rawPrelude.trim(),
+      body: text.slice(i + 1, end),
+      selectorIndex: baseOffset + start + rawPrelude.length - rawPrelude.trimStart().length,
+      bodyIndex: baseOffset + i + 1
+    }, sourceText, visit, inherited);
+    i = end + 1;
   }
+}
+
+function scanRule(rule, sourceText, visit, inherited) {
+  const parts = extractNestedBlocks(rule.body);
+  let childInherited = inherited;
+  if (rule.prelude && !rule.prelude.startsWith('@')) {
+    const contexts = selectorContexts(rule.prelude, inherited);
+    visit(rule.prelude, declarations(parts.declarationText), {
+      selectorIndex: rule.selectorIndex,
+      bodyIndex: rule.bodyIndex,
+      sourceText
+    }, contexts);
+    childInherited = contexts;
+  }
+  for (const nested of parts.nested) {
+    scanRule({
+      prelude: nested.prelude,
+      body: nested.body,
+      selectorIndex: rule.bodyIndex + nested.selectorIndex,
+      bodyIndex: rule.bodyIndex + nested.bodyIndex
+    }, sourceText, visit, childInherited);
+  }
+}
+
+function scanRules(segment, baseOffset, sourceText, visit) {
+  scanRuleList(segment.text, baseOffset, sourceText, visit, [{ positive: false, excludesFocusVisible: false }]);
 }
 
 function scanFile(file, root) {
   const text = fs.readFileSync(file, 'utf8');
+  const scanText = maskCssComments(text);
   const lines = text.split(/\r?\n/);
   const findings = [];
   const seenRules = new Set();
@@ -213,14 +418,13 @@ function scanFile(file, root) {
     findings.push({ rule, severity, weight, file: path.relative(root, file), line, match: match.trim().slice(0, 160), fix });
   };
 
-  for (const segment of cssSegments(file, text)) {
-    scanRules(segment, segment.offset, text, (selectorText, body, location) => {
-      const decls = declarations(body);
-      const removal = decls.find((d) => d.prop === 'outline' && /^(none|0)(?:\s*!important)?$/.test(d.value));
-      if (!removal || visibleReplacement(decls)) return;
-      for (const selector of splitSelectorList(selectorText)) {
-        if (!focusPseudo(selector)) continue;
-        add('outline-removed','P0',5,lineOf(text,location.bodyIndex + removal.offset),body.slice(removal.offset).trim().split(';')[0] || 'outline: none','Restore a visible keyboard focus indicator.');
+  for (const segment of cssSegments(file, scanText)) {
+    scanRules(segment, segment.offset, scanText, (selectorText, decls, location, contexts) => {
+      const outline = analyzeOutline(decls);
+      if (!outline.removal || visibleReplacement(decls, outline)) return;
+      for (const context of contexts) {
+        if (!context.relevant) continue;
+        add('outline-removed','P0',5,lineOf(text,location.bodyIndex + outline.removal.offset),`outline: ${outline.removal.value}`,'Restore a visible keyboard focus indicator.');
       }
     });
   }
