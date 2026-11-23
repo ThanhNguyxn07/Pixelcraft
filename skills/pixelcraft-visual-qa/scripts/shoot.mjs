@@ -123,11 +123,34 @@ const auditSource = `() => {
   };
   if (document.documentElement.scrollWidth > vw + 1) add('horizontal-overflow', 'high', 'document scrollWidth exceeds viewport: ' + document.documentElement.scrollWidth + ' > ' + vw);
   const elements = Array.from(document.querySelectorAll('body *')).slice(0, 5000);
+  const colorContext = document.createElement('canvas').getContext('2d');
+  const parseSerializedColor = (value) => {
+    const text = (value || '').trim().toLowerCase();
+    if (text === 'transparent') return { r: 0, g: 0, b: 0, a: 0 };
+    const hex = /^#([0-9a-f]{6}|[0-9a-f]{8})$/.exec(text);
+    if (hex) {
+      const digits = hex[1];
+      return { r: parseInt(digits.slice(0, 2), 16), g: parseInt(digits.slice(2, 4), 16), b: parseInt(digits.slice(4, 6), 16), a: digits.length === 8 ? parseInt(digits.slice(6, 8), 16) / 255 : 1 };
+    }
+    const rgb = /^rgba?\\(([^)]+)\\)$/.exec(text);
+    if (!rgb) return null;
+    const parts = rgb[1].split(',').map((part) => Number.parseFloat(part));
+    if (parts.length < 3 || parts.slice(0, 3).some(Number.isNaN)) return null;
+    return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 && !Number.isNaN(parts[3]) ? parts[3] : 1 };
+  };
   const parseColor = (value) => {
-    const match = /rgba?\\(([^)]+)\\)/.exec(value || '');
-    if (!match) return null;
-    const parts = match[1].split(',').map((part) => Number.parseFloat(part));
-    return { r: parts[0] || 0, g: parts[1] || 0, b: parts[2] || 0, a: parts.length > 3 ? parts[3] : 1 };
+    if (!value) return null;
+    let serialized = null;
+    for (const sentinel of ['#010203', '#040506']) {
+      colorContext.fillStyle = sentinel;
+      const before = colorContext.fillStyle;
+      colorContext.fillStyle = value;
+      if (colorContext.fillStyle !== before) {
+        serialized = colorContext.fillStyle;
+        break;
+      }
+    }
+    return serialized ? parseSerializedColor(serialized) : null;
   };
   const luminance = (color) => {
     const convert = (channel) => {
@@ -167,6 +190,8 @@ const auditSource = `() => {
         const large = size >= 24 || (size >= 18.66 && weight >= 700);
         const required = large ? 3 : 4.5;
         if (ratio + 0.05 < required) add('low-contrast-text', 'high', 'approximate contrast ' + ratio.toFixed(2) + ':1 below ' + required + ':1', element);
+      } else {
+        add('unchecked-contrast', 'medium', 'text color could not be parsed by the browser canvas normalization path: ' + style.color, element);
       }
     }
   }
