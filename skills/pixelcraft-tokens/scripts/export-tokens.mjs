@@ -223,12 +223,19 @@ try {
   if (!input) throw new Error('missing tokens.json input');
   const getOpt = (name) => {
     const i = args.indexOf(name);
-    return i >= 0 ? args[i + 1] : args.find((a) => a.startsWith(`${name}=`))?.split('=')[1];
+    if (i >= 0) {
+      const value = args[i + 1];
+      return value !== undefined && !value.startsWith('-') ? value : '';
+    }
+    const inline = args.find((a) => a.startsWith(`${name}=`));
+    return inline?.slice(name.length + 1);
   };
   const format = getOpt('--format') || 'all';
   if (![...formats, 'all'].includes(format)) throw new Error(`unknown --format ${format}`);
   const selected = format === 'all' ? formats : [format];
   const mode = getOpt('--mode');
+  const modeSpecified = args.includes('--mode') || args.some((a) => a.startsWith('--mode='));
+  if (modeSpecified && !mode) throw new Error('--mode requires a value');
   const list = entries(collect(input, mode));
   const outDir = getOpt('--out-dir');
   if (outDir) {

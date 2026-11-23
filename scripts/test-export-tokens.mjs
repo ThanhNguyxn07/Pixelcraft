@@ -41,6 +41,13 @@ try {
   assert.doesNotMatch(dark.stdout, /colorSpace/);
   console.log('ok 1 - mode override inherits the original alias target type');
 
+  for (const modeArg of ['--mode', '--mode=']) {
+    const missing = run([fixture, '--format', 'css', modeArg]);
+    assert.notEqual(missing.status, 0, `${modeArg} unexpectedly succeeded`);
+    assert.match(missing.stderr, /--mode requires a value/);
+  }
+  console.log('ok 2 - missing --mode value is rejected');
+
   console.log('token exporter tests passed');
 } finally {
   fs.rmSync(tmp, { recursive: true, force: true });
