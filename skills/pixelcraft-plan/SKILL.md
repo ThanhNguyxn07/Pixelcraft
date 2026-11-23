@@ -44,6 +44,7 @@ The plan must state: chosen stack; platform skill and framework reference by nam
 ## Hard rules
 
 - Do not select a stack before inventorying hard constraints.
+- Do not rely on training-data memory for version-sensitive APIs, config syntax, or current package versions. When choosing a greenfield stack or upgrading dependencies, verify current versions and APIs using whatever live docs/registry capability the host provides (such as a documentation MCP like Context7, official docs lookup, or package registry queries like `npm view`); if unavailable, record the assumed version in `.pixelcraft/plan.md` as `assumption` / `not-checked`.
 - Do not treat familiarity, hype, or example availability as evidence of fit.
 - Do not hide uncertainty behind precise scores; annotate confidence.
 - Do not overwrite an existing `.pixelcraft/plan.md` without preserving prior decisions and recording why they changed.
