@@ -480,15 +480,28 @@ function scanFile(file, root) {
     if (/<(input|textarea)\b[^>]*placeholder=/i.test(line) && !/aria-label|aria-labelledby/i.test(line)) add('placeholder-as-label','P1',4,n,line,'Use a persistent programmatic label; placeholder is only a hint.');
     if (/(user-scalable\s*=\s*["']?no|maximum-scale\s*=\s*["']?1(?:\.0)?\b)/i.test(line)) add('zoom-disabled','P0',5,n,line,'Do not disable pinch zoom or text scaling.');
     if (/\p{Extended_Pictographic}/u.test(line) && /icon|button|nav|<span/i.test(line)) add('emoji-as-icon','P2',2,n,line,'Use a coherent icon system or text instead of structural emoji.');
-    if (/\b(get started|seamless|unlock|revolutionize|elevate)\b/i.test(line) || /lorem ipsum/i.test(line)) add('generic-copy','P2',2,n,line,'Replace template copy with concrete user/domain language.');
-    if (/rounded-2xl/.test(line)) add('rounded-2xl-repetition','P3',1,n,line,'Use semantic radius variation rather than uniform rounded-2xl.', true);
-    if (/shadow-(lg|xl|2xl)/.test(line)) add('uniform-shadow','P3',1,n,line,'Use elevation/shadow only where material semantics require it.', true);
+    if (/\b(get started|seamless|unlock|revolutionize|elevate|supercharge|game-changing|cutting-edge|next-generation|effortlessly|transform your workflow)\b/i.test(line) || /lorem ipsum|trusted by 10,?000\+|99\.99% uptime/i.test(line)) add('generic-copy','P2',2,n,line,'Replace template or invented marketing copy with concrete, verifiable domain language.');
+    if (/<(div|span)\b[^>]*\b(?:onClick|onclick)\s*=/i.test(line) && !/\b(role\s*=\s*["']button["']|onKeyDown|onkeydown|tabIndex|tabindex)\b/i.test(line)) add('clickable-non-semantic','P0',5,n,line,'Use a native <button> or <a> instead of a clickable <div>/<span> without keyboard semantics.');
+    if (/<img\b(?![^>]*\balt\s*=)[^>]*>/i.test(line)) add('missing-img-alt','P0',5,n,line,'Provide a meaningful alt attribute (or alt="" when strictly decorative).');
+    if (/<a\b[^>]*\bhref\s*=\s*["'](?:\s*|#|javascript:[^"']*)["']/i.test(line)) add('dead-anchor-href','P1',3,n,line,'Use a real destination URL or a <button type="button"> for in-page actions.');
+    if (/(via\.placeholder\.com|placehold\.co|placeholder\.com|picsum\.photos|\bimage goes here\b|\bphoto placeholder\b)/i.test(line)) add('placeholder-media','P1',4,n,line,'Replace placeholder URLs or empty media boxes with real licensed/generated assets or honest product UI.');
+    if (/\b(TODO|FIXME|TBD)\s*:|\bcoming soon\b/i.test(line) && /<|return\s*\(|textContent|innerText/i.test(line)) add('unfinished-ui-stub','P1',4,n,line,'Finish the UI copy/state or mark missing scope explicitly instead of shipping placeholder stubs.');
+    if (/(bg-clip-text[^"']*text-transparent|text-transparent[^"']*bg-clip-text|-webkit-background-clip\s*:\s*text)/i.test(line)) add('gradient-text-cliche','P2',2,n,line,'Build headline hierarchy through scale, weight, and spacing rather than gradient-clipped text.');
+    if (/\banimate-(bounce|ping)\b/.test(line) || (/\banimate-pulse\b/.test(line) && !/skeleton|loading|busy|placeholder/i.test(line))) add('decorative-idle-loop','P2',2,n,line,'Remove decorative infinite loops; reserve pulse/shimmer strictly for active loading states.');
+    if (/(?:height|min-height)\s*:\s*100vh\b/i.test(line) && !/100(?:svh|dvh)/i.test(text)) add('fixed-100vh-mobile-trap','P2',2,n,line,'Prefer 100svh/100dvh so mobile browser chrome does not clip full-height layouts.');
+    if (/rounded-2xl/.test(line)) add('rounded-2xl-repetition','P3',1,n,line,'Use semantic radius variation rather than uniform rounded-2xl.');
+    if (/shadow-(lg|xl|2xl)/.test(line)) add('uniform-shadow','P3',1,n,line,'Use elevation/shadow only where material semantics require it.');
   });
 
   const rounded = (text.match(/rounded-2xl/g) || []).length;
   if (rounded < 3) for (const f of findings.filter((f) => f.rule === 'rounded-2xl-repetition')) f.drop = true;
   const shadows = (text.match(/shadow-(lg|xl|2xl)/g) || []).length;
   if (shadows < 3) for (const f of findings.filter((f) => f.rule === 'uniform-shadow')) f.drop = true;
+  const glassCount = (text.match(/backdrop-blur|backdrop-filter\s*:\s*blur/gi) || []).length;
+  if (glassCount >= 3) add('glassmorphism-spam','P2',2,lineOf(text,/backdrop-blur|backdrop-filter\s*:\s*blur/i.exec(text)?.index || 0),`${glassCount} backdrop-blur layers`,'Reserve translucency for meaningful layered context and verify contrast over moving content.');
+  const importantCount = (text.match(/!important\b/g) || []).length;
+  if (importantCount >= 3 && !/prefers-reduced-motion/.test(text)) add('important-cascade-hack','P2',2,lineOf(text,/!important\b/.exec(text)?.index || 0),`${importantCount} !important overrides`,'Fix selector specificity or token layering instead of forcing overrides with !important.');
+  if (/\bfont-serif\b/.test(text) && !/--font-serif|font-family\s*:[^;]*serif/i.test(text) && !/Cormorant|Playfair|Newsreader|Fraunces|Instrument_Serif|Lora|Merriweather|Source_Serif/i.test(text)) add('unloaded-generic-serif','P2',2,lineOf(text,/\bfont-serif\b/.exec(text)?.index || 0),'font-serif without explicit loaded serif family','Load an intentional serif typeface (with script coverage) so the browser does not fall back to system Times.');
 
   if (/gradient/i.test(text) && /(purple|violet|indigo|blue|#[0-9a-f]{3,8})/i.test(text) && /(purple|violet|indigo)/i.test(text) && /(blue|cyan)/i.test(text)) add('purple-blue-gradient','P2',2,lineOf(text,/gradient/i.exec(text)?.index || 0),'gradient definition','Use a color posture derived from subject/material rather than the default AI gradient.');
   const paste = /paste[\s\S]{0,160}preventDefault|preventDefault[\s\S]{0,160}paste/i.exec(text);
