@@ -640,9 +640,14 @@ const extract = String.raw`(() => {
   };
 
   const bodyStyle = document.body ? styleOf(document.body) : null;
-  const hiddenBodyOverflow = Boolean(bodyStyle && /hidden|clip/.test(bodyStyle.overflow + ' ' + bodyStyle.overflowX + ' ' + bodyStyle.overflowY));
+  const rootStyle = styleOf(document.documentElement);
+  const hiddenBodyOverflow = Boolean(
+    (bodyStyle && /hidden|clip/.test(bodyStyle.overflow + ' ' + bodyStyle.overflowX + ' ' + bodyStyle.overflowY))
+    || /hidden|clip/.test(rootStyle.overflow + ' ' + rootStyle.overflowX + ' ' + rootStyle.overflowY),
+  );
   const wheelOrTouchHandlerHint = /addeventlistener\(\s*['"](?:wheel|mousewheel|touchmove)|\bon(?:wheel|mousewheel|touchmove)\s*=/.test(scriptHaystack) || Boolean(document.querySelector('[onwheel],[onmousewheel],[ontouchmove]'));
-  const sectionIds = new Set([...document.querySelectorAll('section[id]')].map((element) => element.id));
+  const sectionIdList = [...document.querySelectorAll('section[id]')].map((element) => element.id);
+  const sectionIds = new Set(sectionIdList);
   let directHashLinks = 0;
   for (const anchor of document.querySelectorAll('a[href^="#"]')) {
     const href = anchor.getAttribute('href') || '';
@@ -777,6 +782,7 @@ const extract = String.raw`(() => {
         hiddenBodyOverflow,
         wheelOrTouchHandlerHint,
         directHashLinks,
+        sectionsWithIds: sectionIdList.length,
       },
     },
     cursor: {
