@@ -86,12 +86,15 @@ async function createStaticTarget(target, options) {
   const fallbackRoot = stat.isDirectory() ? resolved : path.dirname(resolved);
   const configuredRoot = path.resolve(options.root || fallbackRoot);
   if (!fs.existsSync(configuredRoot) || !fs.statSync(configuredRoot).isDirectory()) throw new Error(`static server root is not a directory: ${configuredRoot}`);
+  const lexicalRoot = configuredRoot;
   const root = fs.realpathSync(configuredRoot);
   const rootPrefix = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
+  const lexicalTarget = path.relative(lexicalRoot, resolved);
+  if (lexicalTarget.startsWith('..') || path.isAbsolute(lexicalTarget)) throw new Error(`local target is outside the static server root: target=${resolved}; root=${lexicalRoot}`);
   const realTarget = fs.realpathSync(resolved);
-  const relativeTarget = path.relative(root, realTarget);
-  if (relativeTarget.startsWith('..') || path.isAbsolute(relativeTarget)) throw new Error(`local target is outside the static server root: target=${realTarget}; root=${root}`);
-  const encodedTarget = relativeTarget.split(path.sep).map(encodeURIComponent).join('/');
+  const realRelativeTarget = path.relative(root, realTarget);
+  if (realRelativeTarget.startsWith('..') || path.isAbsolute(realRelativeTarget)) throw new Error(`local target resolves outside the static server root: target=${realTarget}; root=${root}`);
+  const encodedTarget = lexicalTarget.split(path.sep).map(encodeURIComponent).join('/');
   let initialPath = encodedTarget ? `/${encodedTarget}` : '/';
   if (stat.isDirectory() && !initialPath.endsWith('/')) initialPath += '/';
   const server = http.createServer((request, response) => {
@@ -129,7 +132,7 @@ async function createStaticTarget(target, options) {
       response.writeHead(404).end('not found');
       return;
     }
-    response.writeHead(200, { 'content-type': mimeTypes.get(path.extname(realFile).toLowerCase()) || 'application/octet-stream', 'cache-control': 'no-store' });
+    response.writeHead(200, { 'content-type': mimeTypes.get(path.extname(file).toLowerCase()) || 'application/octet-stream', 'cache-control': 'no-store' });
     fs.createReadStream(realFile).pipe(response);
   });
   await new Promise((resolve, reject) => {
