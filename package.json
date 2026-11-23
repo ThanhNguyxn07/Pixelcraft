@@ -12,7 +12,8 @@
   },
   "scripts": {
     "validate": "node scripts/validate-skills.mjs",
-    "build:adapters": "node scripts/build-adapters.mjs"
+    "build:adapters": "node scripts/build-adapters.mjs",
+    "test:adapters": "node scripts/test-build-adapters.mjs"
   },
   "files": [
     "bin/",
