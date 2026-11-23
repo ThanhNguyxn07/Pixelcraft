@@ -166,6 +166,16 @@ window.addEventListener('load', () => {
         res.end('window.__redirectLoaded = true;');
         return;
       }
+      if (req.url === '/hanging-media') {
+        res.writeHead(200, { 'content-type': 'image/png' });
+        setTimeout(() => res.end(), 10000).unref();
+        return;
+      }
+      if (req.url === '/slow-page') {
+        res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+        res.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Slow subresource</title></head><body><main><h1>Ready before load</h1><img src="/hanging-media" alt="slow"></main></body></html>');
+        return;
+      }
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
       res.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Main 200</title><script src="/redirect.js"></script></head><body><main><h1>Main</h1><iframe src="/iframe-404"></iframe></main></body></html>');
     });
@@ -181,7 +191,16 @@ window.addEventListener('load', () => {
       assert.equal(navViewport.network.redirects, 1, `expected 1 redirect, got ${navViewport.network.redirects}`);
       assert.ok(navViewport.network.jsBytes >= 1000, `expected redirect response bytes included in jsBytes, got ${navViewport.network.jsBytes}`);
       console.log('ok 5 - redirect hops account for redirect response transfer bytes');
+
+      const dclOut = path.join(tmp, 'dcl.json');
+      const dclResult = await runInventoryAsync(`http://127.0.0.1:${port}/slow-page`, dclOut, ['--breakpoints=800x600', '--wait-until=domcontentloaded', '--timeout=3000', '--wait-ms=100']);
+      assert.equal(dclResult.status, 0, `${dclResult.stdout}\n${dclResult.stderr}`);
+      const dclViewport = JSON.parse(fs.readFileSync(dclOut, 'utf8')).viewports[0];
+      assert.equal(dclViewport.title, 'Slow subresource');
+      assert.ok(dclViewport.network.pendingRequests >= 1, `expected hanging media in pendingRequests, got ${dclViewport.network.pendingRequests}`);
+      console.log('ok 6 - --wait-until=domcontentloaded measures pages with stalled subresources');
     } finally {
+      navServer.closeAllConnections?.();
       await new Promise((resolve) => navServer.close(resolve));
     }
 

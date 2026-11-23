@@ -65,6 +65,7 @@ Audit rules:
 
 - inventory every loaded/rendered family-weight-style face and delete faces without a hierarchy role;
 - separate modular-step ratio from the observed display/body extreme ratio;
-- verify display letter-spacing only at rendered sizes where it occurs;
-- preload only critical font files, choose `font-display` deliberately, subset required scripts, and never preload every face;
+- compress desktop display-to-body ratio by roughly 25–35% at narrow viewports (e.g., `~4.5× → ~2.5–3.0×` via fluid `clamp()`) so display headlines stay commanding without excessive wrapping, while dense instrumental surfaces keep a tight ratio (`~1.4–1.8×`) steady across widths;
+- verify display letter-spacing only at rendered sizes where it occurs; subtle negative tracking (`-0.02em` to `-0.04em`) belongs on large Latin display headlines, never on body copy or scripts with combining diacritics/shaping;
+- preload at most 1–2 truly critical font files, choose `font-display` deliberately, subset required scripts, and never preload every weight or starve LCP media;
 - canvas-rendered display type still needs semantic text and a fallback type specification.
