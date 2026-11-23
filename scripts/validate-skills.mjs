@@ -15,6 +15,132 @@ function fail(file, message) {
   errors.push(`${path.relative(root, file)}: ${message}`);
 }
 
+function quoteCanOpen(text, index) {
+  if (index === 0) return true;
+  let previous = index - 1;
+  while (previous >= 0 && /\s/.test(text[previous])) previous--;
+  return previous < 0 || '{[,:'.includes(text[previous]);
+}
+
+function stripYamlComment(raw) {
+  let quote = null;
+  for (let i = 0; i < raw.length; i++) {
+    const char = raw[i];
+    if (quote === '"') {
+      if (char === '\\') i++;
+      else if (char === '"') quote = null;
+      continue;
+    }
+    if (quote === "'") {
+      if (char === "'" && raw[i + 1] === "'") i++;
+      else if (char === "'") quote = null;
+      continue;
+    }
+    if ((char === '"' || char === "'") && quoteCanOpen(raw, i)) {
+      quote = char;
+      continue;
+    }
+    if (char === '#' && (i === 0 || /\s/.test(raw[i - 1]))) return raw.slice(0, i).trimEnd();
+  }
+  return raw.trimEnd();
+}
+
+function indentationWidth(line) {
+  return /^ */.exec(line)[0].length;
+}
+
+function parseBlockHeader(value) {
+  const match = /^([|>])((?:[+-]?[1-9]?|[1-9]?[+-]?))$/.exec(value);
+  if (!match) return /^[|>]/.test(value) ? { invalid: true } : null;
+  const suffix = match[2];
+  const explicitIndent = /[1-9]/.exec(suffix);
+  return {
+    style: match[1],
+    chomp: suffix.includes('-') ? '-' : suffix.includes('+') ? '+' : '',
+    indent: explicitIndent ? Number(explicitIndent[0]) : 0
+  };
+}
+
+function foldBlockLines(lines) {
+  let output = '';
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    output += line;
+    if (i === lines.length - 1) break;
+    const next = lines[i + 1];
+    const foldable = line && next && !/^\s/.test(line) && !/^\s/.test(next);
+    if (foldable) output += ' ';
+    else if (!(line === '' && next !== '' && i > 0)) output += '\n';
+  }
+  return output;
+}
+
+function applyChomp(body, lineCount, chomp) {
+  if (!lineCount) return '';
+  if (chomp === '-') return body.replace(/\n+$/g, '');
+  if (chomp === '+') return `${body}\n`;
+  return `${body.replace(/\n+$/g, '')}\n`;
+}
+
+function readBlockScalar(lines, start, end, header) {
+  let indent = header.indent;
+  if (!indent) {
+    for (let probe = start + 1; probe < end; probe++) {
+      if (!lines[probe].trim()) continue;
+      indent = indentationWidth(lines[probe]) || 1;
+      break;
+    }
+    if (!indent) indent = 1;
+  }
+
+  const content = [];
+  let index = start + 1;
+  for (; index < end; index++) {
+    const line = lines[index];
+    if (!line.trim()) {
+      content.push('');
+      continue;
+    }
+    if (indentationWidth(line) < indent) break;
+    content.push(line.slice(indent));
+  }
+  const body = header.style === '|' ? content.join('\n') : foldBlockLines(content);
+  return { value: applyChomp(body, content.length, header.chomp), nextIndex: index };
+}
+
+function isInlineFlow(value) {
+  if (!value.startsWith('{') && !value.startsWith('[')) return false;
+  const closers = { '{': '}', '[': ']' };
+  const stack = [];
+  let quote = null;
+  for (let i = 0; i < value.length; i++) {
+    const char = value[i];
+    if (quote === '"') {
+      if (char === '\\') i++;
+      else if (char === '"') quote = null;
+      continue;
+    }
+    if (quote === "'") {
+      if (char === "'" && value[i + 1] === "'") i++;
+      else if (char === "'") quote = null;
+      continue;
+    }
+    if ((char === '"' || char === "'") && quoteCanOpen(value, i)) {
+      quote = char;
+      continue;
+    }
+    if (closers[char]) {
+      stack.push(closers[char]);
+      continue;
+    }
+    if (char === '}' || char === ']') {
+      if (stack.pop() !== char) return false;
+      if (!stack.length && i !== value.length - 1) return false;
+    }
+  }
+  return !quote && stack.length === 0;
+}
+
 function parseFrontmatter(file, text) {
   const lines = text.split(/\r?\n/);
   if (lines[0] !== '---') return { error: 'missing opening frontmatter delimiter' };
@@ -23,7 +149,8 @@ function parseFrontmatter(file, text) {
 
   const data = {};
   const seen = new Set();
-  for (const line of lines.slice(1, end)) {
+  for (let index = 1; index < end; index++) {
+    const line = lines[index];
     if (!line.trim() || line.trimStart().startsWith('#')) continue;
     if (line.includes('\t')) return { error: 'frontmatter contains a tab character' };
     if (/^\s/.test(line)) continue; // nested metadata/list content; not needed for linted scalar fields
@@ -32,9 +159,18 @@ function parseFrontmatter(file, text) {
     const [, key, raw = ''] = match;
     if (seen.has(key)) return { error: `duplicate frontmatter key: ${key}` };
     seen.add(key);
-    let value = raw.trim();
+    let value = stripYamlComment(raw).trim();
+    const block = parseBlockHeader(value);
+    if (block?.invalid) return { error: `invalid block scalar header for ${key}` };
+    if (block) {
+      const scalar = readBlockScalar(lines, index, end, block);
+      data[key] = scalar.value;
+      index = scalar.nextIndex - 1;
+      continue;
+    }
     const startsQuoted = value.startsWith('"') || value.startsWith("'");
-    if (value && !startsQuoted) {
+    const flow = isInlineFlow(value);
+    if (value && !startsQuoted && !flow) {
       if (value.includes(': ')) return { error: `unquoted scalar for ${key} contains ': '; quote it for strict YAML loaders` };
       if (yamlPlainStartPattern.test(value)) return { error: `unquoted scalar for ${key} starts with YAML-special character '${value[0]}'; quote it for strict YAML loaders` };
     }

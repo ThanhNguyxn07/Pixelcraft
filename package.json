@@ -14,7 +14,8 @@
     "validate": "node scripts/validate-skills.mjs",
     "build:adapters": "node scripts/build-adapters.mjs",
     "test:adapters": "node scripts/test-build-adapters.mjs",
-    "test:tokens": "node scripts/test-export-tokens.mjs"
+    "test:tokens": "node scripts/test-export-tokens.mjs",
+    "test:validator": "node scripts/test-validate-skills.mjs"
   },
   "files": [
     "bin/",
