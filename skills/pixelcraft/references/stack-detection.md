@@ -93,6 +93,15 @@ Detect from concrete files; do not infer from repository age, buzzwords, or one 
 | `.uproject`, UMG/Slate/CommonUI assets or references | `pixelcraft-game-ui` → `unreal-umg` |
 | HUD/controller/safe-area/certification/accessibility question | `pixelcraft-game-ui` → `hud-principles` |
 
+## Brand identity signals
+
+| Signal | Route |
+|---|---|
+| request for brand kit, identity board, visual identity, brand guidelines image, moodboard, visual-world board, logo system, launch identity, rebrand, or refresh | `pixelcraft-brandkit` |
+| supplied logo/wordmark/palette/type/brand assets to preserve | `pixelcraft-brandkit` intake: build on existing brand |
+| explicit rebrand/refresh scope | `pixelcraft-brandkit` intake: refresh/rebrand |
+| selected palette/type must become implementation tokens | `pixelcraft-brandkit` → `pixelcraft-tokens` |
+
 ## Existing system inventory
 
 Before designing, inspect design token files (`tokens.json`, `.tokens`, theme objects, Tailwind CSS/theme, asset catalogs, resource dictionaries, Qt/QSS, Godot themes, UMG styles), component libraries, lint/test/screenshot fixtures, localization catalogs, brand assets/licenses, density conventions, and navigation structure. Record whether the system is authoritative, partial, inconsistent, or absent. Existing tokens outrank Pixelcraft-generated taste.

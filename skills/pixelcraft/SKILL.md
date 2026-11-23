@@ -46,7 +46,7 @@ Hybrid surfaces pick one primary mode per screen or region. Do not let a persuas
 ## The six-step Pixelcraft loop
 
 1. **Frame** — detect stack/surface/input modality; identify audience, job-to-be-done, real material inventory, constraints, locale scope, and existing design system. Ask only for information that materially changes the design.
-2. **Diverge** — use the `pixelcraft-direction` skill to generate 3–5 far-apart directions with probabilities, score them, select one, record why the others lost, and inspect repetition history.
+2. **Diverge** — use the `pixelcraft-direction` skill to generate 3–5 far-apart directions with probabilities, score them, select one, record why the others lost, and inspect repetition history. For brand-kit, identity-board, logo-system, moodboard, or visual-identity image generation, use the `pixelcraft-brandkit` skill by name and its 2–3 brand-world divergence flow before image prompting.
 3. **Specify** — produce the direction card; use `pixelcraft-tokens` for DTCG tokens and `pixelcraft-ux` for flows plus the state matrix. Do not start with component trivia before direction and constraints exist.
 4. **Build** — use the appropriate platform skill by name when installed (`pixelcraft-web`, `pixelcraft-mobile`, `pixelcraft-python-ui`, `pixelcraft-desktop`, `pixelcraft-tui`, `pixelcraft-email`, or `pixelcraft-game-ui`). If absent, translate the direction idiomatically yourself without importing web assumptions.
 5. **Verify** — use `pixelcraft-review` for slop scanning, heuristic critique, accessibility/state review, and evidence-ranked findings; inspect rendered output where the environment permits and label every claim honestly.
@@ -69,6 +69,10 @@ After detecting the stack, use the matching platform skill by name and read only
 | `pixelcraft-game-ui` | `unity-ui-toolkit`, `godot`, `unreal-umg`, `hud-principles` |
 
 References are named here for routing only. Do not construct relative paths across skill folders; read the file inside the installed platform skill.
+
+## Brand routing
+
+Use `pixelcraft-brandkit` when the deliverable is a brand kit, identity board, logo system, brand guidelines image, moodboard, visual-world board, rebrand/refresh concept, or implementation-oriented brand direction. It runs alongside `pixelcraft-direction` rather than replacing it: direction supplies divergence discipline; brandkit supplies intake, logo methods, board composition, prompt construction, and brand-specific QA. Use `pixelcraft-tokens` when the selected palette/type must become DTCG implementation tokens.
 
 ## Mandatory floor summary
 
