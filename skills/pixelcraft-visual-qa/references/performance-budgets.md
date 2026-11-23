@@ -56,6 +56,10 @@ For web surfaces, record total compressed transfer, JavaScript transfer, CSS/med
 
 Keep the mode budgets above as defaults. If a Persuade/Experience direction requires more payload, record the user-facing reason, the expected network/device cost, what is deferred or adaptive, and the explicit waiver owner. Never use visual ambition itself as the waiver.
 
+Watch for two recurring live-production regressions:
+- **Zero-CLS, slow-LCP hydration trap**: product sites frequently achieve near-zero CLS (`≤ 0.002`) while still shipping 600 KB–1.5 MB of compressed JS that pushes LCP past 3–6 seconds. Keep critical hero text/media server-rendered and unblocked by client bundles or excessive font preloads.
+- **Deferred third-party/media stalling `load`**: heavy video, WebGL scenes, or third-party scripts can hold the document `load` event open well past interactive readiness; isolate them below the fold, lazy-load after first paint, and verify both `DOMContentLoaded` and LCP.
+
 ## Style inventory evidence
 
 Use `scripts/style-inventory.mjs` when a browser runtime is available. Its JSON output separates typography, palette, layout geometry, cursor/motion signals, initial/deferred payload and resource-type breakdowns, and basic semantic checks so critique starts from measurements rather than taste adjectives.

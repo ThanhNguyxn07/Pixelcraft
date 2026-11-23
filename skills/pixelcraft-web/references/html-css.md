@@ -34,6 +34,16 @@ Use CSS transitions/animations only for purposeful transform/opacity/state chang
 
 JavaScript should query `matchMedia('(prefers-reduced-motion: reduce)')` when motion is imperative.
 
+## Modern browser-native craft idioms
+
+Use progressive, zero-dependency CSS capabilities before importing JS animation or layout libraries:
+
+- **Discrete entry/exit transitions**: combine `@starting-style` and `transition-behavior: allow-discrete` for native `<dialog>`, `[popover]`, and disclosure reveals so overlays animate smoothly without JS choreography and degrade cleanly when unsupported.
+- **Scroll-driven progress**: gate `animation-timeline: view()` / `scroll()` behind both `@supports (animation-timeline: view())` and `@media (prefers-reduced-motion: no-preference)`; keep the final layout readable without animation.
+- **Typographic rag polish**: apply `text-wrap: balance` on short headings/callouts and `text-wrap: pretty` on body paragraphs to prevent awkward single-word orphans.
+- **Viewport & scrollbar stability**: prefer `svh`/`dvh` over `100vh` on mobile and `scrollbar-gutter: stable` on scrolling regions to prevent horizontal jump when content toggles overflow.
+- **Self-adapting components**: use `container-type: inline-size` with `@container` queries for cards, sidebars, and dense toolbars so components respond to their actual slot width rather than assuming global viewport breakpoints.
+
 ## Accessibility specifics
 
 Native elements carry most semantics: `button`, `a`, `form`, `label`, `input`, `select`, `table`, headings, landmarks. Do not use positive `tabindex`; use DOM order. Use `dialog`/popover/inert patterns carefully and restore focus. Validate names/roles/status behavior in the accessibility tree.
