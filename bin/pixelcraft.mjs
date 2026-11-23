@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const skillsRoot = path.join(repoRoot, 'skills');
-const canonicalAgents = ['claude', 'codex', 'agents', 'devin', 'cursor', 'gemini', 'copilot', 'windsurf', 'opencode'];
+const canonicalAgents = ['claude', 'codex', 'agents', 'devin', 'cursor', 'gemini', 'copilot', 'windsurf', 'opencode', 'kiro'];
 const validAgents = [...canonicalAgents, 'all'];
 const agentAliases = {
   'claude-code': 'claude',
@@ -43,31 +43,40 @@ function expandAgents(input) {
 function targetsFor(agentInput, globalInstall) {
   const home = os.homedir();
   const project = {
-    claude: ['.claude/skills'],
-    codex: ['.agents/skills'],
-    agents: ['.agents/skills'],
-    devin: ['.agents/skills'],
-    cursor: ['.agents/skills'],
-    gemini: ['.agents/skills'],
-    copilot: ['.agents/skills'],
-    windsurf: ['.windsurf/skills'],
-    opencode: ['.opencode/skills'],
+    claude: { root: '.claude/skills', type: 'skills' },
+    codex: { root: '.agents/skills', type: 'skills' },
+    agents: { root: '.agents/skills', type: 'skills' },
+    devin: { root: '.agents/skills', type: 'skills' },
+    cursor: { root: '.cursor/skills', type: 'skills' },
+    gemini: { root: '.gemini/skills', type: 'skills' },
+    copilot: { root: '.github/skills', type: 'skills' },
+    windsurf: { root: '.windsurf', type: 'windsurf' },
+    opencode: { root: '.opencode/skills', type: 'skills' },
+    kiro: { root: '.kiro', type: 'kiro' },
   };
   const globalMap = {
-    claude: [path.join(home, '.claude/skills')],
-    codex: [path.join(home, '.agents/skills')],
-    agents: [path.join(home, '.agents/skills')],
-    devin: [path.join(home, '.agents/skills')],
-    cursor: [path.join(home, '.cursor/skills')],
-    gemini: [path.join(home, '.gemini/skills')],
-    copilot: [path.join(home, '.copilot/skills')],
-    windsurf: [path.join(home, '.codeium/windsurf/skills')],
-    opencode: [path.join(home, '.config/opencode/skills')],
+    claude: { root: path.join(home, '.claude/skills'), type: 'skills' },
+    codex: { root: path.join(home, '.agents/skills'), type: 'skills' },
+    agents: { root: path.join(home, '.agents/skills'), type: 'skills' },
+    devin: { root: path.join(home, '.agents/skills'), type: 'skills' },
+    cursor: { root: path.join(home, '.cursor/skills'), type: 'skills' },
+    gemini: { root: path.join(home, '.gemini/skills'), type: 'skills' },
+    copilot: { root: path.join(home, '.copilot/skills'), type: 'skills' },
+    windsurf: { root: path.join(home, '.codeium/windsurf'), type: 'windsurf' },
+    opencode: { root: path.join(home, '.config/opencode/skills'), type: 'skills' },
+    kiro: { root: path.join(home, '.kiro'), type: 'kiro' },
   };
   const map = globalInstall ? globalMap : project;
-  const agents = expandAgents(agentInput);
-  const selected = agents.flatMap((agent) => map[agent]);
-  return [...new Set(selected)].map((target) => path.resolve(process.cwd(), target));
+  const seen = new Set();
+  const targets = [];
+  for (const agent of expandAgents(agentInput)) {
+    const spec = map[agent];
+    const key = `${spec.type}:${spec.root}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    targets.push({ agent, type: spec.type, root: path.resolve(process.cwd(), spec.root), global: globalInstall });
+  }
+  return targets;
 }
 
 function help() {
@@ -84,7 +93,7 @@ Commands:
   help, --help
       Show this help.
 
-Agents: claude, codex, agents, devin, cursor, gemini, copilot, windsurf, opencode, all.
+Agents: claude, codex, agents, devin, cursor, gemini, copilot, windsurf, opencode, kiro, all.
 Aliases: claude-code, gemini-cli, github-copilot, open-code.
 
 Options:
@@ -96,12 +105,16 @@ Options:
 Symlink safety: installation refuses a symlinked target skills directory or skill
 directory instead of replacing files outside the project.
 
-Project locations: claude=.claude/skills; codex/agents/devin/cursor/gemini/copilot=.agents/skills;
-windsurf=.windsurf/skills; opencode=.opencode/skills. Cursor, Gemini, and Copilot also
-read some compatibility locations; universal .agents/skills is the canonical target here.
+Project locations: claude=.claude/skills; codex/agents/devin=.agents/skills;
+cursor=.cursor/skills; gemini=.gemini/skills; copilot=.github/skills;
+opencode=.opencode/skills. Windsurf receives .windsurf rules/workflows and Kiro
+receives .kiro steering because those hosts use router formats rather than native
+SKILL.md installation. Claude/Cursor/Copilot adapter commands and rules are written
+alongside their skills. Universal .agents/skills remains available through the
+agents target and as a compatibility path in several hosts.
 Global locations: claude=~/.claude/skills; codex/agents/devin=~/.agents/skills;
 cursor=~/.cursor/skills; gemini=~/.gemini/skills; copilot=~/.copilot/skills;
-windsurf=~/.codeium/windsurf/skills; opencode=~/.config/opencode/skills.
+windsurf=~/.codeium/windsurf; opencode=~/.config/opencode/skills; kiro=~/.kiro.
 
 Host behavior and global paths follow current public documentation where available.
 They change quickly; verify current host documentation before depending on them in automation.`;
@@ -186,15 +199,93 @@ function selectSkills(positional, available) {
   return selected;
 }
 
+const adapterActions = [
+  ['pixelcraft', 'pixelcraft', 'Run the Pixelcraft orchestrator for UI design/build work'],
+  ['pixelcraft-plan', 'pixelcraft-plan', 'Run Pixelcraft step-zero planning before UI work'],
+  ['pixelcraft-review', 'pixelcraft-review', 'Audit or critique UI with Pixelcraft evidence rules'],
+  ['pixelcraft-visual-qa', 'pixelcraft-visual-qa', 'Capture and inspect rendered UI evidence'],
+  ['pixelcraft-direction', 'pixelcraft-direction', 'Generate divergent visual directions'],
+];
+
+function adapterIntro(skillsPath) {
+  return `Use Pixelcraft for any request to design, build, redesign, review, audit, polish, or visually verify a user interface. Start with \`pixelcraft-plan\` before implementation, use the \`pixelcraft\` orchestrator for routing, choose the matching platform/pattern skills, and finish with \`pixelcraft-review\` plus \`pixelcraft-visual-qa\` when rendered verification is possible.\n\nDo not inline skill bodies here. Read the matching self-contained skill under \`${skillsPath}\`:\n\n${skillNames().map((name) => `- \`${name}\` — \`${skillsPath}/${name}/SKILL.md\``).join('\n')}\n`;
+}
+
+function commandText(skill, task) {
+  return `---\ndescription: ${task}\n---\n\n${task}. Read and follow the self-contained \`${skill}\` skill available in this workspace or user installation. Preserve the user's brief, existing design system, platform conventions, accessibility requirements, and evidence labels.\n`;
+}
+
+function workflowText(skill, task) {
+  return `# ${task}\n\n1. Read the self-contained \`${skill}\` skill from the installed Pixelcraft distribution or source checkout.\n2. Follow its workflow, including referenced files when they match the task.\n3. Preserve user requirements, project conventions, accessibility, and evidence labels.\n4. Report rendered/static/not-checked/waived verification honestly.\n`;
+}
+
+function assertAdapterPathSafe(file) {
+  assertNotSymlink(file, 'adapter output');
+  let current = path.dirname(file);
+  while (true) {
+    assertNotSymlink(current, 'adapter path component');
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+}
+
+function writeAdapterFile(file, content, dryRun, force) {
+  assertAdapterPathSafe(file);
+  const exists = lstatIfExists(file) !== null;
+  if (dryRun) {
+    console.log(`dry-run: ${exists && !force ? 'skipped existing adapter' : 'adapter'} ${file}${exists && !force ? ' (use --force to replace)' : ''}`);
+    return;
+  }
+  if (exists && !force) {
+    console.log(`skipped existing adapter: ${file} (use --force to replace)`);
+    return;
+  }
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  assertAdapterPathSafe(file);
+  fs.writeFileSync(file, content);
+  console.log(`installed adapter: ${file}`);
+}
+
+function writeAgentAdapters(target, dryRun, force, selected) {
+  const base = target.type === 'skills' ? path.dirname(target.root) : target.root;
+  const displayRoot = target.global ? target.root.replace(os.homedir(), '~') : path.relative(process.cwd(), target.root);
+  const file = (relative) => path.join(base, ...relative.split('/'));
+  const write = (relative, content) => writeAdapterFile(file(relative), content, dryRun, force);
+  if (target.agent === 'claude') {
+    for (const [command, skill, task] of adapterActions.slice(0, 4)) write(`commands/${command}.md`, commandText(skill, task));
+  } else if (target.agent === 'cursor') {
+    write('rules/pixelcraft.mdc', `---\ndescription: Route UI design and review through Pixelcraft\nalwaysApply: true\n---\n\n# Pixelcraft router\n\n${adapterIntro(displayRoot)}`);
+  } else if (target.agent === 'copilot') {
+    write('copilot-instructions.md', `# Pixelcraft router\n\n${adapterIntro(displayRoot)}`);
+    write('instructions/pixelcraft.instructions.md', `---\napplyTo: "**/*.{html,css,scss,js,jsx,ts,tsx,vue,svelte,astro,py,rb,php,cs,java,kt,swift,dart,rs,go,lua,ex,exs,clj,cljs,elm,fs,scala}"\n---\n\nWhen editing interface or user-facing behavior, follow \`copilot-instructions.md\` and read the matching Pixelcraft skill before implementation or review.\n`);
+    for (const [command, skill, task] of adapterActions.slice(1)) write(`prompts/${command}.prompt.md`, commandText(skill, task));
+  } else if (target.type === 'windsurf' || target.type === 'kiro') {
+    const supportRoot = path.join(base, 'pixelcraft', 'skills');
+    assertAdapterPathSafe(path.join(supportRoot, 'probe'));
+    for (const entry of selected) copySkill(entry.name, supportRoot, dryRun, { force: force && !entry.auto, auto: entry.auto });
+    const displaySupport = target.global ? supportRoot.replace(os.homedir(), '~') : path.relative(process.cwd(), supportRoot);
+    if (target.type === 'windsurf') {
+      write('rules/pixelcraft.md', `# Pixelcraft router\n\n${adapterIntro(displaySupport)}`);
+      for (const [command, skill, task] of adapterActions.slice(1)) write(`workflows/${command}.md`, workflowText(skill, task));
+    } else {
+      write('steering/pixelcraft.md', `# Pixelcraft steering\n\n${adapterIntro(displaySupport)}`);
+    }
+  }
+}
+
 function runAdd({ positional, options }) {
   if (positional.length === 0) throw new Error('add requires at least one skill name or all');
   const available = skillNames();
   const selected = selectSkills(positional, available);
   const targets = targetsFor(options.agents, options.global);
   for (const target of targets) {
-    for (const entry of selected) {
-      copySkill(entry.name, target, options.dryRun, { force: options.force && !entry.auto, auto: entry.auto });
+    if (target.type === 'skills') {
+      for (const entry of selected) {
+        copySkill(entry.name, target.root, options.dryRun, { force: options.force && !entry.auto, auto: entry.auto });
+      }
     }
+    writeAgentAdapters(target, options.dryRun, options.force, selected);
   }
 }
 
@@ -284,6 +375,10 @@ async function main() {
     return;
   }
   if (args.length === 0) {
+    if (!process.stdin.isTTY) {
+      console.log(help());
+      return;
+    }
     runAdd(await wizard());
     return;
   }
