@@ -81,14 +81,22 @@ export function DocsShell({
               <span className="font-display text-sm font-bold tracking-wider">PIXELCRAFT DOCS</span>
             </Link>
           </div>
-          <a
-            href="https://github.com/ThanhNguyxn07/Pixelcraft"
-            target="_blank"
-            rel="noreferrer"
-            className="font-mono text-xs text-zinc-400 no-underline hover:text-cyan-300"
-          >
-            GitHub
-          </a>
+          <div className="flex items-center gap-5">
+            <Link
+              href="/gallery"
+              className="font-mono text-xs text-cyan-300 no-underline hover:text-white"
+            >
+              Gallery
+            </Link>
+            <a
+              href="https://github.com/ThanhNguyxn07/Pixelcraft"
+              target="_blank"
+              rel="noreferrer"
+              className="font-mono text-xs text-zinc-400 no-underline hover:text-cyan-300"
+            >
+              GitHub
+            </a>
+          </div>
         </div>
       </header>
 

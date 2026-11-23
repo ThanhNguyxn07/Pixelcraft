@@ -109,9 +109,9 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
             <a href="#process" className="hidden text-xs font-mono uppercase tracking-[0.14em] text-zinc-400 no-underline transition-colors hover:text-white sm:inline">
               Process
             </a>
-            <a href="#archive" className="hidden text-xs font-mono uppercase tracking-[0.14em] text-zinc-400 no-underline transition-colors hover:text-white md:inline">
-              {skills.length} Skills
-            </a>
+            <Link href="/gallery" className="text-xs font-mono uppercase tracking-[0.14em] text-cyan-300 no-underline transition-colors hover:text-white">
+              Gallery
+            </Link>
             <Link
               href="/docs"
               className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white px-4 py-1.5 font-mono text-xs font-semibold text-black no-underline transition-opacity hover:opacity-90"
@@ -167,10 +167,10 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
               </button>
 
               <Link
-                href="/docs"
+                href="/gallery"
                 className="inline-flex h-12 items-center gap-2 rounded-full bg-cyan-300 px-6 font-mono text-xs font-semibold uppercase tracking-wider text-black no-underline transition-opacity hover:opacity-90"
               >
-                Explore Documentation
+                Open Live Gallery
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </div>
