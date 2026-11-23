@@ -101,18 +101,10 @@ function applyMode(token, mode) {
   return { ...token, token: { ...token.token, $value: value } };
 }
 
-function collect(file, mode) {
-  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
-  const flattened = flatten(data);
-  const modes = new Set();
-  for (const token of flattened) {
-    for (const name of Object.keys(token.token.$extensions?.pixelcraft?.modes || {})) modes.add(name);
-  }
-  if (mode && !modes.has(mode)) throw new Error(`unknown --mode ${mode}`);
-  const tokens = flattened.map((token) => applyMode(token, mode));
+function createResolver(tokens) {
   const byPath = new Map(tokens.map((t) => [t.path.join('.'), t]));
   const resolving = new Set();
-  function resolve(t) {
+  return function resolve(t) {
     const v = t.token.$value;
     if (typeof v !== 'string' || !/^\{[^}]+\}$/.test(v)) return t;
     const key = v.slice(1, -1);
@@ -123,8 +115,25 @@ function collect(file, mode) {
     const resolved = resolve(target);
     resolving.delete(key);
     return { ...t, type: t.type || resolved.type, token: { ...t.token, $value: resolved.token.$value } };
+  };
+}
+
+function collect(file, mode) {
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const flattened = flatten(data);
+  const modes = new Set();
+  for (const token of flattened) {
+    for (const name of Object.keys(token.token.$extensions?.pixelcraft?.modes || {})) modes.add(name);
   }
-  return tokens.map(resolve);
+  if (mode && !modes.has(mode)) throw new Error(`unknown --mode ${mode}`);
+  const resolveBase = createResolver(flattened);
+  const baseTokens = flattened.map((token) => resolveBase(token));
+  const tokens = flattened.map((token, index) => {
+    const typed = token.type ? token : { ...token, type: baseTokens[index].type };
+    return applyMode(typed, mode);
+  });
+  const resolveTokens = createResolver(tokens);
+  return tokens.map((token) => resolveTokens(token));
 }
 
 function entries(tokens) {

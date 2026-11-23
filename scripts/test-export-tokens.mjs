@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const exporter = path.join(root, 'skills/pixelcraft-tokens/scripts/export-tokens.mjs');
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pixelcraft-export-tokens-'));
+
+function run(args) {
+  return spawnSync(process.execPath, [exporter, ...args], { encoding: 'utf8' });
+}
+
+try {
+  const fixture = path.join(tmp, 'tokens.json');
+  fs.writeFileSync(fixture, JSON.stringify({
+    color: {
+      $type: 'color',
+      surface: { $value: { colorSpace: 'srgb', components: [1, 1, 1], alpha: 1 } }
+    },
+    semantic: {
+      background: {
+        $value: '{color.surface}',
+        $extensions: {
+          pixelcraft: {
+            modes: {
+              dark: { $value: { colorSpace: 'srgb', components: [0, 0, 0], alpha: 1 } }
+            }
+          }
+        }
+      }
+    }
+  }, null, 2));
+
+  const dark = run([fixture, '--format', 'css', '--mode', 'dark']);
+  assert.equal(dark.status, 0, dark.stderr);
+  assert.match(dark.stdout, /--semantic-background: #000000;/);
+  assert.doesNotMatch(dark.stdout, /colorSpace/);
+  console.log('ok 1 - mode override inherits the original alias target type');
+
+  console.log('token exporter tests passed');
+} finally {
+  fs.rmSync(tmp, { recursive: true, force: true });
+}
