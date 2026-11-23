@@ -915,9 +915,39 @@ const extract = String.raw`(() => {
   };
 })()`;
 
+const initObserver = String.raw`(() => {
+  const state = { lcp: null, cls: 0 };
+  let hasSession = false;
+  let sessionValue = 0;
+  let sessionFirst = 0;
+  let sessionLast = 0;
+  window.__pixelcraftInventory = state;
+  try {
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) state.lcp = entry.startTime;
+    }).observe({ type: 'largest-contentful-paint', buffered: true });
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.hadRecentInput) continue;
+        const start = entry.startTime;
+        if (hasSession && start - sessionLast < 1000 && start - sessionFirst < 5000) {
+          sessionValue += entry.value;
+          sessionLast = start;
+        } else {
+          hasSession = true;
+          sessionValue = entry.value;
+          sessionFirst = start;
+          sessionLast = start;
+        }
+        if (sessionValue > state.cls) state.cls = sessionValue;
+      }
+    }).observe({ type: 'layout-shift', buffered: true });
+  } catch {}
+})();`;
+
 async function measurePage(page, target, viewport, options) {
   await page.setViewportSize(viewport);
-  await page.addInitScript(`window.__pixelcraftInventory={lcp:null,cls:0};try{new PerformanceObserver((list)=>{for(const entry of list.getEntries())window.__pixelcraftInventory.lcp=entry.startTime}).observe({type:'largest-contentful-paint',buffered:true});new PerformanceObserver((list)=>{for(const entry of list.getEntries())if(!entry.hadRecentInput)window.__pixelcraftInventory.cls+=entry.value}).observe({type:'layout-shift',buffered:true})}catch(error){}`);
+  await page.addInitScript(initObserver);
   const session = await page.context().newCDPSession(page);
   const tracker = observeNetwork(session);
   await session.send('Page.enable');

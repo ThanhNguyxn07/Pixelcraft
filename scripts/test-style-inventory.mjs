@@ -84,6 +84,53 @@ try {
     assert.equal(edge.color.mode, 'dark');
     console.log('ok 2 - zero-channel dominant background preserves dark mode');
 
+    const clsFile = path.join(tmp, 'cls-windows.html');
+    fs.writeFileSync(clsFile, `<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>CLS windows</title>
+<style>body{margin:0;background:#fff;color:#111}#box{height:180px;background:#222}</style>
+</head>
+<body>
+<div id="spacer"></div>
+<div id="box" style="height:180px;background:#222;color:#fff;padding:16px">shifted block content</div>
+<script>
+let total = 0;
+new PerformanceObserver((list) => {
+  for (const e of list.getEntries()) {
+    if (!e.hadRecentInput) {
+      total += e.value;
+      document.title = 'sum=' + total.toFixed(4);
+    }
+  }
+}).observe({ type: 'layout-shift', buffered: true });
+window.addEventListener('load', () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    setTimeout(() => { document.getElementById('spacer').style.height = '140px'; }, 60);
+    setTimeout(() => {
+      document.getElementById('spacer').style.height = '280px';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const done = document.createElement('div');
+        done.id = 'shift-done';
+        done.textContent = 'done';
+        document.body.appendChild(done);
+      }));
+    }, 1200);
+  }));
+});
+</script>
+</body>
+</html>`);
+    const clsOut = path.join(tmp, 'cls.json');
+    const clsResult = runInventory(clsFile, clsOut, ['--breakpoints=800x600', '--wait-for=#shift-done', '--wait-ms=100']);
+    assert.equal(clsResult.status, 0, `${clsResult.stdout}\n${clsResult.stderr}`);
+    const clsViewport = JSON.parse(fs.readFileSync(clsOut, 'utf8')).viewports[0];
+    const sumMatch = /^sum=([0-9.]+)$/.exec(clsViewport.title);
+    assert.ok(sumMatch, `expected recorded shift sum in title, got '${clsViewport.title}'`);
+    const totalShiftSum = Number(sumMatch[1]);
+    assert.ok(totalShiftSum > 0.1, `expected two real layout shifts, got sum=${totalShiftSum}`);
+    assert.ok(clsViewport.cls > 0 && clsViewport.cls < totalShiftSum * 0.75, `expected max session-window CLS (${clsViewport.cls}) < 75% of cumulative sum (${totalShiftSum})`);
+    console.log('ok 3 - CLS uses max session window instead of cumulative sum');
+
     console.log('style inventory tests passed');
   }
 } finally {
