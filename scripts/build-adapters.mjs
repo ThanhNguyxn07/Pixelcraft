@@ -107,9 +107,9 @@ function windsurfRule(skills) {
 
 ${routingText}
 
-Rules stay deliberately small. Read the authoritative skill folder in the installed Pixelcraft distribution or repository copy before detailed work; do not inline large generated content here. In source checkouts the catalog is:
+Rules stay deliberately small. Read the authoritative self-contained skill under \`.windsurf/pixelcraft/skills/\` before detailed work; do not inline large generated content here:
 
-${skillList(skills, 'skills')}
+${skillList(skills, '.windsurf/pixelcraft/skills')}
 `;
 }
 
@@ -118,9 +118,9 @@ function kiroSteering(skills) {
 
 ${routingText}
 
-Treat this file as a router only. Read the matching self-contained \`SKILL.md\` from the installed Pixelcraft distribution or source checkout before detailed implementation. Source catalog:
+Treat this file as a router only. Read the matching self-contained \`SKILL.md\` under \`.kiro/pixelcraft/skills/\` before detailed implementation:
 
-${skillList(skills, 'skills')}
+${skillList(skills, '.kiro/pixelcraft/skills')}
 `;
 }
 
@@ -190,6 +190,8 @@ function build() {
     devin: '.agents/skills',
   };
   for (const [agent, relative] of Object.entries(fragments)) copyAllSkills(skills, path.join(dist, agent), relative);
+  copyAllSkills(skills, path.join(dist, 'windsurf'), '.windsurf/pixelcraft/skills');
+  copyAllSkills(skills, path.join(dist, 'kiro'), '.kiro/pixelcraft/skills');
 
   for (const [command, skill, task] of actions.slice(0, 4)) {
     write(path.join(dist, 'claude/.claude/commands', `${command}.md`), claudeCommand(skill, task));
