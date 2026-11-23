@@ -108,3 +108,4 @@ Before presenting the result, perform the self-critique in `references/qa-checkl
 - Read [references/visual-modes.md](references/visual-modes.md) when selecting the visual world.
 - Read [references/prompt-template.md](references/prompt-template.md) before prompting any image model.
 - Read [references/qa-checklist.md](references/qa-checklist.md) before delivering or selecting a generated result.
+- Read [references/asset-pipeline.md](references/asset-pipeline.md) when turning the identity into favicons, app icons, optimized SVG, font subsets, or production raster assets.
