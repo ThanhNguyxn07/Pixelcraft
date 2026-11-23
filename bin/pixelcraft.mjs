@@ -241,6 +241,7 @@ function managedUpsert(existing, content) {
   const block = `${managedStart}\n${content.trimEnd()}\n${managedEnd}`;
   const pattern = new RegExp(`${managedStart}[\\s\\S]*?${managedEnd}`);
   if (pattern.test(existing)) return existing.replace(pattern, block);
+  if (existing.includes(managedStart)) throw new Error(`managed Pixelcraft block is missing its end marker: fix the file before installing`);
   return existing ? `${existing.trimEnd()}\n\n${block}\n` : `${block}\n`;
 }
 
@@ -275,7 +276,7 @@ function writeAgentAdapters(target, dryRun, force, selected) {
   if (target.agent === 'claude') {
     for (const [command, skill, task] of adapterActions.slice(0, 4)) write(`commands/${command}.md`, commandText(skill, task));
   } else if (target.agent === 'cursor') {
-    write('rules/pixelcraft.mdc', `---\ndescription: Route UI design and review through Pixelcraft\nalwaysApply: true\n---\n\n# Pixelcraft router\n\n${adapterIntro(displayRoot)}`, true);
+    write('rules/pixelcraft.mdc', `---\ndescription: Route UI design and review through Pixelcraft\nalwaysApply: true\n---\n\n# Pixelcraft router\n\n${adapterIntro(displayRoot)}`);
   } else if (target.agent === 'copilot') {
     write('copilot-instructions.md', `# Pixelcraft router\n\n${adapterIntro(displayRoot)}`, true);
     write('instructions/pixelcraft.instructions.md', `---\napplyTo: "**/*.{html,css,scss,js,jsx,ts,tsx,vue,svelte,astro,py,rb,php,cs,java,kt,swift,dart,rs,go,lua,ex,exs,clj,cljs,elm,fs,scala}"\n---\n\nWhen editing interface or user-facing behavior, follow \`copilot-instructions.md\` and read the matching Pixelcraft skill before implementation or review.\n`);
@@ -286,10 +287,10 @@ function writeAgentAdapters(target, dryRun, force, selected) {
     for (const entry of selected) copySkill(entry.name, supportRoot, dryRun, { force: force && !entry.auto, auto: entry.auto, boundary });
     const displaySupport = target.global ? supportRoot.replace(os.homedir(), '~') : path.relative(process.cwd(), supportRoot);
     if (target.type === 'windsurf') {
-      write(target.global ? 'memories/global_rules.md' : 'rules/pixelcraft.md', `# Pixelcraft router\n\n${adapterIntro(displaySupport)}`, true);
+      write(target.global ? 'memories/global_rules.md' : 'rules/pixelcraft.md', `# Pixelcraft router\n\n${adapterIntro(displaySupport)}`, target.global);
       for (const [command, skill, task] of adapterActions.slice(1)) write(`workflows/${command}.md`, workflowText(skill, task));
     } else {
-      write('steering/pixelcraft.md', `# Pixelcraft steering\n\n${adapterIntro(displaySupport)}`, true);
+      write('steering/pixelcraft.md', `# Pixelcraft steering\n\n${adapterIntro(displaySupport)}`);
     }
   }
 }
