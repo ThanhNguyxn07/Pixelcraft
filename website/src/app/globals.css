@@ -10,8 +10,8 @@
 
 @layer base {
   html {
-    background-color: var(--color-surface-paper, #f4f1ea);
-    color: var(--color-ink-primary, #141311);
+    background-color: var(--color-surface-ivory, #f7f5f0);
+    color: var(--color-ink-primary, #0d0d0c);
     font-family: var(--font-sans);
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
@@ -20,20 +20,20 @@
 
   body {
     margin: 0;
-    background-color: var(--color-surface-paper, #f4f1ea);
-    color: var(--color-ink-primary, #141311);
+    background-color: var(--color-surface-ivory, #f7f5f0);
+    color: var(--color-ink-primary, #0d0d0c);
     overflow-x: clip;
   }
 
   ::selection {
-    background-color: rgba(194, 49, 20, 0.16);
-    color: #141311;
+    background-color: rgba(200, 50, 22, 0.18);
+    color: #0d0d0c;
   }
 
   input,
   textarea,
   select {
-    caret-color: var(--color-accent-vermilion, #c23114);
+    caret-color: var(--color-accent-vermilion, #c83216);
   }
 
   a {
@@ -45,11 +45,11 @@
   article[id],
   h2[id],
   h3[id] {
-    scroll-margin-top: 5.25rem;
+    scroll-margin-top: 5.5rem;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent-vermilion, #c23114);
+    outline: 2px solid var(--color-accent-vermilion, #c83216);
     outline-offset: 3px;
   }
 
@@ -70,4 +70,14 @@
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+.atelier-grid-bg {
+  background-image: radial-gradient(rgba(13, 13, 12, 0.09) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.obsidian-grid-bg {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
 }

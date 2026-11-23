@@ -24,7 +24,7 @@ interface DocsShellProps {
   markdown: string;
 }
 
-const REPO_BLOB_BASE = 'https://github.com/ThanhNguyxn07/Pixelcraft/blob/main';
+const REPO_BLOB_BASE = 'https://github.com/ThanhNguyxnOrg/Pixelcraft/blob/main';
 
 function resolveMarkdownHref(rawHref: string, activeSlug: string): { href: string; external: boolean } {
   if (/^https?:\/\//i.test(rawHref)) {
@@ -321,10 +321,10 @@ export function DocsShell({
               Gallery
             </Link>
             <a
-              href="https://github.com/ThanhNguyxn07/Pixelcraft"
+              href="https://github.com/ThanhNguyxnOrg/Pixelcraft"
               target="_blank"
               rel="noopener noreferrer"
-              className="border border-[#141311] bg-[#141311] px-3 py-1.5 font-mono text-[11px] font-medium text-[#faf8f3] transition-colors hover:border-[#b82d12] hover:bg-[#b82d12]"
+              className="rounded-full bg-[#0d0d0c] px-3.5 py-1.5 font-mono text-[11px] font-medium text-[#f6f4ef] transition-colors hover:bg-[#c83216]"
             >
               GitHub ↗
             </a>
