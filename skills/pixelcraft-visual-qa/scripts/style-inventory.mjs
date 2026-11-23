@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import http from 'node:http';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { pathToFileURL } from 'node:url';
 
 function help() {
   return `Usage: node style-inventory.mjs <url-or-html-file> [options]
@@ -15,6 +15,7 @@ Options:
   --out FILE             Write JSON report to FILE instead of stdout
   --breakpoints LIST     Width x height list (default: 390x900,1440x900)
   --project DIR          Dependency resolution root (default: current directory)
+  --root DIR             Static server root for local targets (default: target directory)
   --executable-path FILE Use a specific Chromium/Chrome executable
   --timeout MS           Navigation timeout in milliseconds (default: 30000)
   --wait-for SELECTOR    Wait for a selector after page load
@@ -40,7 +41,7 @@ function optionValue(args, index, name) {
 }
 
 function parse(args) {
-  const options = { out: null, breakpoints: '390x900,1440x900', project: process.cwd(), timeout: 30000, waitFor: null, waitMs: 2000, compact: false, executablePath: null, help: false };
+  const options = { out: null, breakpoints: '390x900,1440x900', project: process.cwd(), root: null, timeout: 30000, waitFor: null, waitMs: 2000, compact: false, executablePath: null, help: false };
   const positional = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -58,6 +59,10 @@ function parse(args) {
       options.project = optionValue(args, index, '--project');
       index += 1;
     } else if (arg.startsWith('--project=')) options.project = arg.slice(10);
+    else if (arg === '--root') {
+      options.root = optionValue(args, index, '--root');
+      index += 1;
+    } else if (arg.startsWith('--root=')) options.root = arg.slice(7);
     else if (arg === '--executable-path') {
       options.executablePath = optionValue(args, index, '--executable-path');
       index += 1;
@@ -103,13 +108,99 @@ async function loadChromium(project) {
   }
 }
 
-function resolveTarget(input) {
-  if (/^https?:\/\//i.test(input)) return input;
-  let resolved = path.resolve(input);
+const mimeTypes = new Map(Object.entries({
+  '.html': 'text/html; charset=utf-8',
+  '.htm': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.avif': 'image/avif',
+  '.ico': 'image/x-icon',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.txt': 'text/plain; charset=utf-8',
+  '.wasm': 'application/wasm',
+}));
+
+async function createStaticTarget(input, options) {
+  if (/^https?:\/\//i.test(input)) return { url: input, local: false, async close() {} };
+  const resolved = path.resolve(input);
   if (!fs.existsSync(resolved)) throw new Error(`target is neither an http(s) URL nor an existing HTML file: ${input}`);
-  if (fs.statSync(resolved).isDirectory()) resolved = path.join(resolved, 'index.html');
-  if (!fs.existsSync(resolved) || !fs.statSync(resolved).isFile()) throw new Error(`target is not a readable HTML file: ${input}`);
-  return pathToFileURL(resolved).href;
+  const stat = fs.statSync(resolved);
+  const targetFile = stat.isDirectory() ? path.join(resolved, 'index.html') : resolved;
+  if (!fs.existsSync(targetFile) || !fs.statSync(targetFile).isFile()) throw new Error(`target is not a readable HTML file: ${input}`);
+  const fallbackRoot = stat.isDirectory() ? resolved : path.dirname(resolved);
+  const configuredRoot = path.resolve(options.root || fallbackRoot);
+  if (!fs.existsSync(configuredRoot) || !fs.statSync(configuredRoot).isDirectory()) throw new Error(`static server root is not a directory: ${configuredRoot}`);
+  const lexicalRoot = configuredRoot;
+  const root = fs.realpathSync(configuredRoot);
+  const rootPrefix = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
+  const lexicalTarget = path.relative(lexicalRoot, resolved);
+  if (lexicalTarget.startsWith('..') || path.isAbsolute(lexicalTarget)) throw new Error(`local target is outside the static server root: target=${resolved}; root=${lexicalRoot}`);
+  const realTarget = fs.realpathSync(targetFile);
+  const realRelativeTarget = path.relative(root, realTarget);
+  if (realRelativeTarget.startsWith('..') || path.isAbsolute(realRelativeTarget)) throw new Error(`local target resolves outside the static server root: target=${realTarget}; root=${root}`);
+  const encodedTarget = lexicalTarget.split(path.sep).filter(Boolean).map(encodeURIComponent).join('/');
+  let initialPath = encodedTarget ? `/${encodedTarget}` : '/';
+  if (stat.isDirectory() && !initialPath.endsWith('/')) initialPath += '/';
+  const server = http.createServer((request, response) => {
+    let pathname;
+    try {
+      pathname = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname);
+    } catch {
+      response.writeHead(400).end('bad request');
+      return;
+    }
+    if (pathname.endsWith('/')) pathname += 'index.html';
+    if (pathname.split('/').some((part) => part.startsWith('.'))) {
+      response.writeHead(404).end('not found');
+      return;
+    }
+    const file = path.resolve(root, `.${pathname}`);
+    if (file !== root && !file.startsWith(rootPrefix)) {
+      response.writeHead(403).end('forbidden');
+      return;
+    }
+    let fileStat;
+    let realFile;
+    try {
+      realFile = fs.realpathSync(file);
+      fileStat = fs.statSync(realFile);
+    } catch {
+      response.writeHead(404).end('not found');
+      return;
+    }
+    if (realFile !== root && !realFile.startsWith(rootPrefix)) {
+      response.writeHead(403).end('forbidden');
+      return;
+    }
+    if (!fileStat.isFile()) {
+      response.writeHead(404).end('not found');
+      return;
+    }
+    response.writeHead(200, {
+      'content-type': mimeTypes.get(path.extname(file).toLowerCase()) || 'application/octet-stream',
+      'cache-control': 'no-store',
+    });
+    fs.createReadStream(realFile).pipe(response);
+  });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  const { port } = server.address();
+  return {
+    url: `http://127.0.0.1:${port}${initialPath}`,
+    local: true,
+    close: () => new Promise((resolve) => server.close(resolve)),
+  };
 }
 
 function emptyNetworkPhase() {
@@ -857,8 +948,8 @@ async function main() {
     process.exitCode = 2;
     return;
   }
-  const target = resolveTarget(input);
-  const browser = await chromium.launch({ headless: true, ...(options.executablePath ? { executablePath: options.executablePath } : {}) });
+  const target = await createStaticTarget(input, options);
+  let browser;
   const report = {
     schemaVersion: 1,
     target: input,
@@ -886,16 +977,18 @@ async function main() {
     viewports: [],
   };
   try {
+    browser = await chromium.launch({ headless: true, ...(options.executablePath ? { executablePath: options.executablePath } : {}) });
     for (const viewport of breakpoints) {
       const page = await browser.newPage({ viewport });
       try {
-        report.viewports.push(await measurePage(page, target, viewport, options));
+        report.viewports.push(await measurePage(page, target.url, viewport, options));
       } finally {
         await page.close();
       }
     }
   } finally {
-    await browser.close();
+    if (browser) await browser.close();
+    await target.close();
   }
   const json = options.compact ? JSON.stringify(report) : JSON.stringify(report, null, 2);
   if (options.out) {

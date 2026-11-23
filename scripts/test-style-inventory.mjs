@@ -43,6 +43,8 @@ try {
     assert.equal(narrow.accessibility.focusVisibleCSS, true);
     assert.equal(narrow.accessibility.landmarks.main, 1);
     assert.equal(narrow.accessibility.headingCount, 1);
+    assert.match(narrow.url, /^http:\/\/127\.0\.0\.1:\d+\/style-inventory\.html$/);
+    assert.equal(narrow.network.status, 200);
     assert.equal(typeof narrow.network.requests, 'number');
     assert.equal(typeof narrow.network.transferBytes, 'number');
     assert.equal(typeof narrow.network.jsBytes, 'number');
