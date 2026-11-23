@@ -163,14 +163,32 @@ const auditSource = `() => {
     const la = luminance(a), lb = luminance(b);
     return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
   };
+  const alphaBlend = (source, destination) => {
+    const alpha = source.a + destination.a * (1 - source.a);
+    if (alpha === 0) return { r: 0, g: 0, b: 0, a: 0 };
+    return {
+      r: (source.r * source.a + destination.r * destination.a * (1 - source.a)) / alpha,
+      g: (source.g * source.a + destination.g * destination.a * (1 - source.a)) / alpha,
+      b: (source.b * source.a + destination.b * destination.a * (1 - source.a)) / alpha,
+      a: alpha,
+    };
+  };
   const backgroundFor = (element) => {
+    const layers = [];
     let node = element;
     while (node && node.nodeType === 1) {
-      const color = parseColor(getComputedStyle(node).backgroundColor);
-      if (color && color.a > 0) return color;
+      const value = getComputedStyle(node).backgroundColor;
+      const color = parseColor(value);
+      if (!color) add('unchecked-contrast', 'medium', 'background color could not be parsed while compositing: ' + value, element);
+      if (color && color.a > 0) {
+        layers.push(color);
+        if (color.a >= 0.999) break;
+      }
       node = node.parentElement;
     }
-    return { r: 255, g: 255, b: 255, a: 1 };
+    let composite = { r: 255, g: 255, b: 255, a: 1 };
+    for (let index = layers.length - 1; index >= 0; index -= 1) composite = alphaBlend(layers[index], composite);
+    return composite;
   };
   for (const element of elements) {
     const rect = element.getBoundingClientRect();
@@ -184,7 +202,9 @@ const auditSource = `() => {
     if (element.childNodes.length && Array.from(element.childNodes).some((node) => node.nodeType === 3 && node.textContent.trim())) {
       const fg = parseColor(style.color);
       if (fg) {
-        const ratio = contrast(fg, backgroundFor(element));
+        const background = backgroundFor(element);
+        const foreground = fg.a < 1 ? alphaBlend(fg, background) : fg;
+        const ratio = contrast(foreground, background);
         const size = Number.parseFloat(style.fontSize) || 16;
         const weight = Number.parseInt(style.fontWeight, 10) || 400;
         const large = size >= 24 || (size >= 18.66 && weight >= 700);
