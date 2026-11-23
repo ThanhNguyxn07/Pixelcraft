@@ -49,7 +49,7 @@ Hybrid surfaces pick one primary mode per screen or region. Do not let a persuas
 1. **Frame** — detect stack/surface/input modality; identify audience, job-to-be-done, real material inventory, constraints, locale scope, and existing design system. Ask only for information that materially changes the design.
 2. **Diverge** — use the `pixelcraft-direction` skill to generate 3–5 far-apart directions with probabilities, score them, select one, record why the others lost, and inspect repetition history. For brand-kit, identity-board, logo-system, moodboard, or visual-identity image generation, use the `pixelcraft-brandkit` skill by name and its 2–3 brand-world divergence flow before image prompting.
 3. **Specify** — produce the direction card; use `pixelcraft-tokens` for DTCG tokens, `pixelcraft-ux` for flows plus the state matrix, and `pixelcraft-patterns` when the work matches a named product pattern. Do not start with component trivia before direction and constraints exist.
-4. **Build** — use the appropriate platform skill by name when installed (`pixelcraft-web`, `pixelcraft-mobile`, `pixelcraft-data-apps`, `pixelcraft-desktop`, `pixelcraft-tui`, `pixelcraft-email`, or `pixelcraft-game-ui`). If absent, translate the direction idiomatically yourself without importing web assumptions.
+4. **Build** — use the appropriate platform skill by name when installed (`pixelcraft-web`, `pixelcraft-mobile`, `pixelcraft-data-apps`, `pixelcraft-desktop`, `pixelcraft-tui`, `pixelcraft-email`, `pixelcraft-game-ui`, or `pixelcraft-extensions`). If absent, translate the direction idiomatically yourself without importing web assumptions.
 5. **Verify** — use `pixelcraft-review` for slop scanning, heuristic critique, accessibility/state review, and evidence-ranked findings; use `pixelcraft-visual-qa` for the render → screenshot → self-critique → fix loop and performance budgets. Inspect rendered output where the environment permits and label every claim honestly.
 6. **Report** — decisions, verification evidence, unresolved risks, and waived items using the report contract.
 
@@ -68,6 +68,7 @@ After detecting the stack, use the matching platform skill by name and read only
 | `pixelcraft-tui` | `textual`, `rich`, `ink`, `bubbletea-lipgloss`, `ratatui` |
 | `pixelcraft-email` | `html-tables`, `mjml`, `react-email`, `client-quirks` |
 | `pixelcraft-game-ui` | `unity-ui-toolkit`, `godot`, `unreal-umg`, `hud-principles`, `love2d`, `bevy`, `monogame` |
+| `pixelcraft-extensions` | `browser-extensions`, `vscode-webviews`, `raycast`, `figma-office` |
 
 References are named here for routing only. Do not construct relative paths across skill folders; read the file inside the installed platform skill.
 
