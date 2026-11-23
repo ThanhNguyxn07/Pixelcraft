@@ -9,6 +9,7 @@ const skillsRoot = path.join(root, 'skills');
 const evalsRoot = path.join(root, 'evals');
 const errors = [];
 const namePattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const yamlPlainStartPattern = /^[-?:,\[\]{}#&*!|>'"%@`]/;
 
 function fail(file, message) {
   errors.push(`${path.relative(root, file)}: ${message}`);
@@ -32,6 +33,11 @@ function parseFrontmatter(file, text) {
     if (seen.has(key)) return { error: `duplicate frontmatter key: ${key}` };
     seen.add(key);
     let value = raw.trim();
+    const startsQuoted = value.startsWith('"') || value.startsWith("'");
+    if (value && !startsQuoted) {
+      if (value.includes(': ')) return { error: `unquoted scalar for ${key} contains ': '; quote it for strict YAML loaders` };
+      if (yamlPlainStartPattern.test(value)) return { error: `unquoted scalar for ${key} starts with YAML-special character '${value[0]}'; quote it for strict YAML loaders` };
+    }
     if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
       if (value.length < 2) return { error: `unterminated quoted scalar for ${key}` };
       value = value.slice(1, -1);

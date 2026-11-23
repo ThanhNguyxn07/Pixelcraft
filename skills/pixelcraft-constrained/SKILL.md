@@ -1,6 +1,6 @@
 ---
 name: pixelcraft-constrained
-description: Designs and verifies interfaces for constrained or nonstandard surfaces: TV/console/10-foot UI, D-pad/gamepad spatial navigation, watchOS/Wear OS wearables, e-ink displays, kiosks/self-service hardware, embedded LVGL/low-resolution screens, automotive CarPlay/Android Auto templates, and basic voice UI. Use when input, viewing distance, refresh technology, memory/frame-rate budgets, safety regulation, reach, glanceability, or lack of pointer/touch fundamentally constrains the interface.
+description: "Designs and verifies interfaces for constrained or nonstandard surfaces: TV/console/10-foot UI, D-pad/gamepad spatial navigation, watchOS/Wear OS wearables, e-ink displays, kiosks/self-service hardware, embedded LVGL/low-resolution screens, automotive CarPlay/Android Auto templates, and basic voice UI. Use when input, viewing distance, refresh technology, memory/frame-rate budgets, safety regulation, reach, glanceability, or lack of pointer/touch fundamentally constrains the interface."
 license: MIT
 metadata:
   version: 0.1.0
