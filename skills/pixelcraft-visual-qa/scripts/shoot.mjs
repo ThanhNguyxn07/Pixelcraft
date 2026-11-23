@@ -190,6 +190,24 @@ const auditSource = `() => {
     for (let index = layers.length - 1; index >= 0; index -= 1) composite = alphaBlend(layers[index], composite);
     return composite;
   };
+  const isRenderedText = (element, rect) => {
+    if (rect.width <= 0 || rect.height <= 0) return false;
+    const viewportHeight = document.documentElement.clientHeight;
+    if (rect.right <= 0 || rect.bottom <= 0 || rect.left >= vw || rect.top >= viewportHeight) return false;
+    let node = element;
+    while (node && node.nodeType === 1) {
+      const nodeStyle = getComputedStyle(node);
+      if (nodeStyle.display === 'none' || nodeStyle.visibility === 'hidden' || nodeStyle.visibility === 'collapse' || Number.parseFloat(nodeStyle.opacity) === 0) return false;
+      if (node !== element) {
+        const clip = node.getBoundingClientRect();
+        const clippedHorizontally = /hidden|clip/.test(nodeStyle.overflowX) && (rect.right <= clip.left || rect.left >= clip.right);
+        const clippedVertically = /hidden|clip/.test(nodeStyle.overflowY) && (rect.bottom <= clip.top || rect.top >= clip.bottom);
+        if (clippedHorizontally || clippedVertically) return false;
+      }
+      node = node.parentElement;
+    }
+    return true;
+  };
   for (const element of elements) {
     const rect = element.getBoundingClientRect();
     const style = getComputedStyle(element);
@@ -199,7 +217,7 @@ const auditSource = `() => {
       const clippedY = element.scrollHeight > element.clientHeight + 2 && /hidden|clip/.test(style.overflowY);
       if ((clippedX || clippedY) && element.textContent.trim()) add('clipped-text', 'medium', 'text content may be clipped by hidden overflow', element);
     }
-    if (element.childNodes.length && Array.from(element.childNodes).some((node) => node.nodeType === 3 && node.textContent.trim())) {
+    if (isRenderedText(element, rect) && element.childNodes.length && Array.from(element.childNodes).some((node) => node.nodeType === 3 && node.textContent.trim())) {
       const fg = parseColor(style.color);
       if (fg) {
         const background = backgroundFor(element);
