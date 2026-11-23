@@ -235,6 +235,7 @@ const visibleOutlineStyles = new Set(['auto', 'dotted', 'dashed', 'solid', 'doub
 const invisibleOutlineStyles = new Set(['none', 'hidden']);
 const visibleBorderStyles = new Set(['dotted', 'dashed', 'solid', 'double', 'groove', 'ridge', 'inset', 'outset']);
 const textDecorationLines = new Set(['underline', 'overline', 'line-through', 'blink', 'spelling-error', 'grammar-error']);
+const cssColorKeywords = new Set(('aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond blue blueviolet brown burlywood cadetblue chartreuse chocolate coral cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray darkgreen darkgrey darkkhaki darkmagenta darkolivegreen darkorange darkorchid darkred darksalmon darkseagreen darkslateblue darkslategray darkslategrey darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite gold goldenrod gray green greenyellow grey honeydew hotpink indianred indigo ivory khaki lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue lightyellow lime limegreen linen magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace olive olivedrab orange orangered orchid palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen seashell sienna silver skyblue slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen transparent currentcolor').split(' '));
 
 function cleanValue(value) {
   return value.replace(/\s*!important\s*$/, '').trim();
@@ -277,34 +278,60 @@ function isVisibleWidth(token) {
   return token === 'thin' || token === 'medium' || token === 'thick' || isNonzeroNumericWidth(token);
 }
 
+function isColorToken(token) {
+  return token.startsWith('#') || cssColorKeywords.has(token) || /^(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\(/.test(token);
+}
+
+function outlineTokenKind(token) {
+  if (invisibleOutlineStyles.has(token)) return 'invisible-style';
+  if (visibleOutlineStyles.has(token)) return 'visible-style';
+  if (isZeroWidth(token)) return 'zero-width';
+  if (isVisibleWidth(token)) return 'width';
+  if (isColorToken(token)) return 'color';
+  return 'unknown';
+}
+
+function hasUnresolvedTokens(value) {
+  return splitValueTokens(cleanValue(value)).some((token) => outlineTokenKind(token) === 'unknown');
+}
+
 function parseOutlineShorthand(value) {
-  const parsed = { style: 'none', width: 'medium', removes: false };
+  const parsed = { style: 'none', width: 'medium', removes: false, unknown: false };
   for (const token of splitValueTokens(cleanValue(value))) {
-    if (invisibleOutlineStyles.has(token)) {
+    const kind = outlineTokenKind(token);
+    if (kind === 'unknown') parsed.unknown = true;
+    else if (kind === 'invisible-style') {
       parsed.style = token;
       parsed.removes = true;
-    } else if (visibleOutlineStyles.has(token)) parsed.style = token;
-    else if (isZeroWidth(token)) {
+    } else if (kind === 'visible-style') parsed.style = token;
+    else if (kind === 'zero-width') {
       parsed.width = token;
       parsed.removes = true;
-    } else if (isVisibleWidth(token)) parsed.width = token;
+    } else if (kind === 'width') parsed.width = token;
   }
+  if (parsed.unknown) parsed.removes = false;
   return parsed;
 }
 
 function analyzeOutline(decls) {
-  let style = 'none', width = 'medium', removal = null;
+  let style = 'none', width = 'medium', removal = null, unknown = false;
   for (const decl of decls) {
     const value = cleanValue(decl.value);
     if (decl.prop === 'outline') {
       const parsed = parseOutlineShorthand(value);
       style = parsed.style;
       width = parsed.width;
+      unknown = unknown || parsed.unknown;
       if (parsed.removes && !removal) removal = decl;
-    } else if (decl.prop === 'outline-style') style = value;
-    else if (decl.prop === 'outline-width') width = value;
+    } else if (decl.prop === 'outline-style') {
+      style = value;
+      unknown = unknown || hasUnresolvedTokens(value);
+    } else if (decl.prop === 'outline-width') {
+      width = value;
+      unknown = unknown || hasUnresolvedTokens(value);
+    }
   }
-  return { removal, visible: visibleOutlineStyles.has(style) && isVisibleWidth(width) };
+  return { removal, visible: unknown || (visibleOutlineStyles.has(style) && isVisibleWidth(width)) };
 }
 
 function borderShorthandProp(prop) {
@@ -331,6 +358,13 @@ function visibleTextDecoration(value) {
 
 function visibleReplacement(decls, outline) {
   if (outline.visible) return true;
+  let visibleBorderStyle = false, positiveBorderWidth = false;
+  for (const { prop, value } of decls) {
+    const tokens = splitValueTokens(cleanValue(value));
+    if (prop === 'border-style' && tokens.some((token) => visibleBorderStyles.has(token))) visibleBorderStyle = true;
+    if (prop === 'border-width' && tokens.some((token) => isVisibleWidth(token))) positiveBorderWidth = true;
+  }
+  if (visibleBorderStyle && positiveBorderWidth) return true;
   return decls.some(({ prop, value }) => {
     const clean = cleanValue(value);
     if (prop === 'box-shadow') return clean !== 'none';
@@ -407,7 +441,6 @@ function scanRules(segment, baseOffset, sourceText, visit) {
 
 function scanFile(file, root) {
   const text = fs.readFileSync(file, 'utf8');
-  const scanText = maskCssComments(text);
   const lines = text.split(/\r?\n/);
   const findings = [];
   const seenRules = new Set();
@@ -418,8 +451,10 @@ function scanFile(file, root) {
     findings.push({ rule, severity, weight, file: path.relative(root, file), line, match: match.trim().slice(0, 160), fix });
   };
 
-  for (const segment of cssSegments(file, scanText)) {
-    scanRules(segment, segment.offset, scanText, (selectorText, decls, location, contexts) => {
+  // Focus scan is heuristic; live keyboard testing remains authoritative.
+  for (const segment of cssSegments(file, text)) {
+    const maskedSegment = { text: maskCssComments(segment.text), offset: segment.offset };
+    scanRules(maskedSegment, segment.offset, maskedSegment.text, (selectorText, decls, location, contexts) => {
       const outline = analyzeOutline(decls);
       if (!outline.removal || visibleReplacement(decls, outline)) return;
       for (const context of contexts) {
