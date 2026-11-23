@@ -25,6 +25,8 @@ accessibility floor → Pixelcraft guidance → model taste.
 
 ## Skills
 
+The architecture has five layers: **Plan** (`pixelcraft-plan`), **Core** (orchestration, direction, craft, tokens, UX), **Surfaces** (platform/framework skills), **Patterns** (surface-independent product patterns), and **Quality** (review, accessibility, visual QA). Layers compose; no layer substitutes for the mandatory floor.
+
 | Skill | Role |
 |---|---|
 | `pixelcraft` | Orchestrator: detect stack + surface mode, run the loop, route to other skills, final report contract |
@@ -35,6 +37,7 @@ accessibility floor → Pixelcraft guidance → model taste.
 | `pixelcraft-ux` | UX before and during build: JTBD, flows, IA, full state coverage, forms, feedback, navigation, cognitive load, i18n, UX writing |
 | `pixelcraft-accessibility` | WCAG 2.2 floor + platform translations (HIG, Material, desktop, TUI, email, game) and verification split |
 | `pixelcraft-review` | Audit / critique / polish: heuristic scoring with evidence + confidence, persona walkthroughs, slop scan script |
+| `pixelcraft-visual-qa` | Quality-layer render/screenshot/critique/fix loop, cross-surface capture guidance, contrast/overflow/clipping evidence, performance budgets |
 | `pixelcraft-web` | HTML/CSS, React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, server-rendered (Rails, Laravel, Django, Phoenix, Blazor, templ), Rust/Kotlin/Elm/Clojure/F#/Scala/Java web |
 | `pixelcraft-mobile` | SwiftUI, UIKit, Jetpack Compose, Flutter, React Native/Expo, KMP, Ionic, .NET MAUI, Flet, Kivy |
 | `pixelcraft-data-apps` | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny, Jupyter widgets, R Shiny, Julia Genie, Observable Framework, Evidence |
@@ -59,8 +62,8 @@ many stacks via progressive disclosure.
 3. **Specify** – direction card + tokens (`pixelcraft-tokens`) + UX plan (flows + state matrix,
    `pixelcraft-ux`).
 4. **Build** – via the platform skill; floor rules applied by default, not repaired later.
-5. **Verify** – `pixelcraft-review`: slop scan, a11y checks, rendered screenshots where possible,
-   heuristic critique, persona walkthrough.
+5. **Verify** – `pixelcraft-review` plus `pixelcraft-visual-qa`: slop scan, a11y checks, rendered screenshots/captures where possible,
+   heuristic critique, persona walkthrough, performance-budget evidence.
 6. **Report** – what was verified and how, open risks, decisions.
 
 ## Conventions for SKILL.md

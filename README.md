@@ -44,6 +44,7 @@ The full architecture is documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTUR
 | `pixelcraft-ux` | JTBD, flows, information architecture, state matrices, forms, feedback, i18n UX, UX writing |
 | `pixelcraft-accessibility` | WCAG 2.2 AA floor translated into concrete platform checks and verification methods |
 | `pixelcraft-review` | Audit/critique/polish modes, severity taxonomy, Nielsen checks, persona walkthroughs, slop scanning |
+| `pixelcraft-visual-qa` | Render/screenshot/self-critique/fix loop, capture matrices, contrast/overflow/clipping audits, performance budgets |
 | `pixelcraft-web` | HTML/CSS, React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, Tailwind, server-rendered web, Rust/Kotlin/Elm/ClojureScript/F#/Scala/Java web |
 | `pixelcraft-mobile` | SwiftUI, UIKit, Jetpack Compose, Flutter, React Native/Expo, Kotlin Multiplatform, Ionic/Capacitor, .NET MAUI, Flet, Kivy |
 | `pixelcraft-data-apps` | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny, Jupyter widgets, R Shiny, Julia Genie, Observable Framework, Evidence |
