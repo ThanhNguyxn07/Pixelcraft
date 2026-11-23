@@ -129,7 +129,7 @@ agents=()
 all_agents=(claude codex agents devin cursor gemini copilot windsurf opencode)
 IFS=',' read -r -a raw_agents <<< "$agents_arg"
 use_all_agents=0
-for raw in "${raw_agents[@]}"; do
+for raw in ${raw_agents[@]+"${raw_agents[@]}"}; do
   raw="$(trim "$raw")"
   [[ -n "$raw" ]] || continue
   agent="$(canonical_agent "$raw")"
@@ -138,10 +138,10 @@ for raw in "${raw_agents[@]}"; do
     use_all_agents=1
     break
   fi
-  contains "$agent" "${agents[@]}" || agents+=("$agent")
+  contains "$agent" ${agents[@]+"${agents[@]}"} || agents+=("$agent")
 done
 if (( use_all_agents )); then
-  agents=("${all_agents[@]}")
+  agents=(${all_agents[@]+"${all_agents[@]}"})
 fi
 (( ${#agents[@]} > 0 )) || die "at least one agent is required"
 
@@ -188,36 +188,36 @@ done
 IFS=',' read -r -a raw_skills <<< "$skills_arg"
 use_all_skills=0
 parsed_skills=()
-for raw in "${raw_skills[@]}"; do
+for raw in ${raw_skills[@]+"${raw_skills[@]}"}; do
   raw="$(trim "$raw")"
   [[ -n "$raw" ]] || continue
   if [[ "$raw" == "all" ]]; then
     use_all_skills=1
     break
   fi
-  contains "$raw" "${available[@]}" || die "unknown skill '$raw'; available: ${available[*]}"
-  contains "$raw" "${parsed_skills[@]}" || parsed_skills+=("$raw")
+  contains "$raw" ${available[@]+"${available[@]}"} || die "unknown skill '$raw'; available: ${available[*]}"
+  contains "$raw" ${parsed_skills[@]+"${parsed_skills[@]}"} || parsed_skills+=("$raw")
 done
 
 selected=()
 if (( use_all_skills )); then
-  for name in "${available[@]}"; do
+  for name in ${available[@]+"${available[@]}"}; do
     selected+=("$name:explicit")
   done
 else
   injected=()
   for core in pixelcraft pixelcraft-plan; do
-    if contains "$core" "${available[@]}" && ! contains "$core" "${parsed_skills[@]}"; then
+    if contains "$core" ${available[@]+"${available[@]}"} && ! contains "$core" ${parsed_skills[@]+"${parsed_skills[@]}"}; then
       injected+=("$core")
     fi
   done
   if (( ${#injected[@]} > 0 )); then
     echo "note: including required core skill(s): ${injected[*]}"
-    for name in "${injected[@]}"; do
+    for name in ${injected[@]+"${injected[@]}"}; do
       selected+=("$name:auto")
     done
   fi
-  for name in "${parsed_skills[@]}"; do
+  for name in ${parsed_skills[@]+"${parsed_skills[@]}"}; do
     selected+=("$name:explicit")
   done
 fi
@@ -314,14 +314,14 @@ copy_skill() {
 }
 
 targets=()
-for agent in "${agents[@]}"; do
+for agent in ${agents[@]+"${agents[@]}"}; do
   target="$(target_for "$agent")"
   assert_target_path_safe "$target"
-  contains "$target" "${targets[@]}" || targets+=("$target")
+  contains "$target" ${targets[@]+"${targets[@]}"} || targets+=("$target")
 done
 
-for target in "${targets[@]}"; do
-  for entry in "${selected[@]}"; do
+for target in ${targets[@]+"${targets[@]}"}; do
+  for entry in ${selected[@]+"${selected[@]}"}; do
     name="${entry%%:*}"
     auto=0
     [[ "${entry##*:}" == "auto" ]] && auto=1
