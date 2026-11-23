@@ -311,14 +311,16 @@ function trackDataRequests(page) {
   return () => pending;
 }
 
-async function settlePage(page, options, pendingRequests) {
+async function settlePage(page, options, pendingRequests, allowMissingSelector = false) {
   const deadline = Date.now() + options.waitMs;
   const remaining = () => Math.max(0, deadline - Date.now());
+  let waitForTimedOut = false;
   if (options.waitFor) {
     try {
       await page.waitForSelector(options.waitFor, { timeout: Math.max(1, remaining()) });
     } catch {
-      throw new Error(`--wait-for selector did not appear within ${options.waitMs}ms: ${options.waitFor}`);
+      if (!allowMissingSelector) throw new Error(`--wait-for selector did not appear within ${options.waitMs}ms: ${options.waitFor}`);
+      waitForTimedOut = true;
     }
   }
   while (pendingRequests() > 0 && remaining() > 0) await page.waitForTimeout(Math.min(100, remaining()));
@@ -331,6 +333,7 @@ async function settlePage(page, options, pendingRequests) {
   }
   const paintSettle = Math.min(300, remaining());
   if (paintSettle > 0) await page.waitForTimeout(paintSettle);
+  return { waitForTimedOut };
 }
 
 async function main() {
@@ -372,12 +375,12 @@ async function main() {
           const response = await page.goto(staticTarget.url, { waitUntil: 'load', timeout: options.timeout });
           const status = response ? response.status() : null;
           if (status !== null && status >= 400) sawHttpError = true;
-          await settlePage(page, options, pendingRequests);
+          const settle = await settlePage(page, options, pendingRequests, status !== null && status >= 400);
           const name = `${viewport.width}x${viewport.height}-${colorScheme}-${reducedMotion === 'reduce' ? 'reduced-motion' : 'motion'}.png`;
           const file = path.join(out, name);
           await page.screenshot({ path: file, fullPage: true });
           const audit = await page.evaluate(`(${auditSource})()`);
-          report.captures.push({ file: name, viewport, colorScheme, reducedMotion: reducedMotion === 'reduce', status, ...audit });
+          report.captures.push({ file: name, viewport, colorScheme, reducedMotion: reducedMotion === 'reduce', status, ...(settle.waitForTimedOut ? { waitFor: options.waitFor, waitForTimedOut: true } : {}), ...audit });
           console.log(`captured: ${name}; findings=${audit.findings.length}`);
           await page.close();
         }
