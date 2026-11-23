@@ -13,7 +13,8 @@ Tokens are design decisions in portable form. They encode hierarchy and semantic
 ## Reference and tools
 
 - Read [references/format.md](references/format.md) when authoring DTCG structure, references, modes, themes, or token tiers.
-- Use [assets/tokens.example.json](assets/tokens.example.json) as the canonical small example.
+- Read [references/theme-presets.md](references/theme-presets.md) when designing light/dark/high-contrast modes, dark elevation/accent behavior, forced-colors behavior, or exporter-supported DTCG mode overrides.
+- Use [assets/tokens.example.json](assets/tokens.example.json) as the canonical small example and [assets/tokens.modes.example.json](assets/tokens.modes.example.json) for mode overrides.
 - Run `node scripts/export-tokens.mjs --help` for exporter usage. The exporter supports `css`, `tailwind`, `swift`, `kotlin`, `dart`, `python`, `qt`, and `textual`.
 
 ## Token tiers

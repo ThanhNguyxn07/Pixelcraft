@@ -5,11 +5,12 @@ import path from 'node:path';
 const formats = ['css', 'tailwind', 'swift', 'kotlin', 'dart', 'python', 'qt', 'textual'];
 
 function help() {
-  return `Usage: node export-tokens.mjs <tokens.json> --format <${formats.join('|')}|all> [--out-dir DIR]
+  return `Usage: node export-tokens.mjs <tokens.json> --format <${formats.join('|')}|all> [--mode NAME] [--out-dir DIR]
 
 Zero-dependency exporter for the common DTCG 2025.10 subset used by Pixelcraft.
 Without --out-dir, generated text is written to stdout. Advanced DTCG features
-such as tool-specific mode extensions should be handled by a dedicated compiler.`;
+such as advanced tool-specific extensions should be handled by a dedicated compiler.
+Pixelcraft token-level mode overrides use $extensions.pixelcraft.modes.`;
 }
 
 function camel(parts) {
@@ -92,9 +93,23 @@ function scalar(token, type) {
   return String(v);
 }
 
-function collect(file) {
+function applyMode(token, mode) {
+  if (!mode) return token;
+  const replacement = token.token.$extensions?.pixelcraft?.modes?.[mode];
+  if (replacement === undefined) return token;
+  const value = replacement && typeof replacement === 'object' && Object.hasOwn(replacement, '$value') ? replacement.$value : replacement;
+  return { ...token, token: { ...token.token, $value: value } };
+}
+
+function collect(file, mode) {
   const data = JSON.parse(fs.readFileSync(file, 'utf8'));
-  const tokens = flatten(data);
+  const flattened = flatten(data);
+  const modes = new Set();
+  for (const token of flattened) {
+    for (const name of Object.keys(token.token.$extensions?.pixelcraft?.modes || {})) modes.add(name);
+  }
+  if (mode && !modes.has(mode)) throw new Error(`unknown --mode ${mode}`);
+  const tokens = flattened.map((token) => applyMode(token, mode));
   const byPath = new Map(tokens.map((t) => [t.path.join('.'), t]));
   const resolving = new Set();
   function resolve(t) {
@@ -204,18 +219,19 @@ try {
   const format = getOpt('--format') || 'all';
   if (![...formats, 'all'].includes(format)) throw new Error(`unknown --format ${format}`);
   const selected = format === 'all' ? formats : [format];
-  const list = entries(collect(input));
+  const mode = getOpt('--mode');
+  const list = entries(collect(input, mode));
   const outDir = getOpt('--out-dir');
   if (outDir) {
     fs.mkdirSync(outDir, { recursive: true });
     for (const f of selected) {
       const extensions = { css: 'css', tailwind: 'tailwind.css', swift: 'swift', kotlin: 'kt', dart: 'dart', python: 'py', qt: 'qt', textual: 'textual' };
-      const file = path.join(outDir, `tokens.${extensions[f]}`);
+      const file = path.join(outDir, `tokens${mode ? `.${mode}` : ''}.${extensions[f]}`);
       fs.writeFileSync(file, render(f, list));
       console.log(`wrote ${file}`);
     }
   } else {
-    for (const f of selected) console.log(`/* ${f} */\n${render(f, list)}`);
+    for (const f of selected) console.log(`/* ${f}${mode ? ` mode=${mode}` : ''} */\n${render(f, list)}`);
   }
 } catch (error) {
   console.error(`export-tokens: ${error.message}`);
