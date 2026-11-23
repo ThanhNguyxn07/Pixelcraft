@@ -42,7 +42,7 @@ function help() {
   return `Usage: pixelcraft <command> [options]
 
 Commands:
-  add <skill...|all> --agent <claude|codex|cursor|gemini|copilot|agents|all> [--global] [--dry-run]
+  add <skill...|all> --agent <claude|codex|cursor|gemini|copilot|agents|all> [--global] [--dry-run] [--force]
       Copy self-contained skill folders into an agent skills directory.
   list
       List skills bundled in this package.
@@ -53,6 +53,10 @@ Options:
   --agent NAME   Target host. Required for add.
   --global       Install in the user-level skills directory instead of the current project.
   --dry-run      Print destination copies without writing files.
+  --force        Replace existing skill directories. Without it, existing installs are skipped.
+
+Symlink safety: installation refuses a symlinked target skills directory or skill
+directory instead of replacing files outside the project.
 
 Project locations: claude=.claude/skills; codex/agents=.agents/skills;
 cursor=.cursor/skills; gemini=.gemini/skills; copilot=.github/skills.
@@ -66,11 +70,12 @@ depending on them in automation.`;
 
 function parse(args) {
   const positional = [];
-  const options = { global: false, dryRun: false };
+  const options = { global: false, dryRun: false, force: false };
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === '--global') options.global = true;
     else if (arg === '--dry-run') options.dryRun = true;
+    else if (arg === '--force') options.force = true;
     else if (arg === '--agent') {
       index += 1;
       options.agent = args[index];
@@ -83,14 +88,36 @@ function parse(args) {
   return { positional, options };
 }
 
-function copySkill(name, destinationRoot, dryRun) {
+function assertNotSymlink(file, label) {
+  let stat;
+  try {
+    stat = fs.lstatSync(file);
+  } catch (error) {
+    if (error.code === 'ENOENT') return;
+    throw error;
+  }
+  if (stat.isSymbolicLink()) throw new Error(`${label} is a symlink: ${file}; refusing to install through it`);
+}
+
+function copySkill(name, destinationRoot, dryRun, force) {
   const source = path.join(skillsRoot, name);
   const destination = path.join(destinationRoot, name);
+  assertNotSymlink(source, 'source skill directory');
+  assertNotSymlink(destinationRoot, 'target skills directory');
+  assertNotSymlink(destination, 'installed skill directory');
+  const exists = fs.existsSync(destination);
   if (dryRun) {
-    console.log(`dry-run: ${name} -> ${destination}`);
+    if (exists && !force) console.log(`dry-run: skipped existing ${name} -> ${destination} (use --force to replace)`);
+    else console.log(`dry-run: ${name} -> ${destination}`);
     return;
   }
   fs.mkdirSync(destinationRoot, { recursive: true });
+  assertNotSymlink(destinationRoot, 'target skills directory');
+  assertNotSymlink(destination, 'installed skill directory');
+  if (exists && !force) {
+    console.log(`skipped existing: ${name} -> ${destination} (use --force to replace)`);
+    return;
+  }
   fs.rmSync(destination, { recursive: true, force: true });
   fs.cpSync(source, destination, { recursive: true });
   console.log(`installed: ${name} -> ${destination}`);
@@ -121,7 +148,7 @@ try {
   if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(', ')}; available: ${available.join(', ')}`);
 
   const targets = targetsFor(options.agent, options.global);
-  for (const target of targets) for (const name of selected) copySkill(name, target, options.dryRun);
+  for (const target of targets) for (const name of selected) copySkill(name, target, options.dryRun, options.force);
 } catch (error) {
   console.error(`pixelcraft: ${error.message}`);
   process.exit(1);

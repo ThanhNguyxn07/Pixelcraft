@@ -93,6 +93,14 @@ Preview without writing files:
 npx pixelcraft add all --agent all --dry-run
 ```
 
+Replace an existing installation explicitly (without `--force`, existing skill directories are skipped so local edits are not silently deleted):
+
+```bash
+npx pixelcraft add all --agent claude --force
+```
+
+The installer refuses symlinked target skill directories rather than following them outside the project.
+
 List bundled skills:
 
 ```bash
