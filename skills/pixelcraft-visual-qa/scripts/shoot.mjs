@@ -15,8 +15,8 @@ Options:
   --out DIR             Artifact directory (default: visual-qa)
   --breakpoints LIST    Width x height list (default: 390x844,768x1024,1440x900)
   --project DIR         Dependency resolution root (default: current directory)
-  --root DIR            Static server root for local targets (default: nearest
-                        ancestor containing package.json or .git)
+  --root DIR            Static server root for local targets (default: the
+                        file/directory itself; exposes everything beneath it)
   --timeout MS          Navigation timeout in milliseconds (default: 30000)
   --wait-for SELECTOR   Wait for a selector after page load
   --wait-ms MS          Maximum post-load selector/network/font settle time
@@ -76,23 +76,13 @@ const mimeTypes = new Map(Object.entries({
   '.html': 'text/html; charset=utf-8', '.htm': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.ico': 'image/x-icon', '.woff': 'font/woff', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.wasm': 'application/wasm',
 }));
 
-function findDefaultRoot(start) {
-  let current = start;
-  while (true) {
-    if (fs.existsSync(path.join(current, 'package.json')) || fs.existsSync(path.join(current, '.git'))) return current;
-    const parent = path.dirname(current);
-    if (parent === current) return start;
-    current = parent;
-  }
-}
-
 async function createStaticTarget(target, options) {
   if (/^https?:\/\//i.test(target)) return { url: target, local: false, async close() {} };
   const resolved = path.resolve(target);
   if (!fs.existsSync(resolved)) throw new Error(`target is neither an http(s) URL nor an existing file/directory: ${target}`);
   const stat = fs.statSync(resolved);
   const fallbackRoot = stat.isDirectory() ? resolved : path.dirname(resolved);
-  const configuredRoot = path.resolve(options.root || findDefaultRoot(fallbackRoot));
+  const configuredRoot = path.resolve(options.root || fallbackRoot);
   if (!fs.existsSync(configuredRoot) || !fs.statSync(configuredRoot).isDirectory()) throw new Error(`static server root is not a directory: ${configuredRoot}`);
   const root = fs.realpathSync(configuredRoot);
   const rootPrefix = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
@@ -111,6 +101,10 @@ async function createStaticTarget(target, options) {
       return;
     }
     if (pathname.endsWith('/')) pathname += 'index.html';
+    if (pathname.split('/').some((part) => part.startsWith('.'))) {
+      response.writeHead(404).end('not found');
+      return;
+    }
     const file = path.resolve(root, `.${pathname}`);
     if (file !== root && !file.startsWith(`${root}${path.sep}`)) {
       response.writeHead(403).end('forbidden');

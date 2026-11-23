@@ -297,6 +297,14 @@ node skills/pixelcraft-tokens/scripts/export-tokens.mjs skills/pixelcraft-tokens
 
 Supported export formats are `css`, `tailwind`, `swift`, `kotlin`, `dart`, `python`, `qt`, `textual`, and `all`.
 
+Capture browser visual QA evidence when Playwright is installed:
+
+```bash
+node skills/pixelcraft-visual-qa/scripts/shoot.mjs dist/index.html --out visual-qa
+```
+
+For local files, `shoot.mjs` serves only the file's own directory by default. Use `--root` only when shared parent assets are required; it exposes every non-dotfile beneath that root to page scripts during capture (`.env`, `.git/` and other dot-segments are refused).
+
 Inspect installer behavior:
 
 ```bash

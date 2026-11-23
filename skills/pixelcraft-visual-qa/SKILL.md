@@ -50,6 +50,8 @@ node scripts/shoot.mjs dist/index.html --breakpoints 390x844,768x1024,1440x900
 
 The script writes PNGs plus `report.json`, flags horizontal overflow, elements outside the viewport, clipped text, and low-contrast text heuristically. Treat findings as leads: inspect the PNG before changing design. Absence of findings is not proof of quality.
 
+For local files, the built-in server defaults to the file's own directory. Pass `--root` only when shared parent assets are required: it exposes every non-dotfile beneath that root to page scripts for the duration of the capture. Dot-segments such as `.env` and `.git/` are refused.
+
 ## Hard rules
 
 - Do not use browser emulation as proof of physical-device behavior; label it emulation.
