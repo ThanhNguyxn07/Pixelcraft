@@ -18,6 +18,7 @@ Options:
   --root DIR             Static server root for local targets (default: target directory)
   --executable-path FILE Use a specific Chromium/Chrome executable
   --timeout MS           Navigation timeout in milliseconds (default: 30000)
+  --wait-until EVENT     Navigation lifecycle event: load or domcontentloaded (default: load)
   --wait-for SELECTOR    Wait for a selector after page load
   --wait-ms MS           Post-load settle time in milliseconds (default: 2000)
   --compact              Emit compact JSON
@@ -41,7 +42,7 @@ function optionValue(args, index, name) {
 }
 
 function parse(args) {
-  const options = { out: null, breakpoints: '390x900,1440x900', project: process.cwd(), root: null, timeout: 30000, waitFor: null, waitMs: 2000, compact: false, executablePath: null, help: false };
+  const options = { out: null, breakpoints: '390x900,1440x900', project: process.cwd(), root: null, timeout: 30000, waitUntil: 'load', waitFor: null, waitMs: 2000, compact: false, executablePath: null, help: false };
   const positional = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -71,6 +72,10 @@ function parse(args) {
       options.timeout = Number(optionValue(args, index, '--timeout'));
       index += 1;
     } else if (arg.startsWith('--timeout=')) options.timeout = Number(arg.slice(10));
+    else if (arg === '--wait-until') {
+      options.waitUntil = optionValue(args, index, '--wait-until');
+      index += 1;
+    } else if (arg.startsWith('--wait-until=')) options.waitUntil = arg.slice(13);
     else if (arg === '--wait-for') {
       options.waitFor = optionValue(args, index, '--wait-for');
       index += 1;
@@ -84,6 +89,7 @@ function parse(args) {
   }
   if (!Number.isFinite(options.timeout) || options.timeout <= 0) throw new Error('--timeout must be a positive number');
   if (!Number.isFinite(options.waitMs) || options.waitMs < 0) throw new Error('--wait-ms must be a non-negative number');
+  if (options.waitUntil !== 'load' && options.waitUntil !== 'domcontentloaded') throw new Error(`--wait-until must be 'load' or 'domcontentloaded', got '${options.waitUntil}'`);
   return { positional, options };
 }
 
@@ -1058,7 +1064,7 @@ async function measurePage(page, target, viewport, options) {
   const { frameTree } = await session.send('Page.getFrameTree');
   const mainFrameId = frameTree?.frame?.id || null;
   const tracker = observeNetwork(session, mainFrameId);
-  const response = await page.goto(target, { waitUntil: 'load', timeout: options.timeout });
+  const response = await page.goto(target, { waitUntil: options.waitUntil, timeout: options.timeout });
   if (options.waitFor) await page.waitForSelector(options.waitFor, { timeout: options.timeout });
   if (options.waitMs > 0) await page.waitForTimeout(options.waitMs);
   if (options.waitMs > 0) {
