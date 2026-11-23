@@ -1,0 +1,8 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+src/generated/
+src/styles/tokens.css
+src/styles/tokens.dark.css
+src/styles/theme-tokens.css

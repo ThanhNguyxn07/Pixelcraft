@@ -1,0 +1,69 @@
+@import "tailwindcss";
+@import "../styles/theme-tokens.css";
+
+@theme {
+  --font-display: var(--font-syne), "Space Grotesk", sans-serif;
+  --font-sans: var(--font-jakarta), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: var(--font-mono-code), ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    background: var(--semantic-color-background);
+    color: var(--semantic-color-foreground);
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100svh;
+    background: var(--semantic-color-background);
+    color: var(--semantic-color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--semantic-color-action);
+    outline-offset: 3px;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.pixel-art {
+  image-rendering: pixelated;
+}
+
+.hero-mask-line {
+  overflow: hidden;
+  display: block;
+}
+
+.shader-fallback {
+  background:
+    radial-gradient(65% 55% at 72% 38%, rgba(34, 211, 238, 0.22), transparent 65%),
+    radial-gradient(50% 45% at 30% 70%, rgba(251, 146, 60, 0.16), transparent 65%),
+    #050507;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

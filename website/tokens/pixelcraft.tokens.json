@@ -1,0 +1,88 @@
+{
+  "$schema": "https://www.designtokens.org/TR/2025.10/format/",
+  "color": {
+    "$type": "color",
+    "obsidian": {
+      "$value": { "colorSpace": "oklch", "components": [0.98, 0.002, 260], "alpha": 1 },
+      "$extensions": {
+        "pixelcraft": {
+          "modes": {
+            "dark": { "$value": { "colorSpace": "oklch", "components": [0.11, 0.004, 260], "alpha": 1 } }
+          }
+        }
+      }
+    },
+    "surface": {
+      "$value": { "colorSpace": "oklch", "components": [1, 0, 0], "alpha": 1 },
+      "$extensions": {
+        "pixelcraft": {
+          "modes": {
+            "dark": { "$value": { "colorSpace": "oklch", "components": [0.15, 0.005, 260], "alpha": 1 } }
+          }
+        }
+      }
+    },
+    "ink": {
+      "$value": { "colorSpace": "oklch", "components": [0.14, 0.005, 260], "alpha": 1 },
+      "$extensions": {
+        "pixelcraft": {
+          "modes": {
+            "dark": { "$value": { "colorSpace": "oklch", "components": [0.96, 0.003, 260], "alpha": 1 } }
+          }
+        }
+      }
+    },
+    "muted": {
+      "$value": { "colorSpace": "oklch", "components": [0.43, 0.006, 260], "alpha": 1 },
+      "$extensions": {
+        "pixelcraft": {
+          "modes": {
+            "dark": { "$value": { "colorSpace": "oklch", "components": [0.71, 0.006, 260], "alpha": 1 } }
+          }
+        }
+      }
+    },
+    "hairline": {
+      "$value": { "colorSpace": "oklch", "components": [0.87, 0.004, 260], "alpha": 1 },
+      "$extensions": {
+        "pixelcraft": {
+          "modes": {
+            "dark": { "$value": { "colorSpace": "oklch", "components": [0.25, 0.005, 260], "alpha": 1 } }
+          }
+        }
+      }
+    },
+    "cyan": {
+      "$value": { "colorSpace": "oklch", "components": [0.48, 0.13, 212], "alpha": 1 },
+      "$extensions": {
+        "pixelcraft": {
+          "modes": {
+            "dark": { "$value": { "colorSpace": "oklch", "components": [0.81, 0.13, 202], "alpha": 1 } }
+          }
+        }
+      }
+    },
+    "amber": {
+      "$value": { "colorSpace": "oklch", "components": [0.55, 0.16, 48], "alpha": 1 },
+      "$extensions": {
+        "pixelcraft": {
+          "modes": {
+            "dark": { "$value": { "colorSpace": "oklch", "components": [0.77, 0.16, 52], "alpha": 1 } }
+          }
+        }
+      }
+    }
+  },
+  "semantic": {
+    "color": {
+      "$type": "color",
+      "background": { "$value": "{color.obsidian}" },
+      "surface": { "$value": "{color.surface}" },
+      "foreground": { "$value": "{color.ink}" },
+      "muted": { "$value": "{color.muted}" },
+      "border": { "$value": "{color.hairline}" },
+      "action": { "$value": "{color.cyan}" },
+      "signal": { "$value": "{color.amber}" }
+    }
+  }
+}
