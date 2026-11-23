@@ -53,7 +53,7 @@ Options:
   --agent NAME   Target host. Required for add.
   --global       Install in the user-level skills directory instead of the current project.
   --dry-run      Print destination copies without writing files.
-  --force        Replace existing skill directories. Without it, existing installs are skipped.
+  --force        Replace existing explicitly requested skill directories. Auto-added core skills install only when missing.
 
 Symlink safety: installation refuses a symlinked target skills directory or skill
 directory instead of replacing files outside the project.
@@ -88,24 +88,32 @@ function parse(args) {
   return { positional, options };
 }
 
-function assertNotSymlink(file, label) {
-  let stat;
+function lstatIfExists(file) {
   try {
-    stat = fs.lstatSync(file);
+    return fs.lstatSync(file);
   } catch (error) {
-    if (error.code === 'ENOENT') return;
+    if (error.code === 'ENOENT') return null;
     throw error;
   }
-  if (stat.isSymbolicLink()) throw new Error(`${label} is a symlink: ${file}; refusing to install through it`);
 }
 
-function copySkill(name, destinationRoot, dryRun, force) {
+function assertNotSymlink(file, label) {
+  if (lstatIfExists(file)?.isSymbolicLink()) throw new Error(`${label} is a symlink: ${file}; refusing to install through it`);
+}
+
+function copySkill(name, destinationRoot, dryRun, { force = false, auto = false } = {}) {
   const source = path.join(skillsRoot, name);
   const destination = path.join(destinationRoot, name);
   assertNotSymlink(source, 'source skill directory');
   assertNotSymlink(destinationRoot, 'target skills directory');
-  assertNotSymlink(destination, 'installed skill directory');
-  const exists = fs.existsSync(destination);
+  const destinationStat = lstatIfExists(destination);
+  const exists = destinationStat !== null;
+  if (auto && exists) {
+    const kind = destinationStat.isSymbolicLink() ? 'existing symlink' : 'existing install';
+    console.log(`${dryRun ? 'dry-run: ' : ''}skipped auto-added ${kind}: ${name} -> ${destination}`);
+    return;
+  }
+  if (destinationStat?.isSymbolicLink()) throw new Error(`installed skill directory is a symlink: ${destination}; refusing to install through it`);
   if (dryRun) {
     if (exists && !force) console.log(`dry-run: skipped existing ${name} -> ${destination} (use --force to replace)`);
     else console.log(`dry-run: ${name} -> ${destination}`);
@@ -113,7 +121,6 @@ function copySkill(name, destinationRoot, dryRun, force) {
   }
   fs.mkdirSync(destinationRoot, { recursive: true });
   assertNotSymlink(destinationRoot, 'target skills directory');
-  assertNotSymlink(destination, 'installed skill directory');
   if (exists && !force) {
     console.log(`skipped existing: ${name} -> ${destination} (use --force to replace)`);
     return;
@@ -147,18 +154,22 @@ try {
   const unknown = requested.filter((name) => !available.includes(name));
   if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(', ')}; available: ${available.join(', ')}`);
 
-  let selected = requested;
+  let selected = requested.map((name) => ({ name, auto: false }));
   if (!positional.includes('all')) {
     const required = ['pixelcraft', 'pixelcraft-plan'].filter((name) => available.includes(name));
     const injected = required.filter((name) => !requested.includes(name));
     if (injected.length) {
-      selected = [...injected, ...requested];
+      selected = [...injected.map((name) => ({ name, auto: true })), ...selected];
       console.log(`note: including required core skill(s): ${injected.join(', ')}`);
     }
   }
 
   const targets = targetsFor(options.agent, options.global);
-  for (const target of targets) for (const name of selected) copySkill(name, target, options.dryRun, options.force);
+  for (const target of targets) {
+    for (const entry of selected) {
+      copySkill(entry.name, target, options.dryRun, { force: options.force && !entry.auto, auto: entry.auto });
+    }
+  }
 } catch (error) {
   console.error(`pixelcraft: ${error.message}`);
   process.exit(1);

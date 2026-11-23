@@ -124,7 +124,7 @@ Preview without writing files:
 npx pixelcraft add all --agent all --dry-run
 ```
 
-Replace an existing installation explicitly (without `--force`, existing skill directories are skipped so local edits are not silently deleted):
+Replace an explicitly requested installation with `--force` (auto-added core skills install only when missing; without `--force`, existing skill directories are skipped so local edits are not silently deleted):
 
 ```bash
 npx pixelcraft add all --agent claude --force
