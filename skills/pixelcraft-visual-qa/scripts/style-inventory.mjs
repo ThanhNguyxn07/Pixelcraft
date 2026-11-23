@@ -246,14 +246,19 @@ function observeNetwork(session, mainFrameId = null) {
   });
   session.on('Network.requestWillBeSent', (event) => {
     const existing = active.get(event.requestId);
+    const redirectBytes = event.redirectResponse ? (event.redirectResponse.encodedDataLength || 0) : 0;
     if (event.redirectResponse) network.redirects += 1;
-    if (existing) return;
+    if (existing) {
+      if (redirectBytes) addBytes(existing.type, existing.phase, redirectBytes);
+      return;
+    }
     const type = event.type || 'Other';
     const phase = loadEventSeen ? 'deferred' : 'initial';
     active.set(event.requestId, { type, phase });
     network.requests += 1;
     network[phase].requests += 1;
     resourceBucket(type).requests += 1;
+    if (redirectBytes) addBytes(type, phase, redirectBytes);
   });
   session.on('Network.responseReceived', (event) => {
     if (event.type === 'Document' && (!mainFrameId || event.frameId === mainFrameId)) {

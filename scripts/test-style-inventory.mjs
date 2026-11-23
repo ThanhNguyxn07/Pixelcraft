@@ -153,8 +153,18 @@ window.addEventListener('load', () => {
         res.end('<!doctype html><title>Missing frame</title><p>Not found</p>');
         return;
       }
+      if (req.url === '/redirect.js') {
+        res.writeHead(302, { location: '/final.js', 'x-redirect-pad': 'r'.repeat(900), 'content-type': 'text/plain; charset=utf-8' });
+        res.end();
+        return;
+      }
+      if (req.url === '/final.js') {
+        res.writeHead(200, { 'content-type': 'text/javascript; charset=utf-8' });
+        res.end('window.__redirectLoaded = true;');
+        return;
+      }
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-      res.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Main 200</title></head><body><main><h1>Main</h1><iframe src="/iframe-404"></iframe></main></body></html>');
+      res.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Main 200</title><script src="/redirect.js"></script></head><body><main><h1>Main</h1><iframe src="/iframe-404"></iframe></main></body></html>');
     });
     await new Promise((resolve) => navServer.listen(0, '127.0.0.1', resolve));
     try {
@@ -165,6 +175,9 @@ window.addEventListener('load', () => {
       const navViewport = JSON.parse(fs.readFileSync(navOut, 'utf8')).viewports[0];
       assert.equal(navViewport.network.status, 200, `expected main document status 200, got ${navViewport.network.status}`);
       console.log('ok 4 - subframe document responses do not overwrite main navigation status');
+      assert.equal(navViewport.network.redirects, 1, `expected 1 redirect, got ${navViewport.network.redirects}`);
+      assert.ok(navViewport.network.jsBytes >= 1000, `expected redirect response bytes included in jsBytes, got ${navViewport.network.jsBytes}`);
+      console.log('ok 5 - redirect hops account for redirect response transfer bytes');
     } finally {
       await new Promise((resolve) => navServer.close(resolve));
     }
