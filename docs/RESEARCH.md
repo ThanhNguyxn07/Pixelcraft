@@ -788,6 +788,35 @@ Citation notation: bracketed IDs such as `[S01]` refer to the numbered source re
 - `[S88]` axe-core accessibility engine — https://github.com/dequelabs/axe-core
 - `[S89]` How AI ideas affect creativity/diversity/evolution — https://arxiv.org/abs/2401.13481
 - `[S90]` ChatGPT/Codex build skills — https://learn.chatgpt.com/docs/build-skills
+- `[S91]` Awwwards evaluation system — https://www.awwwards.com/about-evaluation/
+- `[S92]` Awwwards Hot Right Now collection — https://www.awwwards.com/awwwards/collections/hot-right-now/
+- `[S93]` CSS Design Awards WOTY nominee/judging FAQ — https://www.cssdesignawards.com/woty2024/sites/Organimo
+- `[S94]` FWA about/judging — https://legacy.thefwa.com/about/about-fwa/
+- `[S95]` FWA jury interview, Greg Kozakiewicz — https://legacy.thefwa.com/fwa-jury/fwa-jury-greg-kozakiewicz
+- `[S96]` SiteInspire about — https://www.siteinspire.com/about
+- `[S97]` Godly — https://godly.website/
+- `[S98]` Land-book — https://land-book.com/
+- `[S99]` Minimal Gallery about — https://minimal.gallery/about/
+- `[S100]` Httpster — https://httpster.net/
+- `[S101]` One Page Love about — https://onepagelove.com/about
+- `[S102]` Typewolf Type Pairing Lookbooks — https://www.typewolf.com/lookbooks
+- `[S103]` Fonts In Use — https://fontsinuse.com/
+- `[S104]` Lynxflow award-winning website traits survey — https://blog.lynxflow.co/en/posts/web-design-award-winning-traits-2026/
+- `[S105]` Lindgaard et al., 50 ms first impressions — https://doi.org/10.1080/01449290500330448
+- `[S106]` Reinecke et al., predicting website aesthetics — https://kgajos.seas.harvard.edu/papers/reinecke13aesthetics.pdf
+- `[S107]` Reinecke & Gajos, visual preferences around the world — https://dl.acm.org/doi/10.1145/2556288.2557052
+- `[S108]` Tractinsky et al., What is beautiful is usable — https://academic.oup.com/iwc/article-abstract/13/2/127/898608
+- `[S109]` NN/g Scrolljacking 101 — https://www.nngroup.com/articles/scrolljacking-101/
+- `[S110]` NN/g animation duration — https://www.nngroup.com/articles/animation-duration/
+- `[S111]` NN/g homepage design principles — https://www.nngroup.com/articles/homepage-design-principles/
+- `[S112]` Apple HIG Motion — https://developer.apple.com/design/human-interface-guidelines/motion.md
+- `[S113]` Müller-Brockmann, Grid Systems — https://books.google.com/books/about/Grid_Systems_in_Graphic_Design_a_Visual.html?id=YOgtwAEACAAJ
+- `[S114]` Bringhurst, Elements of Typographic Style — https://books.google.com/books?id=gZyWTtYXMHkC
+- `[S115]` MDN CSS scroll-driven animations — https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll-driven_animations
+- `[S116]` MDN Using the View Transition API — https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using
+- `[S117]` MDN prefers-reduced-motion — https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion
+- `[S118]` web.dev why animations are slow — https://web.dev/articles/animations-overview
+- `[S119]` web.dev CSS for Web Vitals — https://web.dev/articles/css-web-vitals
 
 ## 8. Immediate implications for the next implementation step
 
