@@ -1,6 +1,6 @@
 ---
 name: pixelcraft-python-ui
-description: Translates Pixelcraft direction, tokens, UX, and floor requirements into Python-native interfaces across Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny for Python, Flet, Kivy, and Jupyter widgets. Use for data apps, ML demos, dashboards, notebooks, internal tools, forms, state handling, theming limits, custom CSS/components, rerun/session behavior, and honest verification of Python UI constraints.
+description: Translates Pixelcraft direction, tokens, UX, and floor requirements into Python-native interfaces across Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny for Python, Flet, Kivy, and Jupyter widgets, with adjacent R Shiny/Julia Genie data-app guidance. Use for data apps, ML demos, dashboards, notebooks, internal tools, forms, state handling, theming limits, custom CSS/components, rerun/session behavior, and honest verification of Python UI constraints.
 license: MIT
 metadata:
   version: 0.1.0
@@ -58,3 +58,5 @@ DOM-backed frameworks can often be inspected in browser when the app runs, but v
 - Read [references/flet.md](references/flet.md) for Flet.
 - Read [references/kivy.md](references/kivy.md) for Kivy.
 - Read [references/jupyter-widgets.md](references/jupyter-widgets.md) for ipywidgets/Jupyter surfaces.
+- Read [references/r-shiny.md](references/r-shiny.md) for R Shiny data apps.
+- Read [references/julia-genie.md](references/julia-genie.md) for Julia Genie/Stipple data apps.

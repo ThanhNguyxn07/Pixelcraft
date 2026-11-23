@@ -1,6 +1,6 @@
 ---
 name: pixelcraft-desktop
-description: Translates Pixelcraft direction, tokens, UX, and floor requirements into desktop applications across Tauri, Electron, Qt/PySide/QML, WinUI/WPF, AppKit, GTK, Avalonia, and Rust GUI frameworks. Use for window/menu design, keyboard shortcuts, resizing, high-DPI behavior, multi-window state, native/custom chrome, platform accessibility, forms, states, motion, and desktop verification.
+description: Translates Pixelcraft direction, tokens, UX, and floor requirements into desktop applications across Tauri, Electron, Qt/PySide/QML, WinUI/WPF, AppKit, GTK, Avalonia, Rust GUI, Java desktop, C++ GUI, Go GUI, and Uno Platform. Use for window/menu design, keyboard shortcuts, resizing, high-DPI behavior, multi-window state, native/custom chrome, platform accessibility, forms, states, motion, and desktop verification.
 license: MIT
 metadata:
   version: 0.1.0
@@ -57,3 +57,7 @@ Rendered verification requires running the actual app/windowing stack or platfor
 - Read [references/gtk.md](references/gtk.md) for GTK/libadwaita Linux UI.
 - Read [references/avalonia.md](references/avalonia.md) for Avalonia.
 - Read [references/rust-gui.md](references/rust-gui.md) for egui, Slint, Dioxus, and iced.
+- Read [references/javafx-swing.md](references/javafx-swing.md) for JavaFX/Swing desktop.
+- Read [references/cpp-gui.md](references/cpp-gui.md) for Qt C++/QML, Dear ImGui, and wxWidgets.
+- Read [references/go-gui.md](references/go-gui.md) for Fyne, Wails, and Gio.
+- Read [references/uno-platform.md](references/uno-platform.md) for Uno Platform/XAML cross-platform desktop.

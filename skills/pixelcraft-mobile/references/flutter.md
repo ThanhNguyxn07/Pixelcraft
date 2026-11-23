@@ -48,6 +48,10 @@ Use `Form`/`TextFormField`, correct keyboard type/text input action/autofill hin
 | stable keys/scroll controllers for stateful lists | rebuild-dependent scroll/focus loss |
 | `TextFormField(autofillHints: [AutofillHints.email])` | custom keyboard/paste-blocking behavior |
 
+## Flutter web note
+
+Flutter can target web, but choose rendering mode deliberately. Canvas-heavy Flutter web does not automatically provide normal browser semantics, text selection, SEO, deep-link behavior, or accessibility parity. For browser-dominant products, apply `pixelcraft-web` verification and compare a DOM/server-rendered alternative in `pixelcraft-plan` before committing.
+
 ## Known traps
 
 Build context after async gaps, controller lifecycle leaks, fixed pixel design across densities/text scaling, platform back/navigation mismatch, nested scrollables, semantic tree mismatch, golden-test brittleness, font licensing/glyph coverage, treating identical cross-platform rendering as identical platform UX.

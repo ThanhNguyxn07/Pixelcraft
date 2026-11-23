@@ -1,6 +1,6 @@
 ---
 name: pixelcraft-game-ui
-description: Translates Pixelcraft direction, tokens, UX, and floor requirements into game interfaces across Unity UI Toolkit, Godot Control/UI, and Unreal UMG. Use for HUDs, menus, inventory, controller/keyboard navigation, focus order, safe areas, subtitles, accessibility options, localization, legibility at distance, platform certification-style constraints, pause/settings flows, and game UI verification.
+description: Translates Pixelcraft direction, tokens, UX, and floor requirements into game interfaces across Unity UI Toolkit, Godot Control/UI, Unreal UMG, LÖVE2D, Bevy, and MonoGame. Use for HUDs, menus, inventory, controller/keyboard navigation, focus order, safe areas, subtitles, accessibility options, localization, legibility at distance, platform certification-style constraints, pause/settings flows, and game UI verification.
 license: MIT
 metadata:
   version: 0.1.0
@@ -52,3 +52,6 @@ Engine editor preview is not equivalent to runtime gameplay verification. Use pl
 - Read [references/godot.md](references/godot.md) for Godot Control/UI/Theme/focus behavior.
 - Read [references/unreal-umg.md](references/unreal-umg.md) for Unreal UMG/Slate-style UI.
 - Read [references/hud-principles.md](references/hud-principles.md) for cross-engine HUD, controller navigation, safe-area, localization, accessibility, and certification-style constraints.
+- Read [references/love2d.md](references/love2d.md) for LÖVE2D/Lua games.
+- Read [references/bevy.md](references/bevy.md) for Bevy/Rust UI and AccessKit-oriented semantics.
+- Read [references/monogame.md](references/monogame.md) for MonoGame/C# custom game UI.

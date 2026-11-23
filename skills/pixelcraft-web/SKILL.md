@@ -1,6 +1,6 @@
 ---
 name: pixelcraft-web
-description: Translates Pixelcraft direction, tokens, UX, and floor requirements into idiomatic web UI across HTML/CSS, React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, Tailwind, and server-rendered stacks. Use when building or reviewing browser UI, routing/navigation, responsive layout, forms, states, motion, accessibility, rendering performance, hydration, or web component behavior.
+description: Translates Pixelcraft direction, tokens, UX, and floor requirements into idiomatic web UI across HTML/CSS, React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, Tailwind, server-rendered stacks, Rust/Leptos/Yew, Kotlin web, Elm, ClojureScript, F#/Fable, Scala/Laminar, and Java web. Use when building or reviewing browser UI, routing/navigation, responsive layout, forms, states, motion, accessibility, rendering performance, hydration, or web component behavior.
 license: MIT
 metadata:
   version: 0.1.0
@@ -61,3 +61,10 @@ Be explicit: browser rendering and interaction can be inspected here when a brow
 - Read [references/lit-web-components.md](references/lit-web-components.md) for Lit/standards-based web components.
 - Read [references/tailwind.md](references/tailwind.md) whenever Tailwind is the styling layer, especially v4 CSS-first configuration.
 - Read [references/server-rendered.md](references/server-rendered.md) for Rails/Hotwire, Laravel/Blade/Livewire, Django/Jinja, Phoenix/LiveView, Blazor, and Go templ surfaces.
+- Read [references/leptos-yew.md](references/leptos-yew.md) for Rust browser/WASM UI in Leptos or Yew.
+- Read [references/kotlin-web.md](references/kotlin-web.md) for Compose Multiplatform Web/Kobweb.
+- Read [references/elm.md](references/elm.md) for Elm.
+- Read [references/clojurescript.md](references/clojurescript.md) for Reagent/re-frame ClojureScript.
+- Read [references/fsharp-fable.md](references/fsharp-fable.md) for F#/Fable Feliz/Elmish.
+- Read [references/scala-laminar.md](references/scala-laminar.md) for Scala.js/Laminar.
+- Read [references/java-web.md](references/java-web.md) for Vaadin and Thymeleaf.

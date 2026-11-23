@@ -1,6 +1,6 @@
 ---
 name: pixelcraft
-description: Orchestrates distinctive, evidence-verified UI work across any frontend stack. Use when designing, building, redesigning, auditing, or polishing interfaces, pages, screens, components, emails, terminal UI, game UI, or app shells. Detects the stack and surface mode, runs the six-step Pixelcraft loop, routes to named Pixelcraft skills, applies the mandatory cross-platform floor, and produces an evidence-labeled final report.
+description: Orchestrates distinctive, evidence-verified UI work across any frontend stack. Use when designing, building, redesigning, auditing, or polishing interfaces, pages, screens, components, emails, terminal UI, game UI, or app shells. Detects the stack and surface mode, runs the Pixelcraft loop, routes to named Pixelcraft skills, applies the mandatory cross-platform floor, and produces an evidence-labeled final report.
 license: MIT
 metadata:
   version: 0.1.0
@@ -43,8 +43,9 @@ Classify the surface using evidence in the repository rather than assumptions:
 
 Hybrid surfaces pick one primary mode per screen or region. Do not let a persuasive visual system leak into high-frequency operational UI.
 
-## The six-step Pixelcraft loop
+## The Pixelcraft loop
 
+0. **Plan** — use the `pixelcraft-plan` skill first. In brownfield work, read the repository systematically and write `.pixelcraft/plan.md`; in greenfield work, intake constraints and justify stack selection with a weighted matrix before any visual direction.
 1. **Frame** — detect stack/surface/input modality; identify audience, job-to-be-done, real material inventory, constraints, locale scope, and existing design system. Ask only for information that materially changes the design.
 2. **Diverge** — use the `pixelcraft-direction` skill to generate 3–5 far-apart directions with probabilities, score them, select one, record why the others lost, and inspect repetition history. For brand-kit, identity-board, logo-system, moodboard, or visual-identity image generation, use the `pixelcraft-brandkit` skill by name and its 2–3 brand-world divergence flow before image prompting.
 3. **Specify** — produce the direction card; use `pixelcraft-tokens` for DTCG tokens and `pixelcraft-ux` for flows plus the state matrix. Do not start with component trivia before direction and constraints exist.
@@ -60,13 +61,13 @@ After detecting the stack, use the matching platform skill by name and read only
 
 | Platform skill | Framework references |
 |---|---|
-| `pixelcraft-web` | `html-css`, `react-next`, `vue-nuxt`, `svelte`, `solid`, `angular`, `astro`, `qwik`, `htmx-alpine`, `lit-web-components`, `tailwind`, `server-rendered` |
+| `pixelcraft-web` | `html-css`, `react-next`, `vue-nuxt`, `svelte`, `solid`, `angular`, `astro`, `qwik`, `htmx-alpine`, `lit-web-components`, `tailwind`, `server-rendered`, `leptos-yew`, `kotlin-web`, `elm`, `clojurescript`, `fsharp-fable`, `scala-laminar`, `java-web` |
 | `pixelcraft-mobile` | `swiftui`, `uikit`, `jetpack-compose`, `flutter`, `react-native-expo`, `kotlin-multiplatform`, `ionic-capacitor`, `dotnet-maui` |
-| `pixelcraft-python-ui` | `streamlit`, `gradio`, `reflex`, `nicegui`, `dash`, `panel`, `shiny`, `flet`, `kivy`, `jupyter-widgets` |
-| `pixelcraft-desktop` | `tauri`, `electron`, `qt-pyside-qml`, `winui-wpf`, `appkit`, `gtk`, `avalonia`, `rust-gui` |
+| `pixelcraft-python-ui` | `streamlit`, `gradio`, `reflex`, `nicegui`, `dash`, `panel`, `shiny`, `flet`, `kivy`, `jupyter-widgets`, `r-shiny`, `julia-genie` |
+| `pixelcraft-desktop` | `tauri`, `electron`, `qt-pyside-qml`, `winui-wpf`, `appkit`, `gtk`, `avalonia`, `rust-gui`, `javafx-swing`, `cpp-gui`, `go-gui`, `uno-platform` |
 | `pixelcraft-tui` | `textual`, `rich`, `ink`, `bubbletea-lipgloss`, `ratatui` |
 | `pixelcraft-email` | `html-tables`, `mjml`, `react-email`, `client-quirks` |
-| `pixelcraft-game-ui` | `unity-ui-toolkit`, `godot`, `unreal-umg`, `hud-principles` |
+| `pixelcraft-game-ui` | `unity-ui-toolkit`, `godot`, `unreal-umg`, `hud-principles`, `love2d`, `bevy`, `monogame` |
 
 References are named here for routing only. Do not construct relative paths across skill folders; read the file inside the installed platform skill.
 

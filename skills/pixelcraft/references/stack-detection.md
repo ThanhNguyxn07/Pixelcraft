@@ -23,6 +23,13 @@ Detect from concrete files; do not infer from repository age, buzzwords, or one 
 | Phoenix/LiveView (`mix.exs`, `.heex`) | `pixelcraft-web` → `server-rendered` |
 | Blazor (`.razor`, `.csproj`) | `pixelcraft-web` → `server-rendered` |
 | Go templ/html template (`.templ`, `.tmpl`, handler templates) | `pixelcraft-web` → `server-rendered` |
+| `Cargo.toml` deps `leptos`/`yew`, `Trunk.toml`, `Leptos.toml` | `pixelcraft-web` → `leptos-yew` |
+| Kotlin web/Kobweb dependencies/config in Gradle project | `pixelcraft-web` → `kotlin-web` |
+| `elm.json` | `pixelcraft-web` → `elm` |
+| `deps.edn`, `shadow-cljs.edn`, Reagent/re-frame deps | `pixelcraft-web` → `clojurescript` |
+| `.fsproj`, Fable/Feliz/Elmish deps | `pixelcraft-web` → `fsharp-fable` |
+| `build.sbt`, Scala.js/Laminar deps | `pixelcraft-web` → `scala-laminar` |
+| `pom.xml`/Gradle Vaadin or Thymeleaf deps/templates | `pixelcraft-web` → `java-web` |
 
 ## Mobile signals
 
@@ -51,6 +58,8 @@ Detect from concrete files; do not infer from repository age, buzzwords, or one 
 | `flet` controls/page | `pixelcraft-python-ui` → `flet` |
 | `kivy`/KV language/App classes | `pixelcraft-python-ui` → `kivy` |
 | `ipywidgets`/notebook widget traits | `pixelcraft-python-ui` → `jupyter-widgets` |
+| R `DESCRIPTION`/`app.R` with `shiny`/`bslib` | `pixelcraft-python-ui` → `r-shiny` |
+| Julia `Project.toml` with Genie/Stipple | `pixelcraft-python-ui` → `julia-genie` |
 
 ## Desktop signals
 
@@ -64,6 +73,10 @@ Detect from concrete files; do not infer from repository age, buzzwords, or one 
 | GTK/libadwaita build definitions/imports/blueprints | `pixelcraft-desktop` → `gtk` |
 | Avalonia `.csproj`/XAML references | `pixelcraft-desktop` → `avalonia` |
 | `egui`, `slint`, `dioxus`, `iced` in Rust dependencies | `pixelcraft-desktop` → `rust-gui` |
+| `pom.xml`/Gradle JavaFX, Swing UI entry points/FXML | `pixelcraft-desktop` → `javafx-swing` |
+| `CMakeLists.txt` Qt/imgui/wxWidgets dependencies | `pixelcraft-desktop` → `cpp-gui` |
+| `go.mod` Fyne/Wails/Gio deps | `pixelcraft-desktop` → `go-gui` |
+| Uno Platform `.csproj`/XAML/config references | `pixelcraft-desktop` → `uno-platform` |
 
 ## TUI signals
 
@@ -92,6 +105,35 @@ Detect from concrete files; do not infer from repository age, buzzwords, or one 
 | `project.godot`, `.tscn`, `.gd`, Control/Theme resources | `pixelcraft-game-ui` → `godot` |
 | `.uproject`, UMG/Slate/CommonUI assets or references | `pixelcraft-game-ui` → `unreal-umg` |
 | HUD/controller/safe-area/certification/accessibility question | `pixelcraft-game-ui` → `hud-principles` |
+| `main.lua` + `conf.lua`, `love.*` calls | `pixelcraft-game-ui` → `love2d` |
+| `Cargo.toml` with `bevy` dependency | `pixelcraft-game-ui` → `bevy` |
+| MonoGame `.csproj`/Content Pipeline/Game class references | `pixelcraft-game-ui` → `monogame` |
+
+## Language → framework routing matrix
+
+| Language | Frameworks/surfaces | Skill → reference |
+|---|---|---|
+| TS/JS | React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, Electron/Tauri webview, Ink | web/desktop/TUI matching reference |
+| Python | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny, Flet, Kivy, Jupyter, Textual/Rich, Qt/PySide | python-ui/desktop/TUI matching reference |
+| Java | Vaadin, Thymeleaf, JavaFX, Swing | web `java-web`; desktop `javafx-swing` |
+| Kotlin | Compose Android/KMP, Compose Web/Kobweb | mobile; web `kotlin-web` |
+| Swift | SwiftUI, UIKit, AppKit | mobile/desktop matching reference |
+| Dart | Flutter mobile/desktop/web | mobile `flutter`; use web skill guidance when browser surface dominates |
+| C# | Blazor, MAUI, WinUI/WPF, Avalonia, Uno, MonoGame | web/desktop/mobile/game matching reference |
+| F# | Fable/Feliz/Elmish, .NET desktop | web `fsharp-fable`; desktop by actual XAML framework |
+| Go | templ, Bubble Tea, Fyne/Wails/Gio | web `server-rendered`; TUI; desktop `go-gui` |
+| Rust | Leptos/Yew, egui/Slint/Dioxus/iced, Ratatui, Bevy | web `leptos-yew`; desktop `rust-gui`; TUI `ratatui`; game `bevy` |
+| C++ | Qt/QML, Dear ImGui, wxWidgets | desktop `cpp-gui` |
+| PHP | Laravel Blade/Livewire | web `server-rendered` |
+| Ruby | Rails/Hotwire | web `server-rendered` |
+| Elixir | Phoenix LiveView | web `server-rendered` |
+| Scala | Laminar/Scala.js | web `scala-laminar` |
+| Clojure | Reagent/re-frame/ClojureScript | web `clojurescript` |
+| Elm | Elm Browser UI | web `elm` |
+| R | Shiny/bslib | python-ui `r-shiny` (data-app routing) |
+| Julia | Genie/Stipple | python-ui `julia-genie` (data-app routing) |
+| Lua | LÖVE2D | game-ui `love2d` |
+| Zig | no substantive dedicated reference yet | plan manually; inspect actual UI/library constraints |
 
 ## Brand identity signals
 

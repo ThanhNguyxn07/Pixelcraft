@@ -22,7 +22,8 @@ Pixelcraft treats this as a process problem rather than a prompt slogan. It does
 
 ```mermaid
 flowchart LR
-    A[Frame<br/>stack, surface, audience,<br/>job, constraints] --> B[Diverge<br/>far-apart directions<br/>or brand worlds]
+    P[Plan<br/>repo map or greenfield<br/>stack decision] --> A[Frame<br/>stack, surface, audience,<br/>job, constraints]
+    A --> B[Diverge<br/>far-apart directions<br/>or brand worlds]
     B --> C[Specify<br/>direction card, tokens,<br/>flows, state matrix]
     C --> D[Build<br/>platform idioms,<br/>floor applied by default]
     D --> E[Verify<br/>slop scan, accessibility,<br/>states, rendered evidence]
@@ -35,35 +36,63 @@ The full architecture is documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTUR
 
 | Skill | Purpose |
 |---|---|
-| `pixelcraft` | Orchestrator: stack/surface detection, mode classification, six-step loop, mandatory floor, evidence-labeled reporting |
+| `pixelcraft` | Orchestrator: stack/surface detection, mode classification, plan-first loop, mandatory floor, evidence-labeled reporting |
+| `pixelcraft-plan` | Step-zero planning: brownfield repo mapping, greenfield requirements intake, weighted stack selection, `.pixelcraft/plan.md` |
 | `pixelcraft-direction` | Divergent visual direction, scoring, direction cards, repetition history, anti-slop fingerprints, design movements |
 | `pixelcraft-craft` | Typography, color, layout, motion, imagery, and icon craft across platforms |
 | `pixelcraft-tokens` | DTCG token structure and multi-platform token export |
 | `pixelcraft-ux` | JTBD, flows, information architecture, state matrices, forms, feedback, i18n UX, UX writing |
 | `pixelcraft-accessibility` | WCAG 2.2 AA floor translated into concrete platform checks and verification methods |
 | `pixelcraft-review` | Audit/critique/polish modes, severity taxonomy, Nielsen checks, persona walkthroughs, slop scanning |
-| `pixelcraft-web` | HTML/CSS, React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, Tailwind, server-rendered web |
+| `pixelcraft-web` | HTML/CSS, React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, Tailwind, server-rendered web, Rust/Kotlin/Elm/ClojureScript/F#/Scala/Java web |
 | `pixelcraft-mobile` | SwiftUI, UIKit, Jetpack Compose, Flutter, React Native/Expo, Kotlin Multiplatform, Ionic/Capacitor, .NET MAUI |
-| `pixelcraft-python-ui` | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny, Flet, Kivy, Jupyter widgets |
-| `pixelcraft-desktop` | Tauri, Electron, Qt/PySide/QML, WinUI/WPF, AppKit, GTK, Avalonia, Rust GUI |
+| `pixelcraft-python-ui` | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny, Flet, Kivy, Jupyter widgets; adjacent R Shiny/Julia Genie data apps |
+| `pixelcraft-desktop` | Tauri, Electron, Qt/PySide/QML, WinUI/WPF, AppKit, GTK, Avalonia, Rust GUI, JavaFX/Swing, C++ GUI, Go GUI, Uno |
 | `pixelcraft-tui` | Textual, Rich, Ink, Bubble Tea/Lip Gloss, Ratatui |
 | `pixelcraft-email` | Table HTML email, MJML, React Email, client quirks, dark mode, image blocking, plaintext |
-| `pixelcraft-game-ui` | Unity UI Toolkit, Godot, Unreal UMG, HUD principles |
+| `pixelcraft-game-ui` | Unity UI Toolkit, Godot, Unreal UMG, LÖVE2D, Bevy, MonoGame, HUD principles |
 | `pixelcraft-brandkit` | Brand kits, identity boards, logo systems, moodboards, visual-world presentations, brand-specific prompting and QA |
 
 ## Supported stacks
 
 | Surface | Coverage |
 |---|---|
-| Web | HTML/CSS, React/Next.js, Vue/Nuxt, Svelte/SvelteKit, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit/Web Components, Tailwind CSS v4 |
+| Web | HTML/CSS, React/Next.js, Vue/Nuxt, Svelte/SvelteKit, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit/Web Components, Tailwind CSS v4, Leptos/Yew, Kotlin web, Elm, ClojureScript, F#/Fable, Scala/Laminar, Vaadin/Thymeleaf |
 | Server-rendered | Rails/Hotwire, Laravel Blade/Livewire, Django/Jinja, Phoenix LiveView, Blazor, Go templ/templates |
 | Mobile | SwiftUI, UIKit, Jetpack Compose, Flutter, React Native/Expo, Kotlin Multiplatform, Ionic/Capacitor, .NET MAUI |
-| Python UI | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny for Python, Flet, Kivy, Jupyter widgets |
-| Desktop | Tauri, Electron, Qt/PySide/QML, WinUI/WPF, AppKit, GTK/libadwaita, Avalonia, egui/Slint/Dioxus/iced |
+| Python/data UI | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny for Python, Flet, Kivy, Jupyter widgets, R Shiny, Julia Genie |
+| Desktop | Tauri, Electron, Qt/PySide/QML, WinUI/WPF, AppKit, GTK/libadwaita, Avalonia, egui/Slint/Dioxus/iced, JavaFX/Swing, Qt C++/ImGui/wxWidgets, Fyne/Wails/Gio, Uno |
 | Terminal | Textual, Rich, Ink, Bubble Tea/Lip Gloss, Ratatui |
 | Email | HTML tables, MJML, React Email, Outlook/Gmail/Apple Mail constraints |
-| Game UI | Unity UI Toolkit, Godot Control/Theme, Unreal UMG/Slate/CommonUI, HUD/focus/safe-area principles |
+| Game UI | Unity UI Toolkit, Godot Control/Theme, Unreal UMG/Slate/CommonUI, LÖVE2D, Bevy, MonoGame, HUD/focus/safe-area principles |
 | Identity | Brand-kit and visual-world generation workflows with token handoff |
+
+
+### Language routing overview
+
+| Language | Frameworks/surfaces | Skill → reference |
+|---|---|---|
+| TS/JS | React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, Electron/Tauri, Ink | matching `pixelcraft-web`/`desktop`/`tui` reference |
+| Python | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny, Flet, Kivy, Jupyter, Qt/PySide, Textual/Rich | matching `pixelcraft-python-ui`/`desktop`/`tui` reference |
+| Java | Vaadin, Thymeleaf, JavaFX, Swing | `pixelcraft-web` → `java-web`; `pixelcraft-desktop` → `javafx-swing` |
+| Kotlin | Compose, KMP, Compose Web/Kobweb | `pixelcraft-mobile`; `pixelcraft-web` → `kotlin-web` |
+| Swift | SwiftUI, UIKit, AppKit | `pixelcraft-mobile`/`desktop` matching reference |
+| Dart | Flutter mobile/web/desktop | `pixelcraft-mobile` → `flutter`; apply web guidance when browser surface dominates |
+| C# | Blazor, MAUI, WinUI/WPF, Avalonia, Uno, MonoGame | matching web/mobile/desktop/game reference |
+| F# | Fable/Feliz/Elmish, .NET UI | `pixelcraft-web` → `fsharp-fable`; desktop by actual framework |
+| Go | templ, Bubble Tea/Lip Gloss, Fyne/Wails/Gio | web `server-rendered`; TUI; desktop `go-gui` |
+| Rust | Leptos/Yew, egui/Slint/Dioxus/iced, Ratatui, Bevy | web `leptos-yew`; desktop `rust-gui`; TUI `ratatui`; game `bevy` |
+| C++ | Qt/QML, Dear ImGui, wxWidgets | `pixelcraft-desktop` → `cpp-gui` |
+| PHP | Laravel Blade/Livewire | `pixelcraft-web` → `server-rendered` |
+| Ruby | Rails/Hotwire | `pixelcraft-web` → `server-rendered` |
+| Elixir | Phoenix LiveView | `pixelcraft-web` → `server-rendered` |
+| Scala | Scala.js/Laminar | `pixelcraft-web` → `scala-laminar` |
+| Clojure | ClojureScript/Reagent/re-frame | `pixelcraft-web` → `clojurescript` |
+| Elm | Elm Browser UI | `pixelcraft-web` → `elm` |
+| R | Shiny/bslib | `pixelcraft-python-ui` → `r-shiny` (data-app routing) |
+| Julia | Genie/Stipple | `pixelcraft-python-ui` → `julia-genie` (data-app routing) |
+| Lua | LÖVE2D | `pixelcraft-game-ui` → `love2d` |
+| Zig | no dedicated substantive reference yet | plan manually in `pixelcraft-plan`; inspect actual UI/library constraints |
 
 ## Install
 
