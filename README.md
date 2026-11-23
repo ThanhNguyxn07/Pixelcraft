@@ -107,8 +107,10 @@ npx pixelcraft add all --agent claude
 Install selected skills:
 
 ```bash
-npx pixelcraft add pixelcraft pixelcraft-web pixelcraft-review --agent codex
+npx pixelcraft add pixelcraft-web pixelcraft-review --agent codex
 ```
+
+When a subset is requested, the installer automatically includes the required `pixelcraft` orchestrator and `pixelcraft-plan` step-zero skill and prints a note saying so.
 
 Install user-level/global skills:
 

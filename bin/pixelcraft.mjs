@@ -143,9 +143,19 @@ try {
   if (positional.length === 0) throw new Error('add requires at least one skill name or all');
 
   const available = skillNames();
-  const selected = positional.includes('all') ? available : positional;
-  const unknown = selected.filter((name) => !available.includes(name));
+  const requested = positional.includes('all') ? available : positional;
+  const unknown = requested.filter((name) => !available.includes(name));
   if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(', ')}; available: ${available.join(', ')}`);
+
+  let selected = requested;
+  if (!positional.includes('all')) {
+    const required = ['pixelcraft', 'pixelcraft-plan'].filter((name) => available.includes(name));
+    const injected = required.filter((name) => !requested.includes(name));
+    if (injected.length) {
+      selected = [...injected, ...requested];
+      console.log(`note: including required core skill(s): ${injected.join(', ')}`);
+    }
+  }
 
   const targets = targetsFor(options.agent, options.global);
   for (const target of targets) for (const name of selected) copySkill(name, target, options.dryRun, options.force);
