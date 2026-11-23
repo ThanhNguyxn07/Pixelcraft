@@ -6,7 +6,7 @@ Use this reference when implementing an approved or supplied design: Figma frame
 
 When the user asks to implement an approved design, do **not** run divergence or redesign the visual direction. Preserve layout intent, hierarchy, spacing rhythm, color/type decisions, imagery, and interaction meaning. Divergence applies only to parts the design leaves undecided: missing states, missing breakpoints, unspecified behavior, implementation tokens, accessibility gaps, or places where the source is explicitly marked inspiration rather than specification.
 
-Conflicts are resolved in this order: user approval → existing project architecture/tokens/components → platform/accessibility floor → visual source pixels → model inference. Report intentional deviations; never silently “improve” the design.
+Approved visual intent is preserved, but the accessibility floor, platform/legal requirements, existing component/token constraints, data ownership, security/privacy requirements, and architecture are never overridden silently. Resolve tension through existing components and platform idioms first. If faithful implementation genuinely requires an exception, record the conflict and obtain an explicit user override. Report intentional deviations; never silently “improve” the design.
 
 ## 1. Establish the translation contract
 

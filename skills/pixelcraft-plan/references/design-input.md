@@ -54,7 +54,7 @@ Mark each dimension `specified`, `partial`, `missing`, or `not applicable`. Do n
 
 ## 4. Record assumptions and contradiction policy
 
-Every inferred item must be either confirmed or written as an explicit assumption with scope and consequence. If artifacts conflict, use this order: explicit user decision → newer approved specification → existing production architecture/legal/accessibility constraint → older/inspiration artifact → model inference. Preserve the losing rationale in the plan so later agents do not resurrect it.
+Every inferred item must be either confirmed or written as an explicit assumption with scope and consequence. An approved design decides visual intent within its approved scope, but it does not silently override the accessibility floor, platform or legal requirements, existing semantic tokens/components, data ownership, security/privacy constraints, or architecture. Resolve conflicts through existing components and platform idioms where possible. If fidelity truly requires breaking one of those constraints, record the conflict in the plan and escalate for an explicit user override rather than treating the newer artifact as higher authority. Preserve the losing rationale in the plan so later agents do not resurrect it.
 
 ## 5. Decide whether handoff is needed
 
