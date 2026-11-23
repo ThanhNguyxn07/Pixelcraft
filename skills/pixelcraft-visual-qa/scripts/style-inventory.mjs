@@ -21,6 +21,7 @@ Options:
   --wait-until EVENT     Navigation lifecycle event: load or domcontentloaded (default: load)
   --wait-for SELECTOR    Wait for a selector after page load
   --wait-ms MS           Post-load settle time in milliseconds (default: 2000)
+  --finish-gate          Evaluate 3-viewport finish gate (defaults breakpoints to 390x844,768x1024,1440x900; exits 1 on overflow, broken images, or contrast/alt failures)
   --compact              Emit compact JSON
   --help                 Show this help
 
@@ -42,12 +43,13 @@ function optionValue(args, index, name) {
 }
 
 function parse(args) {
-  const options = { out: null, breakpoints: '390x900,1440x900', project: process.cwd(), root: null, timeout: 30000, waitUntil: 'load', waitFor: null, waitMs: 2000, compact: false, executablePath: null, help: false };
+  const options = { out: null, breakpoints: null, project: process.cwd(), root: null, timeout: 30000, waitUntil: 'load', waitFor: null, waitMs: 2000, finishGate: false, compact: false, executablePath: null, help: false };
   const positional = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === '--help' || arg === '-h') options.help = true;
     else if (arg === '--compact') options.compact = true;
+    else if (arg === '--finish-gate') options.finishGate = true;
     else if (arg === '--out') {
       options.out = optionValue(args, index, '--out');
       index += 1;
@@ -90,6 +92,7 @@ function parse(args) {
   if (!Number.isFinite(options.timeout) || options.timeout <= 0) throw new Error('--timeout must be a positive number');
   if (!Number.isFinite(options.waitMs) || options.waitMs < 0) throw new Error('--wait-ms must be a non-negative number');
   if (options.waitUntil !== 'load' && options.waitUntil !== 'domcontentloaded') throw new Error(`--wait-until must be 'load' or 'domcontentloaded', got '${options.waitUntil}'`);
+  if (!options.breakpoints) options.breakpoints = options.finishGate ? '390x844,768x1024,1440x900' : '390x900,1440x900';
   return { positional, options };
 }
 
@@ -974,6 +977,8 @@ const extract = String.raw`(() => {
       whitespaceRatio: round(1 - clamp(occupiedArea / (viewportWidth * viewportHeight), 0, 1), 3),
       asymmetry: round(Math.abs(centroid - viewportWidth / 2) / (viewportWidth / 2), 3),
       overlapCount,
+      scrollWidth: document.documentElement.scrollWidth,
+      horizontalOverflow: document.documentElement.scrollWidth > viewportWidth + 1,
       scrollHeight: document.documentElement.scrollHeight,
     },
     motion: {
@@ -1007,6 +1012,7 @@ const extract = String.raw`(() => {
       contrastMedian: round(median(contrastRatios), 2),
       contrastMinimum: contrastRatios.length ? round(Math.min(...contrastRatios), 2) : null,
       images: images.length,
+      brokenImages: images.filter((image) => image.complete && image.naturalWidth === 0).length,
       missingAlt: images.filter((image) => !image.hasAttribute('alt')).length,
       focusVisibleCSS: /:focus-visible|focus-visible/.test(cssLower),
     },
@@ -1137,6 +1143,19 @@ async function main() {
     if (browser) await browser.close();
     await target.close();
   }
+  const finishGate = {
+    horizontalOverflowViewports: report.viewports.filter((v) => v.layout.horizontalOverflow).map((v) => `${v.width}x${v.height}`),
+    brokenImagesTotal: report.viewports.reduce((sum, v) => sum + (v.accessibility.brokenImages || 0), 0),
+    contrastFailuresTotal: report.viewports.reduce((sum, v) => sum + (v.accessibility.contrastFailures || 0), 0),
+    missingAltTotal: report.viewports.reduce((sum, v) => sum + (v.accessibility.missingAlt || 0), 0),
+    maxCls: report.viewports.reduce((max, v) => Math.max(max, v.cls || 0), 0),
+  };
+  finishGate.pass = finishGate.horizontalOverflowViewports.length === 0
+    && finishGate.brokenImagesTotal === 0
+    && finishGate.contrastFailuresTotal === 0
+    && finishGate.missingAltTotal === 0
+    && finishGate.maxCls <= 0.1;
+  report.finishGate = finishGate;
   const json = options.compact ? JSON.stringify(report) : JSON.stringify(report, null, 2);
   if (options.out) {
     const out = path.resolve(options.out);
@@ -1145,6 +1164,10 @@ async function main() {
     console.log(`wrote ${path.relative(process.cwd(), out) || out}`);
   } else {
     console.log(json);
+  }
+  if (options.finishGate && !finishGate.pass) {
+    console.error(`style-inventory finish-gate failed: ${JSON.stringify(finishGate)}`);
+    process.exitCode = 1;
   }
 }
 

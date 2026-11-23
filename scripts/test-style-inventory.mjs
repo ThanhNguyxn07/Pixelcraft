@@ -89,6 +89,7 @@ try {
     assert.ok(narrow.network.resourceTypes.script.requests >= 2, 'expected script resource-type accounting');
     assert.match(report.measurement.payloadPhase, /before the document load event/);
     assert.match(narrow.color.dominant, /^#[0-9a-f]{6}$/);
+    assert.equal(report.finishGate.pass, true, `expected fixture finishGate pass, got ${JSON.stringify(report.finishGate)}`);
     console.log('ok 1 - local fixture produces style inventory JSON');
 
     const edgeOut = path.join(tmp, 'edge.json');
