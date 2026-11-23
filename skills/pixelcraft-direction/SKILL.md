@@ -13,6 +13,7 @@ Divergence is a procedure, not a mood. Never ask for “the best design” in on
 ## References
 
 - Read [references/movements.md](references/movements.md) when selecting or translating a design movement/aesthetic.
+- Read [references/composition-library.md](references/composition-library.md) when choosing the structural composition/grid or when hero-plus-cards feels like the default answer.
 - Read [references/slop-fingerprints.md](references/slop-fingerprints.md) before proposing directions and again before finalizing one.
 - Read [references/direction-card.md](references/direction-card.md) whenever writing the committed direction.
 - Read [references/wildcards.md](references/wildcards.md) when catalog directions feel repetitive, insufficiently subject-derived, or too safe.

@@ -49,3 +49,20 @@ Use movements as materials, not costumes. Translate their structural logic into 
 2. Define what does **not** transfer: print grain, blur, terminal scanlines, physical texture, or platform chrome may need symbolic translation.
 3. Keep body text and controls boring enough to remain usable; put historical force into composition, imagery, sequence, or signature element.
 4. For culturally specific movements, use knowledgeable reviewers and real context. Do not extract sacred or identity-bearing motifs as decoration.
+
+## Award-level technique references
+
+Use these as constraints that raise execution quality; they are not styles to copy. Awwwards weights usability almost as heavily as visual design `[S91]`, CSSDA separates UI aesthetics from UX functionality and innovation `[S93]`, and FWA jurors repeatedly emphasize uniqueness, interactivity, and smart use of available technology `[S94]` `[S95]`.
+
+| Technique reference | Compatible catalog families | Execution constraint | Slop risk |
+|---|---|---|---|
+| typographic structure carrying the page | Swiss, editorial broadsheet, neo-brutalist web, retro terminal | build the grid/measure/casing system before selecting display lettering | giant cropped word as generic hero decoration |
+| narrative scroll with persistent artifact | botanical plate, blueprint/technical drawing, mid-century, object-led wildcard | sticky media changes state in response to chapter content; static reading order remains complete | scrolljacking or forcing a cinematic sequence unrelated to decisions `[S109]` |
+| experimental navigation | punk zine, Postmodern/New Wave, cyberpunk, archive wildcard | unusual navigation must expose orientation, escape, keyboard/controller access, and direct deep links | mystery-meat navigation that tests patience rather than boundaries |
+| WebGL/shader accent | cyberpunk, vaporwave, isometric, spatial wildcard | reserve GPU cost for the signature scene; static image/fallback preserves content | orb/blob/shader background with no subject relation |
+| controlled overlap/collage | Constructivism, punk zine, Dada/collage, magazine maximalism | one intentional collision per scene; DOM order remains logical | overlapping clutter mistaken for avant-garde design |
+| restrained curated minimalism | Scandinavian, Mingei/wabi-sabi, flat design | spacing, alignment, image crop, and typographic detail carry the identity | blank white page confused with taste `[S96]` `[S99]` `[S100]` |
+| index/archive as interface | botanical plate, editorial broadsheet, blueprint, alpine wayfinding | row anatomy, metadata alignment, sorting/filtering, and empty states receive craft | pseudo-editorial numbers/rules with no indexing behavior |
+| material/texture system | risograph, grunge, botanical, mid-century | texture has physical cause and a strict opacity/contrast budget | noise overlay sprinkled over a conventional layout |
+
+Selection rule: name the source of each technique as a mechanism (“sticky annotated specimen”, “asymmetric editorial grid”), never as an imitation target (“make it look like that winner”). Document what was deliberately not copied.
