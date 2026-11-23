@@ -4,6 +4,16 @@ import path from 'node:path';
 
 const exts = new Set(['.css','.scss','.html','.jsx','.tsx','.vue','.svelte','.dart','.swift','.kt','.py','.qss','.tcss','.js','.ts']);
 const skip = new Set(['node_modules','.git','dist','build','coverage']);
+const skillHosts = new Set(['.claude','.agents','.cursor','.gemini','.github','.copilot']);
+function partsOf(file) { return file.split(/[\\/]/); }
+function isInstalledPixelcraftSkill(file) {
+  const parts = partsOf(file);
+  return parts.some((part, i) => skillHosts.has(part) && parts[i + 1] === 'skills' && parts[i + 2]?.startsWith('pixelcraft'));
+}
+function isInsidePixelcraftSkill(file) {
+  const parts = partsOf(file);
+  return parts.some((part, i) => part === 'skills' && parts[i + 1]?.startsWith('pixelcraft'));
+}
 const disclaimer = 'A zero score means only that these known fingerprints were not detected; zero findings is not evidence of good design.';
 
 function help() {
@@ -13,6 +23,8 @@ function walk(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if (skip.has(entry.name)) continue;
     const file = path.join(dir, entry.name);
+    if (isInstalledPixelcraftSkill(file)) continue;
+    if ((entry.name === 'fixtures' || entry.name === 'examples') && isInsidePixelcraftSkill(file)) continue;
     if (entry.isDirectory()) walk(file, out);
     else if (exts.has(path.extname(entry.name))) out.push(file);
   }
@@ -25,6 +37,29 @@ function scanFile(file, root) {
   const lines = text.split(/\r?\n/);
   const findings = [];
   const seenRules = new Set();
+  const focusVisibleLines = new Set();
+  const focusRulePattern = /([^{}]+)\{([^{}]*)\}/gs;
+  for (const match of text.matchAll(focusRulePattern)) {
+    const [whole, selector, body] = match;
+    if (!selector.includes(':focus-visible')) continue;
+    const start = lineOf(text, match.index);
+    const end = lineOf(text, match.index + whole.length);
+    for (let line = start; line <= end; line += 1) focusVisibleLines.add(line);
+    const outline = /outline\s*:\s*(none|0)\b/i.exec(body);
+    if (!outline) continue;
+    const shadow = /box-shadow\s*:\s*(?!none\b)[^;}]+/i.test(body);
+    const border = /border(?:-[\w-]+)?\s*:\s*(?!none\b|0\b)[^;}]+/i.test(body);
+    const visibleOutline = /outline-offset/i.test(body) && /outline(?:-style)?\s*:[^;}]*(?:solid|double|auto|thick|thin|medium)/i.test(body);
+    if (!shadow && !border && !visibleOutline) {
+      const bodyStart = match.index + whole.indexOf(body);
+      const line = lineOf(text, bodyStart + outline.index);
+      const key = `outline-removed:${line}`;
+      if (!seenRules.has(key)) {
+        seenRules.add(key);
+        findings.push({ rule: 'outline-removed', severity: 'P0', weight: 5, file: path.relative(root, file), line, match: outline[0], fix: 'Restore a visible keyboard focus indicator.' });
+      }
+    }
+  }
   const add = (rule, severity, weight, line, match, fix) => {
     const key = `${rule}:${line}`;
     if (seenRules.has(key)) return;
@@ -35,7 +70,7 @@ function scanFile(file, root) {
     const n = i + 1;
     if (/font-family\s*:\s*['"]?(Inter|Roboto|Geist|Arial)['"]?\s*;?/i.test(line)) add('default-font-only','P2',2,n,line,'Choose type by voice/platform and provide deliberate fallbacks.');
     if (/transition\s*:\s*all\b/.test(line)) add('transition-all','P2',2,n,line,'Animate only intentional properties with semantic durations/easing.');
-    if (/outline\s*:\s*(none|0)\b/.test(line) && !/focus-visible|box-shadow|outline-offset/i.test(line)) add('outline-removed','P0',5,n,line,'Restore a visible keyboard focus indicator.');
+    if (!focusVisibleLines.has(n) && /outline\s*:\s*(none|0)\b/.test(line) && !/box-shadow|outline-offset/i.test(line)) add('outline-removed','P0',5,n,line,'Restore a visible keyboard focus indicator.');
     if (/<(input|textarea)\b[^>]*placeholder=/i.test(line) && !/aria-label|aria-labelledby/i.test(line)) add('placeholder-as-label','P1',4,n,line,'Use a persistent programmatic label; placeholder is only a hint.');
     if (/(user-scalable\s*=\s*["']?no|maximum-scale\s*=\s*["']?1(?:\.0)?\b)/i.test(line)) add('zoom-disabled','P0',5,n,line,'Do not disable pinch zoom or text scaling.');
     if (/\p{Extended_Pictographic}/u.test(line) && /icon|button|nav|<span/i.test(line)) add('emoji-as-icon','P2',2,n,line,'Use a coherent icon system or text instead of structural emoji.');
