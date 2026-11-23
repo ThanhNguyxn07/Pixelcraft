@@ -19,6 +19,7 @@ UX precedes styling. Establish user intent, task sequence, state coverage, and r
 - Read [references/forms.md](references/forms.md) for labels, validation, input preservation, autofill, paste, mobile keyboards, redundant entry, authentication, and error recovery.
 - Read [references/feedback-performance.md](references/feedback-performance.md) for response-time limits, undo/destructive behavior, loading strategy, and perceived performance.
 - Read [references/i18n.md](references/i18n.md) before layout/copy for multilingual, RTL, locale-format, name/address, plural/gender, or IME contexts.
+- Read [references/locale-test-matrix.md](references/locale-test-matrix.md) when selecting concrete locales, scripts, fixtures, and rendering evidence for international verification.
 - Read [references/ux-writing.md](references/ux-writing.md) for microcopy, actions, errors, empty states, and tone by mode.
 - Read [references/laws.md](references/laws.md) when applying Hick, Fitts, Jakob, Doherty, recognition-over-recall, and cognitive-load evidence.
 

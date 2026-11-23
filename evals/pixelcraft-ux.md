@@ -40,6 +40,7 @@
 - preserves input/context and gives truthful retry/idempotency behavior.
 - specifies adaptive validation timing, error summary/focus behavior, tolerant parsing, autocomplete/input-mode behavior, and paste/autofill preservation.
 - distinguishes inspection/model judgment from real-user evidence and escalates unresolved behavioral uncertainty rather than fabricating testing.
+- selects representative locale/script/plural/input fixtures and classifies hard-coded-string, concatenation, shaping, segmentation, directionality, formatting, and translation-quality failures.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
