@@ -21,6 +21,7 @@ Options:
   --wait-for SELECTOR   Wait for a selector after page load
   --wait-ms MS          Maximum post-load selector/network/font settle time
                         (default: 5000)
+  --allow-http-error    Capture HTTP 4xx/5xx pages without failing the run
   --light-only          Skip dark-mode captures
   --no-reduced-motion   Skip reduced-motion captures
   --help                Show this help
@@ -36,13 +37,14 @@ Install Playwright in the target project when capture is desired, for example:
 }
 
 function parse(args) {
-  const options = { out: 'visual-qa', breakpoints: '390x844,768x1024,1440x900', timeout: 30000, waitFor: null, waitMs: 5000, project: process.cwd(), root: null, lightOnly: false, reducedMotion: true };
+  const options = { out: 'visual-qa', breakpoints: '390x844,768x1024,1440x900', timeout: 30000, waitFor: null, waitMs: 5000, allowHttpError: false, project: process.cwd(), root: null, lightOnly: false, reducedMotion: true };
   const positional = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === '--help' || arg === '-h') options.help = true;
     else if (arg === '--light-only') options.lightOnly = true;
     else if (arg === '--no-reduced-motion') options.reducedMotion = false;
+    else if (arg === '--allow-http-error') options.allowHttpError = true;
     else if (arg === '--out') options.out = args[++index];
     else if (arg.startsWith('--out=')) options.out = arg.slice(6);
     else if (arg === '--breakpoints') options.breakpoints = args[++index];
@@ -357,6 +359,7 @@ async function main() {
   const browser = await chromium.launch({ headless: true });
   const staticTarget = await createStaticTarget(target, options);
   const report = { target, generatedAt: new Date().toISOString(), captures: [], heuristic: true };
+  let sawHttpError = false;
   try {
     for (const viewport of breakpoints) {
       for (const colorScheme of options.lightOnly ? ['light'] : ['light', 'dark']) {
@@ -364,14 +367,14 @@ async function main() {
           const page = await browser.newPage({ viewport, colorScheme, reducedMotion });
           const pendingRequests = trackDataRequests(page);
           const response = await page.goto(staticTarget.url, { waitUntil: 'load', timeout: options.timeout });
-          if (!response && staticTarget.local) throw new Error(`local capture target produced no response: ${staticTarget.url}`);
-          if (response && response.status() >= 400) throw new Error(`capture target returned HTTP ${response.status()}: ${staticTarget.url}`);
+          const status = response ? response.status() : null;
+          if (status !== null && status >= 400) sawHttpError = true;
           await settlePage(page, options, pendingRequests);
           const name = `${viewport.width}x${viewport.height}-${colorScheme}-${reducedMotion === 'reduce' ? 'reduced-motion' : 'motion'}.png`;
           const file = path.join(out, name);
           await page.screenshot({ path: file, fullPage: true });
           const audit = await page.evaluate(`(${auditSource})()`);
-          report.captures.push({ file: name, viewport, colorScheme, reducedMotion: reducedMotion === 'reduce', ...audit });
+          report.captures.push({ file: name, viewport, colorScheme, reducedMotion: reducedMotion === 'reduce', status, ...audit });
           console.log(`captured: ${name}; findings=${audit.findings.length}`);
           await page.close();
         }
@@ -383,6 +386,10 @@ async function main() {
   }
   fs.writeFileSync(path.join(out, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
   console.log(`report: ${path.join(out, 'report.json')}`);
+  if (sawHttpError && !options.allowHttpError) {
+    console.error('capture target returned HTTP 4xx/5xx; use --allow-http-error only when intentionally capturing error-page designs');
+    process.exitCode = 1;
+  }
 }
 
 main().catch((error) => {
