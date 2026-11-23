@@ -55,6 +55,7 @@ The full architecture is documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTUR
 | `pixelcraft-tui` | Textual, Rich, Ink, Bubble Tea/Lip Gloss, Ratatui |
 | `pixelcraft-email` | Table HTML email, MJML, React Email, client quirks, dark mode, image blocking, plaintext |
 | `pixelcraft-document` | Print CSS/paged media, PDF pipelines, invoices/reports/CVs, slides, projector/document legibility |
+| `pixelcraft-media` | OG/social cards, SVG banners, platform safe zones, thumbnail legibility, Remotion/Motion Canvas |
 | `pixelcraft-game-ui` | Unity UI Toolkit, Godot, Unreal UMG, LÖVE2D, Bevy, MonoGame, HUD principles |
 | `pixelcraft-brandkit` | Brand kits, identity boards, logo systems, moodboards, visual-world presentations, brand-specific prompting and QA |
 

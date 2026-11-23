@@ -48,6 +48,7 @@ The architecture has five layers: **Plan** (`pixelcraft-plan`), **Core** (orches
 | `pixelcraft-tui` | Textual, Rich, Ink, Bubble Tea, Ratatui |
 | `pixelcraft-email` | HTML email / MJML / React Email: tables, inline CSS, dark mode, image blocking, plaintext parity |
 | `pixelcraft-document` | Print/paged-media surface: print CSS, PDF toolchains, invoices/reports/CVs, slide decks, physical typography and final-artifact verification |
+| `pixelcraft-media` | External media surface: social cards/OG generation, SVG banners, platform safe zones, thumbnail legibility, motion/video export constraints |
 | `pixelcraft-game-ui` | Unity UI Toolkit, Godot, Unreal UMG, LÖVE2D, Bevy, MonoGame: HUD legibility, controller nav, safe areas, localization |
 | `pixelcraft-brandkit` | Premium brand-kit / identity-board image generation (art direction for image models) |
 

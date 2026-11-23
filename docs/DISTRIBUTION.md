@@ -127,6 +127,7 @@ skills/
 ├── pixelcraft-tui/
 ├── pixelcraft-email/
 ├── pixelcraft-document/
+├── pixelcraft-media/
 ├── pixelcraft-game-ui/
 └── pixelcraft-brandkit/
 adapters/
