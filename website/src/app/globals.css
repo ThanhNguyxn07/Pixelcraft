@@ -1,74 +1,73 @@
 @import "tailwindcss";
-@import "../styles/theme-tokens.css";
+@import "../styles/tokens.css";
 
-@theme {
-  --font-display: var(--font-space), "Plus Jakarta Sans", sans-serif;
+@theme inline {
   --font-serif: var(--font-cormorant), Georgia, serif;
-  --font-sans: var(--font-jakarta), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: var(--font-space), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono-code), ui-monospace, SFMono-Regular, monospace;
 }
 
 @layer base {
   html {
-    background: var(--semantic-color-background);
-    color: var(--semantic-color-foreground);
-    scrollbar-gutter: stable;
+    background-color: var(--color-surface-paper, #f4f1ea);
+    color: var(--color-ink-primary, #141311);
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   body {
     margin: 0;
-    min-height: 100svh;
-    background: var(--semantic-color-background);
-    color: var(--semantic-color-foreground);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
+    background-color: var(--color-surface-paper, #f4f1ea);
+    color: var(--color-ink-primary, #141311);
     overflow-x: clip;
   }
 
+  ::selection {
+    background-color: rgba(194, 49, 20, 0.16);
+    color: #141311;
+  }
+
+  input,
+  textarea,
+  select {
+    caret-color: var(--color-accent-vermilion, #c23114);
+  }
+
+  a {
+    text-underline-offset: 0.24em;
+    text-decoration-thickness: 1px;
+  }
+
+  section[id],
+  article[id],
+  h2[id],
+  h3[id] {
+    scroll-margin-top: 5.25rem;
+  }
+
   :focus-visible {
-    outline: 2px solid var(--semantic-color-action);
+    outline: 2px solid var(--color-accent-vermilion, #c23114);
     outline-offset: 3px;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
-.font-display {
-  font-family: var(--font-display);
-}
-
-.font-serif {
-  font-family: var(--font-serif);
-}
-
-.font-mono {
-  font-family: var(--font-mono);
+.tabular-nums {
   font-variant-numeric: tabular-nums;
-}
-
-.pixel-art {
-  image-rendering: pixelated;
-}
-
-.hero-mask-line {
-  overflow: hidden;
-  display: block;
-}
-
-.shader-fallback {
-  background:
-    radial-gradient(65% 55% at 72% 38%, rgba(34, 211, 238, 0.22), transparent 65%),
-    radial-gradient(50% 45% at 30% 70%, rgba(251, 146, 60, 0.16), transparent 65%),
-    #050507;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
 }

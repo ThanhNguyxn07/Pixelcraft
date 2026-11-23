@@ -1,8 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Check, Copy, FileText, Search, Terminal } from 'lucide-react';
 
 export interface FullSkillDoc {
   slug: string;
@@ -19,10 +18,246 @@ interface DocsShellProps {
   activeSlug: string;
   title: string;
   subtitle: string;
-  markdown: string;
   installCmd?: string;
   references?: string[];
   scripts?: string[];
+  markdown: string;
+}
+
+const REPO_BLOB_BASE = 'https://github.com/ThanhNguyxn07/Pixelcraft/blob/main';
+
+function resolveMarkdownHref(rawHref: string, activeSlug: string): { href: string; external: boolean } {
+  if (/^https?:\/\//i.test(rawHref)) {
+    return { href: rawHref, external: true };
+  }
+  if (rawHref.startsWith('#') || rawHref.startsWith('/')) {
+    return { href: rawHref, external: false };
+  }
+  const clean = rawHref.replace(/^\.\//, '');
+  if (activeSlug === 'architecture' || activeSlug === 'rationale' || activeSlug === 'overview') {
+    return { href: `${REPO_BLOB_BASE}/docs/${clean}`, external: true };
+  }
+  return { href: `${REPO_BLOB_BASE}/skills/${activeSlug}/${clean}`, external: true };
+}
+
+function renderInline(text: string, activeSlug: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  const regex = /(\[[^\]]+\]\([^)]+\)|`[^`]+`|\*\*[^*]+\*\*)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let keyIdx = 0;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const token = match[0];
+    if (token.startsWith('[')) {
+      const m = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(token);
+      if (m) {
+        const { href, external } = resolveMarkdownHref(m[2], activeSlug);
+        parts.push(
+          <a
+            key={`link-${keyIdx++}`}
+            href={href}
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noopener noreferrer' : undefined}
+            className="text-[#b82d12] underline decoration-[#b82d12]/40 hover:decoration-[#b82d12]"
+          >
+            {m[1]}
+          </a>
+        );
+      }
+    } else if (token.startsWith('`')) {
+      parts.push(
+        <code
+          key={`code-${keyIdx++}`}
+          className="border border-[#d8d2c6] bg-[#eae5da] px-1.5 py-0.5 font-mono text-[0.85em] text-[#141311]"
+        >
+          {token.slice(1, -1)}
+        </code>
+      );
+    } else if (token.startsWith('**')) {
+      parts.push(
+        <strong key={`strong-${keyIdx++}`} className="font-semibold text-[#141311]">
+          {token.slice(2, -2)}
+        </strong>
+      );
+    }
+    lastIndex = match.index + token.length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts;
+}
+
+function renderMarkdown(markdown: string, activeSlug: string): ReactNode[] {
+  const lines = markdown.replace(/\r\n/g, '\n').split('\n');
+  const nodes: ReactNode[] = [];
+  let i = 0;
+  let key = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (!line.trim()) {
+      i++;
+      continue;
+    }
+
+    // Fenced code block
+    if (line.trim().startsWith('```')) {
+      const codeLines: string[] = [];
+      i++;
+      while (i < lines.length && !lines[i].trim().startsWith('```')) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      i++;
+      nodes.push(
+        <pre
+          key={`pre-${key++}`}
+          className="my-5 overflow-x-auto border border-[#d8d2c6] bg-[#141311] p-4 font-mono text-xs leading-relaxed text-[#faf8f3]"
+        >
+          <code>{codeLines.join('\n')}</code>
+        </pre>
+      );
+      continue;
+    }
+
+    // Headings
+    const headingMatch = /^(#{1,3})\s+(.+)$/.exec(line);
+    if (headingMatch) {
+      const level = headingMatch[1].length;
+      const headingText = headingMatch[2];
+      if (level === 1) {
+        nodes.push(
+          <h2
+            key={`h-${key++}`}
+            className="mt-8 border-b border-[#d8d2c6] pb-2 font-serif text-3xl font-medium text-[#141311]"
+          >
+            {renderInline(headingText, activeSlug)}
+          </h2>
+        );
+      } else if (level === 2) {
+        nodes.push(
+          <h2
+            key={`h-${key++}`}
+            className="mt-9 border-b border-[#d8d2c6] pb-2 font-display text-lg font-semibold text-[#141311]"
+          >
+            {renderInline(headingText, activeSlug)}
+          </h2>
+        );
+      } else {
+        nodes.push(
+          <h3
+            key={`h-${key++}`}
+            className="mt-6 font-display text-base font-semibold text-[#141311]"
+          >
+            {renderInline(headingText, activeSlug)}
+          </h3>
+        );
+      }
+      i++;
+      continue;
+    }
+
+    // Markdown table
+    if (line.includes('|') && i + 1 < lines.length && /^\s*\|?[\s:-]+\|/.test(lines[i + 1])) {
+      const parseRow = (r: string) =>
+        r
+          .trim()
+          .replace(/^\|/, '')
+          .replace(/\|$/, '')
+          .split('|')
+          .map((cell) => cell.trim());
+
+      const headers = parseRow(line);
+      i += 2;
+      const rows: string[][] = [];
+      while (i < lines.length && lines[i].includes('|') && lines[i].trim()) {
+        rows.push(parseRow(lines[i]));
+        i++;
+      }
+
+      nodes.push(
+        <div key={`tbl-${key++}`} className="my-5 overflow-x-auto border border-[#d8d2c6]">
+          <table className="w-full border-collapse text-left text-xs tabular-nums">
+            <thead>
+              <tr className="border-b border-[#d8d2c6] bg-[#eae5da]">
+                {headers.map((h, idx) => (
+                  <th
+                    key={idx}
+                    className="px-3.5 py-2.5 font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-[#141311]"
+                  >
+                    {renderInline(h, activeSlug)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#d8d2c6] bg-[#faf8f3]">
+              {rows.map((row, rIdx) => (
+                <tr key={rIdx}>
+                  {row.map((cell, cIdx) => (
+                    <td key={cIdx} className="px-3.5 py-2.5 align-top leading-relaxed text-[#2b2925]">
+                      {renderInline(cell, activeSlug)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      continue;
+    }
+
+    // Unordered or ordered list
+    if (/^\s*([-*]|\d+\.)\s+/.test(line)) {
+      const ordered = /^\s*\d+\.\s+/.test(line);
+      const items: string[] = [];
+      while (i < lines.length && /^\s*([-*]|\d+\.)\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^\s*([-*]|\d+\.)\s+/, ''));
+        i++;
+      }
+      const ListTag = ordered ? 'ol' : 'ul';
+      nodes.push(
+        <ListTag
+          key={`list-${key++}`}
+          className={`my-4 space-y-2 pl-5 text-sm leading-[1.7] text-[#2b2925] ${
+            ordered ? 'list-decimal' : 'list-disc'
+          }`}
+        >
+          {items.map((item, idx) => (
+            <li key={idx}>{renderInline(item, activeSlug)}</li>
+          ))}
+        </ListTag>
+      );
+      continue;
+    }
+
+    // Paragraph
+    const paraLines: string[] = [];
+    while (
+      i < lines.length &&
+      lines[i].trim() &&
+      !lines[i].trim().startsWith('#') &&
+      !lines[i].trim().startsWith('```') &&
+      !/^\s*([-*]|\d+\.)\s+/.test(lines[i])
+    ) {
+      paraLines.push(lines[i].trim());
+      i++;
+    }
+    nodes.push(
+      <p key={`p-${key++}`} className="my-3.5 text-sm leading-[1.75] text-[#2b2925]">
+        {renderInline(paraLines.join(' '), activeSlug)}
+      </p>
+    );
+  }
+
+  return nodes;
 }
 
 export function DocsShell({
@@ -30,345 +265,211 @@ export function DocsShell({
   activeSlug,
   title,
   subtitle,
-  markdown,
   installCmd,
   references = [],
   scripts = [],
+  markdown,
 }: DocsShellProps) {
-  const [query, setQuery] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const grouped = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const list = q
-      ? skills.filter(
-          (s) => s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q)
-        )
-      : skills;
-    const map = new Map<string, FullSkillDoc[]>();
-    for (const s of list) {
-      const arr = map.get(s.category) ?? [];
-      arr.push(s);
-      map.set(s.category, arr);
-    }
-    return [...map.entries()];
-  }, [skills, query]);
+  const grouped = skills.reduce<Record<string, FullSkillDoc[]>>((acc, s) => {
+    if (!acc[s.category]) acc[s.category] = [];
+    acc[s.category].push(s);
+    return acc;
+  }, {});
 
-  const copyInstall = async () => {
+  async function handleCopy() {
     if (!installCmd) return;
     try {
       await navigator.clipboard.writeText(installCmd);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {}
-  };
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-[#070709] text-[#f5f5f7]">
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-[#070709]/85 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-[1440px] items-center justify-between px-4 sm:px-8">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-[#f4f1ea] text-[#141311]">
+      {/* Masthead */}
+      <header className="sticky top-0 z-40 border-b border-[#d8d2c6] bg-[#f4f1ea]/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-14 max-w-[1380px] items-center justify-between px-4 sm:px-8">
+          <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 font-mono text-xs text-zinc-400 no-underline hover:text-white"
+              className="flex items-center gap-2.5 font-display text-sm font-bold tracking-[0.14em] text-[#141311] uppercase"
             >
-              <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-              Showcase
+              <span aria-hidden="true" className="inline-block h-2.5 w-2.5 bg-[#c23114]" />
+              PIXELCRAFT
             </Link>
-            <span className="text-zinc-700">/</span>
-            <Link href="/docs" className="flex items-center gap-2 text-white no-underline">
-              <img src="/brand/logo-256.png" alt="" width={22} height={22} className="pixel-art" />
-              <span className="font-display text-sm font-bold tracking-wider">PIXELCRAFT DOCS</span>
-            </Link>
+            <span className="border-l border-[#d8d2c6] pl-3 font-mono text-[11px] uppercase tracking-[0.1em] text-[#b82d12]">
+              Docs
+            </span>
           </div>
-          <div className="flex items-center gap-5">
+
+          <nav aria-label="Primary" className="flex items-center gap-5 sm:gap-7">
+            <Link
+              href="/"
+              className="text-xs font-medium text-[#524e47] transition-colors hover:text-[#141311]"
+            >
+              Overview
+            </Link>
             <Link
               href="/gallery"
-              className="font-mono text-xs text-cyan-300 no-underline hover:text-white"
+              className="text-xs font-medium text-[#524e47] transition-colors hover:text-[#141311]"
             >
               Gallery
             </Link>
             <a
               href="https://github.com/ThanhNguyxn07/Pixelcraft"
               target="_blank"
-              rel="noreferrer"
-              className="font-mono text-xs text-zinc-400 no-underline hover:text-cyan-300"
+              rel="noopener noreferrer"
+              className="border border-[#141311] bg-[#141311] px-3 py-1.5 font-mono text-[11px] font-medium text-[#faf8f3] transition-colors hover:border-[#b82d12] hover:bg-[#b82d12]"
             >
-              GitHub
+              GitHub ↗
             </a>
-          </div>
+          </nav>
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)]">
+      <div className="mx-auto grid max-w-[1380px] grid-cols-1 lg:grid-cols-12">
         {/* Sidebar */}
-        <aside className="border-b border-white/10 p-4 lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto lg:border-b-0 lg:border-r lg:p-5">
-          <div className="relative mb-5">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-500" />
-            <label htmlFor="docs-search" className="sr-only">
-              Search docs
-            </label>
-            <input
-              id="docs-search"
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Filter 26 skills..."
-              className="h-9 w-full rounded-md border border-white/15 bg-white/[0.03] pl-8 pr-3 font-mono text-xs text-white placeholder:text-zinc-500"
-            />
-          </div>
-
-          <div className="mb-5">
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-              Foundations
-            </p>
-            <ul className="m-0 list-none space-y-1 p-0">
-              {[
-                ['overview', '/docs', 'Overview'],
-                ['architecture', '/docs/architecture', 'Architecture'],
-                ['rationale', '/docs/rationale', 'Design Rationale'],
-              ].map(([slug, href, label]) => (
-                <li key={slug}>
-                  <Link
-                    href={href}
-                    className={`block rounded px-2.5 py-1.5 text-sm no-underline transition-colors ${
-                      activeSlug === slug
-                        ? 'bg-cyan-300/15 font-semibold text-cyan-300'
-                        : 'text-zinc-400 hover:bg-white/5 hover:text-white'
-                    }`}
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {grouped.map(([cat, list]) => (
-            <div key={cat} className="mb-5">
-              <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-                {cat} ({list.length})
+        <aside className="border-b border-[#d8d2c6] bg-[#faf8f3] p-5 lg:col-span-3 lg:border-b-0 lg:border-r">
+          <div className="space-y-6">
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#59554d]">
+                Guides
               </p>
-              <ul className="m-0 list-none space-y-0.5 p-0">
-                {list.map((s) => (
-                  <li key={s.slug}>
-                    <Link
-                      href={`/docs/${s.slug}`}
-                      className={`block truncate rounded px-2.5 py-1.5 font-mono text-xs no-underline transition-colors ${
-                        activeSlug === s.slug
-                          ? 'bg-cyan-300/15 font-semibold text-cyan-300'
-                          : 'text-zinc-400 hover:bg-white/5 hover:text-white'
-                      }`}
-                    >
-                      {s.name}
-                    </Link>
-                  </li>
-                ))}
+              <ul className="mt-2 space-y-1">
+                {[
+                  { slug: 'architecture', label: 'Architecture' },
+                  { slug: 'rationale', label: 'Design Rationale' },
+                ].map((item) => {
+                  const active = activeSlug === item.slug;
+                  return (
+                    <li key={item.slug}>
+                      <Link
+                        href={`/docs/${item.slug}`}
+                        className={`block px-2.5 py-1.5 font-mono text-xs transition-colors ${
+                          active
+                            ? 'bg-[#141311] text-[#faf8f3]'
+                            : 'text-[#45413b] hover:bg-[#eae5da] hover:text-[#141311]'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
-          ))}
+
+            {Object.entries(grouped).map(([category, items]) => (
+              <div key={category}>
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#59554d]">
+                  {category}
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {items.map((skill) => {
+                    const active = activeSlug === skill.slug;
+                    return (
+                      <li key={skill.slug}>
+                        <Link
+                          href={`/docs/${skill.slug}`}
+                          className={`block px-2.5 py-1.5 font-mono text-xs transition-colors ${
+                            active
+                              ? 'bg-[#141311] text-[#faf8f3]'
+                              : 'text-[#45413b] hover:bg-[#eae5da] hover:text-[#141311]'
+                          }`}
+                        >
+                          {skill.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
         </aside>
 
-        {/* Main reading column (68ch) */}
-        <main id="main-content" className="px-5 py-10 sm:px-12 sm:py-14">
-          <div className="max-w-[74ch]">
-            <p className="font-mono text-xs uppercase tracking-[0.16em] text-cyan-300">
-              Documentation
+        {/* Main Article */}
+        <main id="main-content" className="px-5 py-10 sm:px-10 lg:col-span-9 lg:py-12">
+          <div className="max-w-[78ch]">
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-[#b82d12]">
+              SPECIFICATION · {activeSlug}
             </p>
-            <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-white sm:text-5xl">
-              {title}
-            </h1>
-            <p className="mt-4 text-base leading-relaxed text-zinc-400">{subtitle}</p>
+            <h1 className="mt-2 font-serif text-4xl font-medium text-[#141311]">{title}</h1>
+            <p className="mt-3 text-[15px] leading-[1.7] text-[#45413b]">{subtitle}</p>
 
             {installCmd && (
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/15 bg-white/[0.03] px-4 py-3">
-                <div className="flex items-center gap-2 font-mono text-xs text-zinc-200">
-                  <Terminal className="h-3.5 w-3.5 text-amber-300" aria-hidden="true" />
-                  <code>{installCmd}</code>
-                </div>
+              <div className="mt-6 flex flex-col gap-2 border border-[#d8d2c6] bg-[#faf8f3] p-3.5 sm:flex-row sm:items-center sm:justify-between">
+                <code className="overflow-x-auto font-mono text-xs text-[#141311]">
+                  <span className="mr-2 select-none text-[#b82d12]">$</span>
+                  {installCmd}
+                </code>
                 <button
                   type="button"
-                  onClick={copyInstall}
-                  className="inline-flex items-center gap-1.5 rounded border border-white/15 px-2.5 py-1 font-mono text-xs text-cyan-300 cursor-pointer hover:border-cyan-300"
+                  onClick={handleCopy}
+                  className="min-h-8 shrink-0 border border-[#b8b0a1] px-3 font-mono text-[11px] text-[#141311] hover:border-[#141311] hover:bg-[#141311] hover:text-[#faf8f3]"
                 >
-                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                   {copied ? 'Copied' : 'Copy'}
                 </button>
               </div>
             )}
 
             {(references.length > 0 || scripts.length > 0) && (
-              <div className="mt-5 flex flex-wrap gap-2">
-                {references.map((ref) => (
-                  <span
-                    key={ref}
-                    className="inline-flex items-center gap-1 rounded border border-white/10 bg-white/[0.02] px-2 py-0.5 font-mono text-[11px] text-zinc-400"
-                  >
-                    <FileText className="h-3 w-3" aria-hidden="true" />
-                    references/{ref}
-                  </span>
-                ))}
-                {scripts.map((sc) => (
-                  <span
-                    key={sc}
-                    className="inline-flex items-center gap-1 rounded border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 font-mono text-[11px] text-amber-300"
-                  >
-                    <Terminal className="h-3 w-3" aria-hidden="true" />
-                    scripts/{sc}
-                  </span>
-                ))}
+              <div className="mt-6 grid grid-cols-1 gap-4 border-y border-[#d8d2c6] py-4 sm:grid-cols-2">
+                {references.length > 0 && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#59554d]">
+                      References ({references.length})
+                    </p>
+                    <ul className="mt-2 space-y-1">
+                      {references.map((ref) => (
+                        <li key={ref}>
+                          <a
+                            href={`${REPO_BLOB_BASE}/skills/${activeSlug}/references/${ref}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono text-xs text-[#b82d12] hover:underline"
+                          >
+                            references/{ref} ↗
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {scripts.length > 0 && (
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#59554d]">
+                      Scripts ({scripts.length})
+                    </p>
+                    <ul className="mt-2 space-y-1">
+                      {scripts.map((sc) => (
+                        <li key={sc}>
+                          <a
+                            href={`${REPO_BLOB_BASE}/skills/${activeSlug}/scripts/${sc}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono text-xs text-[#b82d12] hover:underline"
+                          >
+                            scripts/{sc} ↗
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             )}
 
-            <article className="mt-10 border-t border-white/10 pt-8 space-y-4">
-              {renderMarkdownBlocks(markdown)}
-            </article>
+            <article className="mt-8">{renderMarkdown(markdown, activeSlug)}</article>
           </div>
         </main>
       </div>
     </div>
   );
-}
-
-function renderInline(text: string) {
-  const parts = text.split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
-  return parts.map((part, i) => {
-    if (part.startsWith('`') && part.endsWith('`')) {
-      return (
-        <code
-          key={i}
-          className="rounded border border-white/10 bg-white/[0.05] px-1.5 py-0.5 font-mono text-[12px] text-cyan-200"
-        >
-          {part.slice(1, -1)}
-        </code>
-      );
-    }
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return (
-        <strong key={i} className="font-semibold text-white">
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
-    return part;
-  });
-}
-
-function renderMarkdownBlocks(md: string) {
-  const lines = md.split(/\r?\n/);
-  const nodes: React.ReactNode[] = [];
-  let i = 0;
-  let key = 0;
-
-  while (i < lines.length) {
-    const line = lines[i];
-    if (!line.trim()) {
-      i += 1;
-      continue;
-    }
-    if (line.startsWith('```')) {
-      const codeLines: string[] = [];
-      i += 1;
-      while (i < lines.length && !lines[i].startsWith('```')) {
-        codeLines.push(lines[i]);
-        i += 1;
-      }
-      i += 1;
-      nodes.push(
-        <pre
-          key={key++}
-          className="overflow-x-auto rounded-lg border border-white/10 bg-[#0d0d12] p-4 font-mono text-xs leading-6 text-zinc-200"
-        >
-          <code>{codeLines.join('\n')}</code>
-        </pre>
-      );
-      continue;
-    }
-    if (line.startsWith('### ')) {
-      nodes.push(
-        <h3 key={key++} className="pt-4 font-display text-lg font-bold text-white">
-          {renderInline(line.slice(4))}
-        </h3>
-      );
-      i += 1;
-      continue;
-    }
-    if (line.startsWith('## ')) {
-      nodes.push(
-        <h2 key={key++} className="border-t border-white/10 pt-6 font-display text-2xl font-bold text-white">
-          {renderInline(line.slice(3))}
-        </h2>
-      );
-      i += 1;
-      continue;
-    }
-    if (line.startsWith('# ')) {
-      i += 1;
-      continue;
-    }
-    if (/^[-*]\s+/.test(line) || /^\d+\.\s+/.test(line)) {
-      const items: string[] = [];
-      while (i < lines.length && (/^[-*]\s+/.test(lines[i]) || /^\d+\.\s+/.test(lines[i]))) {
-        items.push(lines[i].replace(/^([-*]|\d+\.)\s+/, ''));
-        i += 1;
-      }
-      nodes.push(
-        <ul key={key++} className="list-disc space-y-2 pl-5 text-sm leading-7 text-zinc-300">
-          {items.map((item, idx) => (
-            <li key={idx}>{renderInline(item)}</li>
-          ))}
-        </ul>
-      );
-      continue;
-    }
-    if (line.startsWith('|')) {
-      const rows: string[][] = [];
-      while (i < lines.length && lines[i].startsWith('|')) {
-        const cells = lines[i]
-          .split('|')
-          .slice(1, -1)
-          .map((c) => c.trim());
-        if (!cells.every((c) => /^:?-+:?$/.test(c))) rows.push(cells);
-        i += 1;
-      }
-      if (rows.length > 0) {
-        const [head, ...body] = rows;
-        nodes.push(
-          <div key={key++} className="overflow-x-auto rounded-lg border border-white/10">
-            <table className="w-full border-collapse text-left text-xs">
-              <thead className="bg-white/[0.04] font-mono text-zinc-300">
-                <tr>
-                  {head.map((h, hi) => (
-                    <th key={hi} className="border-b border-white/10 px-3 py-2.5">
-                      {renderInline(h)}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/10 text-zinc-300">
-                {body.map((r, ri) => (
-                  <tr key={ri}>
-                    {r.map((c, ci) => (
-                      <td key={ci} className="px-3 py-2.5 align-top leading-6">
-                        {renderInline(c)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        );
-      }
-      continue;
-    }
-    nodes.push(
-      <p key={key++} className="text-sm leading-7 text-zinc-300">
-        {renderInline(line)}
-      </p>
-    );
-    i += 1;
-  }
-
-  return nodes;
 }

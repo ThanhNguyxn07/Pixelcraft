@@ -37,9 +37,9 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'PIXELCRAFT — Anti-Slop UI/UX Agent Skills',
+  title: 'Pixelcraft — Evidence-Verified UI/UX Agent Skills',
   description:
-    'Portable Agent Skills for distinctive, evidence-verified UI and rigorous UX across every frontend stack.',
+    '26 portable Agent Skills, 43 static anti-slop detectors, and a 3-viewport Chromium finish gate for building distinctive, verified interfaces across every stack.',
   icons: {
     icon: '/favicon.ico',
   },
@@ -49,13 +49,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      data-theme="dark"
+      data-theme="light"
       className={`${spaceGrotesk.variable} ${cormorant.variable} ${jakarta.variable} ${jetbrains.variable}`}
     >
       <body>
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-black"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-[#141311] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-[#faf8f3]"
         >
           Skip to main content
         </a>

@@ -2,191 +2,217 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowUpRight, Check, Copy, Layers, ShieldCheck, Terminal } from 'lucide-react';
 import { DEMOS } from '@/lib/demos';
 
 export function GalleryView() {
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
 
-  const copyPrompt = async (slug: string, prompt: string) => {
+  async function copyPrompt(slug: string, prompt: string) {
     try {
       await navigator.clipboard.writeText(prompt);
       setCopiedSlug(slug);
-      setTimeout(() => setCopiedSlug(null), 1600);
-    } catch {}
-  };
+      window.setTimeout(() => setCopiedSlug(null), 1800);
+    } catch {
+      setCopiedSlug(null);
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-[#050507] text-[#f5f5f7]">
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-[#050507]/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 sm:px-10">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-[#f4f1ea] text-[#141311]">
+      {/* Masthead */}
+      <header className="sticky top-0 z-40 border-b border-[#d8d2c6] bg-[#f4f1ea]/95 backdrop-blur-sm">
+        <div className="mx-auto flex h-14 max-w-[1380px] items-center justify-between px-4 sm:px-8">
+          <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 font-mono text-xs text-zinc-400 no-underline hover:text-white"
+              className="flex items-center gap-2.5 font-display text-sm font-bold tracking-[0.14em] text-[#141311] uppercase"
             >
-              <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-              Showcase
+              <span aria-hidden="true" className="inline-block h-2.5 w-2.5 bg-[#c23114]" />
+              PIXELCRAFT
             </Link>
-            <span className="text-zinc-700">/</span>
-            <Link href="/gallery" className="flex items-center gap-2.5 text-white no-underline">
-              <img src="/brand/logo-256.png" alt="" width={24} height={24} className="pixel-art" />
-              <span className="font-display text-sm font-bold tracking-[0.14em]">LIVE GALLERY</span>
-            </Link>
+            <span className="border-l border-[#d8d2c6] pl-3 font-mono text-[11px] uppercase tracking-[0.1em] text-[#b82d12]">
+              Gallery
+            </span>
           </div>
-          <nav aria-label="Gallery navigation" className="flex items-center gap-5">
-            <Link href="/docs" className="font-mono text-xs text-zinc-400 no-underline hover:text-white">
+
+          <nav aria-label="Primary" className="flex items-center gap-5 sm:gap-7">
+            <Link
+              href="/"
+              className="text-xs font-medium text-[#524e47] transition-colors hover:text-[#141311]"
+            >
+              Overview
+            </Link>
+            <Link
+              href="/docs"
+              className="text-xs font-medium text-[#524e47] transition-colors hover:text-[#141311]"
+            >
               Docs
             </Link>
             <a
               href="https://github.com/ThanhNguyxn07/Pixelcraft"
               target="_blank"
-              rel="noreferrer"
-              className="font-mono text-xs text-zinc-400 no-underline hover:text-cyan-300"
+              rel="noopener noreferrer"
+              className="border border-[#141311] bg-[#141311] px-3 py-1.5 font-mono text-[11px] font-medium text-[#faf8f3] transition-colors hover:border-[#b82d12] hover:bg-[#b82d12]"
             >
-              GitHub
+              GitHub ↗
             </a>
           </nav>
         </div>
       </header>
 
-      <main id="main-content" className="mx-auto max-w-[1400px] px-5 py-14 sm:px-10 sm:py-20">
-        <div className="border-b border-white/10 pb-10">
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-cyan-300">
-            CURATED LIVE DEMOS · HAND-CRAFTED ONE BY ONE
+      <main id="main-content" className="mx-auto max-w-[1380px] px-4 py-12 sm:px-8 lg:py-16">
+        {/* Header */}
+        <div className="border-b border-[#d8d2c6] pb-8">
+          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#b82d12]">
+            LIVE SPECIMEN ARCHIVE · ONE PIECE AT A TIME
           </p>
-          <h1 className="mt-3 font-display text-4xl font-bold tracking-[-0.03em] text-white sm:text-5xl">
-            Real pages, real prompts, zero shortcuts.
+          <h1 className="mt-3 font-serif text-4xl font-medium leading-[1.02] text-[#141311] sm:text-5xl">
+            Verified interfaces, with the{' '}
+            <em className="italic text-[#b82d12]">exact prompt</em> behind each build.
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-400 sm:text-base">
-            Each demo is built one at a time using Pixelcraft skills, real photography, proper typography, and verified browser states. Copy the exact prompt to run with Pixelcraft, or open the live site directly.
+          <p className="mt-4 max-w-[64ch] text-[15px] leading-[1.68] text-[#45413b]">
+            Every specimen below is built as a self-contained visual world with real media,
+            verified loaded fonts, and 3-viewport browser inspection. Copy the verbatim skill
+            prompt to reproduce or adapt the workflow in your own project.
           </p>
         </div>
 
-        <div className="mt-12 space-y-12">
-          {DEMOS.map((demo) => (
-            <article
-              key={demo.slug}
-              className="overflow-hidden rounded-xl border border-white/15 bg-[#0b0b0f]"
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-12">
-                {/* Real Photograph Preview */}
-                <div className="flex flex-col border-b border-white/10 lg:col-span-5 lg:border-b-0 lg:border-r">
-                  <Link href={`/gallery/${demo.slug}`} className="group relative block flex-1 overflow-hidden">
-                    <img
-                      src={demo.coverImage}
-                      alt={demo.coverAlt}
-                      className="h-full min-h-[260px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    />
-                    <span className="absolute left-4 top-4 rounded-full bg-black/65 px-3 py-1 font-mono text-[11px] text-white backdrop-blur-md">
-                      {demo.code} · {demo.theme.toUpperCase()}
-                    </span>
-                  </Link>
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-[#07070a] px-5 py-3">
-                    <div className="flex items-center gap-2" aria-label="Color palette swatches">
-                      {demo.swatches.map((sw) => (
-                        <span
-                          key={sw.hex}
-                          title={`${sw.name} (${sw.hex})`}
-                          className="h-4 w-4 rounded-sm border border-white/20"
-                          style={{ backgroundColor: sw.hex }}
-                        />
-                      ))}
-                      <span className="ml-1 font-mono text-[11px] text-zinc-500">{demo.mode}</span>
-                    </div>
-                    <span className="inline-flex items-center gap-1 font-mono text-[11px] text-emerald-400">
-                      <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-                      {demo.evidence.contrast}
-                    </span>
+        {/* Specimens */}
+        <div className="mt-10 space-y-12">
+          {DEMOS.map((demo) => {
+            const isCopied = copiedSlug === demo.slug;
+            return (
+              <article
+                key={demo.slug}
+                className="border border-[#d8d2c6] bg-[#faf8f3]"
+              >
+                {/* Top Strip */}
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#d8d2c6] bg-[#eae5da]/60 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.08em] text-[#524e47]">
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-[#b82d12]">PIECE {demo.code}</span>
+                    <span>{demo.category}</span>
+                    <span className="hidden sm:inline">· {demo.mode}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[#1a6646]">CONTRAST: {demo.evidence.contrast}</span>
+                    <span>· {demo.evidence.responsive}</span>
                   </div>
                 </div>
 
-                {/* Metadata + Exact Prompt + Open Live Demo */}
-                <div className="flex flex-col justify-between p-6 sm:p-8 lg:col-span-7">
-                  <div>
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-cyan-300">
-                        {demo.category}
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {demo.techStack.map((tech) => (
-                          <span
-                            key={tech}
-                            className="rounded border border-white/10 bg-white/[0.04] px-2 py-0.5 font-mono text-[11px] text-zinc-300"
+                {/* Split Showcase */}
+                <div className="grid grid-cols-1 lg:grid-cols-12">
+                  <Link
+                    href={`/gallery/${demo.slug}`}
+                    className="group relative block aspect-[16/10] overflow-hidden bg-[#ded8cb] lg:col-span-6 lg:aspect-auto lg:border-r lg:border-[#d8d2c6]"
+                  >
+                    <img
+                      src={demo.coverImage}
+                      alt={demo.coverAlt}
+                      width={1200}
+                      height={800}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  </Link>
+
+                  <div className="flex flex-col justify-between p-6 sm:p-8 lg:col-span-6">
+                    <div>
+                      <h2 className="font-serif text-3xl font-medium text-[#141311]">
+                        {demo.title}
+                      </h2>
+                      <p className="mt-3 text-sm leading-[1.7] text-[#45413b]">
+                        {demo.subtitle}
+                      </p>
+
+                      {/* Tech Stack & Skills */}
+                      <div className="mt-5 grid grid-cols-1 gap-4 border-y border-[#d8d2c6] py-4 sm:grid-cols-2">
+                        <div>
+                          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#59554d]">
+                            Stack
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {demo.techStack.map((item) => (
+                              <span
+                                key={item}
+                                className="border border-[#d8d2c6] bg-[#f4f1ea] px-2 py-0.5 font-mono text-[11px] text-[#141311]"
+                              >
+                                {item}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#59554d]">
+                            Skills Applied
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-1.5">
+                            {demo.skillsUsed.map((skill) => (
+                              <Link
+                                key={skill}
+                                href={`/docs/${skill}`}
+                                className="border border-[#b8b0a1] bg-[#faf8f3] px-2 py-0.5 font-mono text-[11px] text-[#141311] hover:border-[#b82d12] hover:text-[#b82d12]"
+                              >
+                                {skill}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Swatches */}
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {demo.swatches.map((sw) => (
+                          <div
+                            key={sw.hex}
+                            className="flex items-center gap-2 border border-[#d8d2c6] bg-[#f4f1ea] px-2.5 py-1"
                           >
-                            {tech}
-                          </span>
+                            <span
+                              aria-hidden="true"
+                              className="h-3.5 w-3.5 border border-[#141311]/20"
+                              style={{ backgroundColor: sw.hex }}
+                            />
+                            <span className="font-mono text-[11px] text-[#141311]">
+                              {sw.name} ({sw.hex})
+                            </span>
+                          </div>
                         ))}
                       </div>
                     </div>
 
-                    <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                      {demo.title}
-                    </h2>
-                    <p className="mt-2 text-sm leading-relaxed text-zinc-400">{demo.subtitle}</p>
-
-                    <div className="mt-4 flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center gap-1 font-mono text-[11px] text-zinc-500">
-                        <Layers className="h-3 w-3" aria-hidden="true" /> Skills:
-                      </span>
-                      {demo.skillsUsed.map((sk) => (
-                        <Link
-                          key={sk}
-                          href={`/docs/${sk}`}
-                          className="rounded border border-cyan-300/25 bg-cyan-300/10 px-2 py-0.5 font-mono text-[11px] text-cyan-200 no-underline hover:border-cyan-300"
-                        >
-                          {sk}
-                        </Link>
-                      ))}
-                    </div>
-
-                    <div className="mt-5 rounded-lg border border-white/10 bg-[#050507] p-4">
-                      <div className="mb-2 flex items-center justify-between gap-2">
-                        <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-amber-300">
-                          <Terminal className="h-3.5 w-3.5" aria-hidden="true" />
-                          Prompt for Pixelcraft Skills
+                    {/* Verbatim Prompt Box + Open Demo */}
+                    <div className="mt-6 border border-[#d8d2c6] bg-[#f4f1ea]">
+                      <div className="flex items-center justify-between border-b border-[#d8d2c6] px-4 py-2">
+                        <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#59554d]">
+                          Verbatim Skill Prompt
                         </span>
                         <button
                           type="button"
                           onClick={() => copyPrompt(demo.slug, demo.prompt)}
-                          className="inline-flex items-center gap-1.5 rounded border border-white/15 px-2.5 py-1 font-mono text-[11px] text-zinc-200 cursor-pointer hover:border-cyan-300 hover:text-cyan-300"
+                          className="font-mono text-[11px] font-medium text-[#b82d12] hover:underline"
                         >
-                          {copiedSlug === demo.slug ? (
-                            <>
-                              <Check className="h-3 w-3 text-emerald-400" aria-hidden="true" />
-                              Copied
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="h-3 w-3" aria-hidden="true" />
-                              Copy prompt
-                            </>
-                          )}
+                          {isCopied ? 'Copied Prompt' : 'Copy Prompt'}
                         </button>
                       </div>
-                      <p className="font-mono text-xs leading-6 text-zinc-300">{demo.prompt}</p>
+                      <p className="p-4 font-mono text-xs leading-[1.65] text-[#2b2925]">
+                        {demo.prompt}
+                      </p>
+                      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d8d2c6] bg-[#faf8f3] px-4 py-3">
+                        <span className="font-mono text-[11px] text-[#59554d]">
+                          Verified states: {demo.evidence.states}
+                        </span>
+                        <Link
+                          href={`/gallery/${demo.slug}`}
+                          className="inline-flex min-h-10 items-center gap-2 bg-[#141311] px-4 py-2 font-mono text-xs font-medium text-[#faf8f3] transition-colors hover:bg-[#b82d12]"
+                        >
+                          Open Live Demo ↗
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-5">
-                    <div className="flex flex-wrap gap-3 font-mono text-[11px] text-zinc-400">
-                      <span>{demo.evidence.states}</span>
-                      <span>·</span>
-                      <span>{demo.evidence.responsive}</span>
-                    </div>
-
-                    <Link
-                      href={`/gallery/${demo.slug}`}
-                      className="inline-flex h-11 items-center gap-2 rounded-full bg-cyan-300 px-6 font-mono text-xs font-semibold uppercase tracking-wider text-black no-underline transition-opacity hover:opacity-90"
-                    >
-                      Open Live Showcase
-                      <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                    </Link>
                   </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </main>
     </div>

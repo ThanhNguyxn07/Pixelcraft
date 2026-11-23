@@ -53,7 +53,7 @@ export default async function DocDetailPage({
       activeSlug={skill.slug}
       title={skill.name}
       subtitle={skill.description}
-      installCmd={`npx pixelcraft add ${skill.name} --agent codex`}
+      installCmd={`npx github:ThanhNguyxn07/Pixelcraft install codex --only ${skill.name}`}
       references={skill.references}
       scripts={skill.scripts}
       markdown={skill.body}
