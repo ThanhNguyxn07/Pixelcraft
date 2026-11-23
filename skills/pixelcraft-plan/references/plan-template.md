@@ -24,6 +24,15 @@
 - Reversal conditions:
 - Confidence:
 
+## Design input intake
+- Artifact inventory/classification (specification vs inspiration):
+- Provenance/version/approval state:
+- Breakpoints/modes/locales/input represented:
+- Completeness matrix (`specified` / `partial` / `missing` / `not applicable`):
+- Explicit assumptions and contradictions:
+- Handoff needed? yes / no / partial and scope:
+- Visual-fidelity evidence required:
+
 ## Repository/system map
 - Language/framework inventory:
 - Entry points:

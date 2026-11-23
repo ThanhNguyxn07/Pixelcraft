@@ -9,7 +9,8 @@
 **Expected behaviors**
 
 - Selects or applies `pixelcraft-handoff` behavior when the prompt matches its trigger.
-- fetches structured MCP evidence and maps variables/components before coding.
+- records provenance/approval/breakpoint/mode and maps variables/components before coding.
+- reuses existing components and preserves the approved visual direction instead of running divergence.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -36,7 +37,7 @@
 **Expected behaviors**
 
 - Selects or applies `pixelcraft-handoff` behavior when the prompt matches its trigger.
-- documents assumptions/missing states and validates fidelity with declared tolerance.
+- classifies screenshot evidence as partial specification, documents assumptions/missing states, translates into the actual project stack, and validates fidelity with declared tolerance.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 

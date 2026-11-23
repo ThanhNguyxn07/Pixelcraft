@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft-plan` behavior when the prompt matches its trigger.
 - intakes constraints and compares stack choices with weighted evidence.
+- inventories supplied design inputs and classifies specification versus inspiration before visual decisions.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -37,6 +38,7 @@
 
 - Selects or applies `pixelcraft-plan` behavior when the prompt matches its trigger.
 - inspects architecture/framework evidence and writes useful plan artifacts.
+- records design provenance/version/breakpoints, missing dimensions, assumptions, and whether handoff is required.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 

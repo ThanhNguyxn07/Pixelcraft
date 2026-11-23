@@ -1,6 +1,6 @@
 ---
 name: pixelcraft-handoff
-description: Converts design-system artifacts and Figma selections into faithful implementation without losing existing architecture. Use for Figma Dev Mode MCP server workflows, get_design_context/get_variable_defs/get_screenshot inspection, Dev Mode variables and modes, DTCG token reconciliation, Code Connect mappings, screenshot/mockup-to-component translation, existing-component reuse, spacing/token normalization, ambiguity resolution, and visual-fidelity checking with pixelcraft-visual-qa.
+description: Translates approved designs, Figma selections, screenshots, mockups, and design-system artifacts into faithful implementation without losing existing architecture. Use for design-to-code translation, variable-to-token mapping, existing-component reuse, missing-state resolution, cross-stack implementation, ambiguity handling, and visual-fidelity checking with pixelcraft-visual-qa.
 license: MIT
 metadata:
   version: 0.1.0
@@ -8,21 +8,22 @@ metadata:
 
 # Pixelcraft handoff
 
-Design handoff is translation under uncertainty, not screenshot copying. Figma output is evidence about intent; it is not automatically correct production architecture. Preserve existing components, tokens, state behavior, accessibility, localization, data contracts, and framework idioms before visual novelty.
+Design handoff is translation under uncertainty, not screenshot copying. Visual source material is evidence about intent; it is not automatically correct production architecture. Preserve existing components, tokens, state behavior, accessibility, localization, data contracts, and framework idioms before visual novelty.
+
+**Approved-design rule:** when the user asks to implement an approved design, do not run divergence or change visual direction. Handoff preserves design intent. Divergence applies only to undecided parts such as missing states, missing breakpoints, unspecified behavior, token gaps, accessibility gaps, or regions explicitly labeled inspiration.
 
 ## References
 
-- Read [references/figma-mcp.md](references/figma-mcp.md) for Dev Mode MCP setup/workflow, tool selection, variable/style extraction, screenshots/assets, and Code Connect context.
-- Read [references/mapping-fidelity.md](references/mapping-fidelity.md) for mockup-to-component mapping, token/spacing reconciliation, missing states, ambiguity handling, and the visual-qa fidelity loop.
+- Read [references/design-translation.md](references/design-translation.md) for the translation contract, evidence hierarchy, component reuse, token mapping, stack-specific translation, missing states, accessibility preservation, and the visual-qa fidelity loop.
 
 ## Required workflow
 
-1. **Inspect implementation first.** Inventory existing components/tokens/routes/state before asking for generated code. Reuse is the default; divergence must be justified.
-2. **Define selection and contract.** Capture exact Figma frame/component, breakpoints/modes/variants, interaction state, data states, target surface, and acceptance tolerance.
-3. **Fetch structured context.** Prefer semantic design context/variables/component metadata over screenshot inference. Use screenshots as visual evidence, not as the only source.
-4. **Map before generating.** Identify existing component matches, Code Connect mappings, token aliases/modes, asset exports, unsupported effects, and unknown/missing states.
-5. **Reconcile tokens.** Translate Figma variables/styles into the project's semantic DTCG token layer through the `pixelcraft-tokens` skill. Do not hard-code leaf hex/px values when a semantic token exists.
-6. **Verify fidelity.** Implement, render real states, compare screenshot/overlay/pixel measurements within a declared tolerance, fix meaningful divergence, and report residual uncertainty.
+1. **Establish the contract.** Record provenance/version/frame or asset, approval state, target stack, breakpoint/mode/locale/input, exact scope, and acceptance tolerance.
+2. **Inspect implementation first.** Inventory existing components/tokens/routes/state/data ownership. Reuse is the default; divergence from architecture must be justified.
+3. **Gather structured evidence.** Prefer semantic variables, component metadata, variants, constraints, comments, and production mappings over screenshot inference; use screenshots as visual evidence rather than sole truth.
+4. **Map before generating.** Match elements to existing components, variables, assets, and platform primitives. Resolve missing hover/focus/disabled/loading/empty/error/overflow/localization states or label them assumptions.
+5. **Translate idiomatically.** Map design variables into semantic project tokens through `pixelcraft-tokens`; implement in the actual target stack rather than copying generated markup or absolute geometry.
+6. **Verify fidelity.** Hand off rendered evidence to `pixelcraft-visual-qa` for screenshot/crop/overlay/diff comparison within a declared tolerance; repair meaningful divergence and report residual uncertainty.
 
 ## Non-negotiable rules
 

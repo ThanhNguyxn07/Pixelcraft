@@ -22,6 +22,10 @@ Apply constraints in this order and stop at the first conflict:
 
 Never override a user or project decision because it resembles a common pattern. Flag conflict instead of silently replacing it.
 
+## Approved-design rule
+
+When the user asks to implement an approved design, do **not** run divergence or change visual direction. Route through `pixelcraft-handoff` to preserve layout, hierarchy, token/color/type decisions, interaction meaning, and accessibility while translating into the actual stack. Divergence applies only to undecided parts: missing states/breakpoints/behavior, token or accessibility gaps, and regions explicitly classified as inspiration rather than specification.
+
 ## References
 
 - Read [references/stack-detection.md](references/stack-detection.md) when identifying the frontend stack, rendering surface, input modality, or existing design system.
@@ -47,7 +51,7 @@ Hybrid surfaces pick one primary mode per screen or region. Do not let a persuas
 
 0. **Plan** — use the `pixelcraft-plan` skill first. In brownfield work, read the repository systematically and write `.pixelcraft/plan.md`; in greenfield work, intake constraints and justify stack selection with a weighted matrix before any visual direction. If `pixelcraft-plan` is not installed, perform a minimal inline fallback before continuing: map repo/framework evidence, make or record the stack decision, create/update `.pixelcraft/plan.md` when writable, and label the reduced plan `not-checked` rather than pretending full planning happened.
 1. **Frame** — detect stack/surface/input modality; identify audience, job-to-be-done, real material inventory, constraints, locale scope, and existing design system. Ask only for information that materially changes the design.
-2. **Diverge** — use the `pixelcraft-direction` skill to generate 3–5 far-apart directions with probabilities, score them, select one, record why the others lost, and inspect repetition history. For brand-kit, identity-board, logo-system, moodboard, or visual-identity image generation, use the `pixelcraft-brandkit` skill by name and its 2–3 brand-world divergence flow before image prompting.
+2. **Diverge** — only for undecided visual scope. Use the `pixelcraft-direction` skill to generate 3–5 far-apart directions with probabilities, score them, select one, record why the others lost, and inspect repetition history. Do not rediverge an approved design; handoff preserves that intent. For brand-kit, identity-board, logo-system, moodboard, or visual-identity image generation, use the `pixelcraft-brandkit` skill by name and its 2–3 brand-world divergence flow before image prompting.
 3. **Specify** — produce the direction card; use `pixelcraft-tokens` for DTCG tokens, `pixelcraft-handoff` when translating Figma/design-system artifacts into implementation, `pixelcraft-ux` for flows plus the state matrix, `pixelcraft-patterns` when the work matches a named product pattern, and `pixelcraft-dataviz` when the work communicates quantitative data, dashboards, maps, graphs, or visualization-heavy interfaces. Do not start with component trivia before direction and constraints exist.
 4. **Build** — use the appropriate platform skill by name when installed (`pixelcraft-web`, `pixelcraft-mobile`, `pixelcraft-data-apps`, `pixelcraft-desktop`, `pixelcraft-tui`, `pixelcraft-email`, `pixelcraft-document`, `pixelcraft-media`, `pixelcraft-chat-ui`, `pixelcraft-constrained`, `pixelcraft-spatial`, `pixelcraft-game-ui`, or `pixelcraft-extensions`). If absent, translate the direction idiomatically yourself without importing web assumptions.
 5. **Verify** — use `pixelcraft-review` for slop scanning, heuristic critique, accessibility/state review, and evidence-ranked findings; use `pixelcraft-visual-qa` for the render → screenshot → self-critique → fix loop and performance budgets. Inspect rendered output where the environment permits and label every claim honestly.
@@ -71,7 +75,7 @@ After detecting the stack, use the matching platform skill by name and read only
 | `pixelcraft-media` | `social-cards`, `og-generation`, `banners-video` |
 | `pixelcraft-chat-ui` | `slack-discord`, `mobile-business-platforms`, `conversation-design` |
 | `pixelcraft-constrained` | `tv-wearables`, `specialized-hardware`, `voice-ui` |
-| `pixelcraft-handoff` | `figma-mcp`, `mapping-fidelity` |
+| `pixelcraft-handoff` | `design-translation` |
 | `pixelcraft-spatial` | `platforms`, `comfort-accessibility` |
 | `pixelcraft-game-ui` | `unity-ui-toolkit`, `godot`, `unreal-umg`, `hud-principles`, `love2d`, `bevy`, `monogame` |
 | `pixelcraft-extensions` | `browser-extensions`, `vscode-webviews`, `raycast`, `figma-office` |

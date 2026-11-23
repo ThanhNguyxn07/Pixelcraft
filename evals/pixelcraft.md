@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft` behavior when the prompt matches its trigger.
 - runs plan/direction/constraint routing before implementation.
+- suppresses divergence for approved design scope while still diverging only on undecided parts.
 - coordinates ux/tokens/platform/review skills.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
