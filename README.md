@@ -117,7 +117,7 @@ The full architecture is documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTUR
 | GitHub Release asset | Download `pixelcraft-skills.zip` or `pixelcraft-skills.tar.gz` from Releases | Controlled offline/manual distribution |
 | git clone/copy | `git clone --depth 1 https://github.com/ThanhNguyxn07/Pixelcraft.git` | Pinning, inspection, and manual per-agent copying |
 
-Details and target-specific paths follow. The complete distribution comparison, verified agent matrix, generated-fragment layout, release contents, and unsupported-agent policy are in [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md). Agent directories evolve quickly; the paths below reflect public documentation checked for this release.
+Details and target-specific paths follow. The matrix below records the targets implemented by Pixelcraft's bundled installers. Agent directories evolve quickly; verify target behavior in the host before depending on it in automation.
 
 ### Guided and direct Pixelcraft installer
 
@@ -148,22 +148,22 @@ When a subset is requested, the installer automatically includes the required `p
 
 Installer agent names are `claude`, `codex`, `agents`, `devin`, `cursor`, `gemini`, `copilot`, `windsurf`, `opencode`, `kiro`, and `all`, with aliases `claude-code`, `gemini-cli`, `github-copilot`, and `open-code`.
 
-| Agent | Project path used by installer | User-level path used by installer |
-|---|---|---|
-| Claude Code | `.claude/skills` | `~/.claude/skills` |
-| Codex, generic agents, Devin | `.agents/skills` | `~/.agents/skills` |
-| Cursor | `.cursor/skills` plus `.cursor/rules/pixelcraft.mdc` | `~/.cursor/skills` |
-| Gemini CLI | `.gemini/skills` | `~/.gemini/skills` |
-| GitHub Copilot | `.github/skills` plus instructions/prompt adapters | `~/.copilot/skills` |
-| Windsurf | `.windsurf/skills` plus `.windsurf/rules` and `.windsurf/workflows` adapters | `~/.codeium/windsurf/skills` plus adapter files under `~/.codeium/windsurf` |
-| OpenCode | `.opencode/skills` | `~/.config/opencode/skills` |
-| Kiro | `.kiro/pixelcraft/skills` plus `.kiro/steering/pixelcraft.md` | `~/.kiro/pixelcraft/skills` plus steering under `~/.kiro` |
+| Agent | Project path | User path | What Pixelcraft installs |
+|---|---|---|---|
+| Claude Code | `.claude/skills` | `~/.claude/skills` | Native skills plus `.claude/commands` adapter files |
+| Codex / generic agents / Devin | `.agents/skills` | `~/.agents/skills` | Native skills only |
+| Cursor | `.cursor/skills` | `~/.cursor/skills` | Native skills plus `.cursor/rules/pixelcraft.mdc` |
+| Gemini CLI | `.gemini/skills` | `~/.gemini/skills` | Native skills only |
+| GitHub Copilot | `.github/skills` | `~/.copilot/skills` | Native skills plus instruction/prompt adapter files |
+| OpenCode | `.opencode/skills` | `~/.config/opencode/skills` | Native skills only |
+| Windsurf | `.windsurf` | `~/.codeium/windsurf` | Adapter-only skill payload under `skills/` plus rules/memory and workflow routers |
+| Kiro | `.kiro` | `~/.kiro` | Adapter-only skill payload under `pixelcraft/skills` plus steering router |
 
 `--agent all` installs every target and deduplicates shared `.agents/skills` destinations.
 
 ### Vercel `skills` CLI
 
-The external [`skills`](https://github.com/vercel-labs/skills) CLI supports GitHub shorthand discovery and interactive agent selection. It requires Node.js 22.20 or newer:
+The external `skills` CLI supports GitHub shorthand discovery and interactive agent selection. It requires Node.js 22.20 or newer:
 
 ```bash
 npx skills add ThanhNguyxn07/Pixelcraft
@@ -232,7 +232,7 @@ The release workflow runs when a `v*` tag is pushed. It validates the skills, bu
 gh release download <tag> --repo ThanhNguyxn07/Pixelcraft --pattern pixelcraft-skills.zip
 ```
 
-Unpack the archive and either copy a canonical `skills/<name>` directory into a verified target or copy the matching generated project-root fragment from `adapters/<agent>/`. The full archive tree is documented in [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md#release-archive-contents).
+Each archive contains canonical `skills/` plus generated `adapters/`. Either copy a canonical `skills/<name>` directory into a verified target or copy the matching generated project-root fragment from `adapters/<agent>/`.
 
 ### Manual git clone/copy
 
@@ -244,19 +244,7 @@ mkdir -p .agents/skills
 cp -R Pixelcraft/skills/pixelcraft-web .agents/skills/
 ```
 
-Use the destination matching the agent:
-
-| Agent | Project destination | User-level destination |
-|---|---|---|
-| Claude Code | `.claude/skills/<skill>` | `~/.claude/skills/<skill>` |
-| Codex | `.agents/skills/<skill>` | `~/.agents/skills/<skill>` |
-| Cursor | `.cursor/skills/<skill>` plus `.cursor/rules/pixelcraft.mdc` | `~/.cursor/skills/<skill>` |
-| Gemini CLI | `.gemini/skills/<skill>` | `~/.gemini/skills/<skill>` |
-| GitHub Copilot | `.github/skills/<skill>` plus `.github/copilot-instructions.md`, `.github/instructions/pixelcraft.instructions.md`, and `.github/prompts/*.prompt.md` | `~/.copilot/skills/<skill>` |
-| Windsurf | `.windsurf/skills/<skill>` plus `.windsurf/rules/pixelcraft.md` and `.windsurf/workflows/*.md` | `~/.codeium/windsurf/skills/<skill>` plus the corresponding adapter files under `~/.codeium/windsurf` |
-| OpenCode | `.opencode/skills/<skill>` | `~/.config/opencode/skills/<skill>` |
-| Devin | `.agents/skills/<skill>` (recommended) | `~/.agents/skills/<skill>` or `~/.config/devin/skills/<skill>` where the Devin CLI is used |
-| Kiro | `.kiro/pixelcraft/skills/<skill>` plus `.kiro/steering/pixelcraft.md` | `~/.kiro/pixelcraft/skills/<skill>` plus steering under `~/.kiro` |
+Use the support matrix above for the destination matching the agent. Adapter rows require copying both the skill payload and the small router files; release archive fragments preserve that layout.
 
 Do not construct cross-skill relative links after copying; each skill folder is self-contained.
 
