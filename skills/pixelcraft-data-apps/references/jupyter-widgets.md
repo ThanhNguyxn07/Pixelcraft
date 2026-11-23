@@ -46,7 +46,7 @@ Frontend differences (JupyterLab/classic/VS Code/Colab/nbconvert), kernel discon
 
 ```sh
 python -m pytest
-python -m compileall.
+python -m compileall .
 jupyter lab 2>/dev/null || jupyter notebook 2>/dev/null || true
 ```
 

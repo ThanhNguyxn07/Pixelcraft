@@ -240,8 +240,8 @@ Clone once, choose a target directory, and copy either all skills or selected se
 
 ```bash
 git clone --depth 1 https://github.com/ThanhNguyxn07/Pixelcraft.git
-mkdir -p.agents/skills
-cp -R Pixelcraft/skills/pixelcraft-web.agents/skills/
+mkdir -p .agents/skills
+cp -R Pixelcraft/skills/pixelcraft-web .agents/skills/
 ```
 
 Use the destination matching the agent:

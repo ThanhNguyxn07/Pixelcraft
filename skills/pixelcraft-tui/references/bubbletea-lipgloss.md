@@ -51,10 +51,10 @@ Unicode width miscalculation, unbounded redraw frequency, stale async command re
 ## Verification commands
 
 ```sh
-go test./...
-go vet./...
-go run./cmd/app --help
-NO_COLOR=1 go run./cmd/app 2>/dev/null || true
+go test ./...
+go vet ./...
+go run ./cmd/app --help
+NO_COLOR=1 go run ./cmd/app 2>/dev/null || true
 ```
 
 Use actual terminal runs, golden output/snapshot tests where configured, narrow/wide matrices, piped/non-TTY behavior, keyboard-driven tests, interrupt/cancel paths, and color-capability matrices.

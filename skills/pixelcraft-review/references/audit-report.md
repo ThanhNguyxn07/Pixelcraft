@@ -3,9 +3,9 @@
 ```markdown
 # Pixelcraft audit: <surface/commit/date>
 
-**Mode:** audit|critique|polish
-**Scope:** <flows/screens/platforms/locales/themes/input modalities>
-**Method:** <rendered/static/tools/personas/model judgment>
+**Mode:** audit|critique|polish  
+**Scope:** <flows/screens/platforms/locales/themes/input modalities>  
+**Method:** <rendered/static/tools/personas/model judgment>  
 **Direction/system:** <selected direction or existing system inspected>
 
 ## Summary

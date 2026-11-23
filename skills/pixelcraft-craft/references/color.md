@@ -39,9 +39,9 @@ Users form aesthetic judgments extremely quickly, so the first visible field mus
 Illustrative shape only—not a reusable palette:
 
 ```text
-surface-0 L.98 C.01 / surface-1 L.94 C.02 / ink L.24 C.03
-accent core L.58 C.16 / hover L.52 C.17 / soft-fill L.91 C.05
-dark surface L.20 C.02 / dark raised L.26 C.025 / dark accent L.72 C.11
+surface-0 L .98 C .01 / surface-1 L .94 C .02 / ink L .24 C .03
+accent core L .58 C .16 / hover L .52 C .17 / soft-fill L .91 C .05
+dark surface L .20 C .02 / dark raised L .26 C .025 / dark accent L .72 C .11
 ```
 
 ## Dark and high-contrast behavior

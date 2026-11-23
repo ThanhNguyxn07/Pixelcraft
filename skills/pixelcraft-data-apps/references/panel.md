@@ -47,7 +47,7 @@ Resize/sizing behavior, template/version differences, disconnected sessions, cal
 ```sh
 panel serve app.py
 python -m pytest
-python -m compileall.
+python -m compileall .
 ```
 
 Rendered evidence requires browser inspection at multiple widths/session states; notebook rendering alone is insufficient.

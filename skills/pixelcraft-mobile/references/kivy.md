@@ -53,7 +53,7 @@ Canvas redraw/resize bugs, touch target inconsistency, platform packaging differ
 ```sh
 python main.py
 python -m pytest
-python -m compileall.
+python -m compileall .
 ```
 
 Use actual desktop/device runs at multiple sizes/input modes. Kivy behavior cannot be verified meaningfully by compile/tests alone.

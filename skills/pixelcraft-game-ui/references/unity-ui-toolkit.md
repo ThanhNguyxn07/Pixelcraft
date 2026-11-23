@@ -57,8 +57,8 @@ Editor-vs-runtime rendering mismatch, USS feature subset differences from browse
 
 ```sh
 # project dependent
-Unity -batchmode -projectPath. -runTests -testPlatform EditMode 2>/dev/null || true
-Unity -batchmode -projectPath. -runTests -testPlatform PlayMode 2>/dev/null || true
+Unity -batchmode -projectPath . -runTests -testPlatform EditMode 2>/dev/null || true
+Unity -batchmode -projectPath . -runTests -testPlatform PlayMode 2>/dev/null || true
 ```
 
 Use playmode/device screenshots, UI Builder plus runtime inspection, controller-only navigation, resolution/aspect/safe-area matrix, localization pseudo-text/glyph tests, accessibility settings, and platform validation checklists where available.

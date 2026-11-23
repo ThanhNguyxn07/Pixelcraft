@@ -60,7 +60,7 @@ Unicode width mismatch, terminal font assumptions, color capability variation, f
 ```sh
 python -m pytest
 pytest --snapshot-update  # only when intentionally updating
-python -m compileall.
+python -m compileall .
 python app.py 2>/dev/null || true
 ```
 

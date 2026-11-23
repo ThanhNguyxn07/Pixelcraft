@@ -57,7 +57,7 @@ Shared-state leakage, server-client synchronization gaps, dark-mode precedence c
 ```sh
 python main.py
 python -m pytest
-python -m compileall.
+python -m compileall .
 ```
 
 Rendered evidence requires actual browser inspection including resize, dark mode, keyboard, disconnect/reconnect, and multi-client behavior where relevant.
