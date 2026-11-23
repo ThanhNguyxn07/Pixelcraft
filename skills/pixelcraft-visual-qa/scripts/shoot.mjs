@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createRequire } from 'node:module';
 
 function help() {
   return `Usage: node shoot.mjs <url-or-file> [options]
@@ -13,6 +14,7 @@ is captured.
 Options:
   --out DIR             Artifact directory (default: visual-qa)
   --breakpoints LIST    Width x height list (default: 390x844,768x1024,1440x900)
+  --project DIR         Dependency resolution root (default: current directory)
   --timeout MS          Navigation timeout in milliseconds (default: 30000)
   --light-only          Skip dark-mode captures
   --no-reduced-motion   Skip reduced-motion captures
@@ -29,7 +31,7 @@ Install Playwright in the target project when capture is desired, for example:
 }
 
 function parse(args) {
-  const options = { out: 'visual-qa', breakpoints: '390x844,768x1024,1440x900', timeout: 30000, lightOnly: false, reducedMotion: true };
+  const options = { out: 'visual-qa', breakpoints: '390x844,768x1024,1440x900', timeout: 30000, project: process.cwd(), lightOnly: false, reducedMotion: true };
   const positional = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -40,6 +42,8 @@ function parse(args) {
     else if (arg.startsWith('--out=')) options.out = arg.slice(6);
     else if (arg === '--breakpoints') options.breakpoints = args[++index];
     else if (arg.startsWith('--breakpoints=')) options.breakpoints = arg.slice(14);
+    else if (arg === '--project') options.project = args[++index];
+    else if (arg.startsWith('--project=')) options.project = arg.slice(10);
     else if (arg === '--timeout') options.timeout = Number(args[++index]);
     else if (arg.startsWith('--timeout=')) options.timeout = Number(arg.slice(10));
     else if (arg.startsWith('-')) throw new Error(`unknown option: ${arg}`);
@@ -138,11 +142,16 @@ async function main() {
 
   let chromium;
   try {
-    ({ chromium } = await import('playwright'));
+    const projectRequire = createRequire(path.join(path.resolve(options.project), 'pixelcraft-shoot-require.cjs'));
+    ({ chromium } = projectRequire('playwright'));
   } catch {
-    console.error('Playwright is not installed in this dependency context. Install it explicitly, for example: npm install --save-dev playwright && npx playwright install chromium');
-    process.exitCode = 2;
-    return;
+    try {
+      ({ chromium } = await import('playwright'));
+    } catch {
+      console.error('Playwright is not installed in this dependency context. Install it explicitly in the target project, for example: npm install --save-dev playwright && npx playwright install chromium');
+      process.exitCode = 2;
+      return;
+    }
   }
 
   const out = path.resolve(options.out);
