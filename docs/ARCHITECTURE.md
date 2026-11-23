@@ -36,6 +36,7 @@ The architecture has five layers: **Plan** (`pixelcraft-plan`), **Core** (orches
 | `pixelcraft-tokens` | DTCG 2025.10 tokens, theming/modes, export to CSS/Tailwind/Swift/Compose/Flutter/Python/Qt/Textual |
 | `pixelcraft-ux` | UX before and during build: JTBD, flows, IA, full state coverage, forms, feedback, navigation, cognitive load, i18n, UX writing |
 | `pixelcraft-patterns` | Patterns layer: surface-independent dashboards/admin, commerce, creative tools, communication, auth/onboarding, marketing, settings, search/filtering, tables/CRUD |
+| `pixelcraft-dataviz` | Patterns layer for evidence communication: chart choice, encoding, color/accessibility, tables/dashboards, streaming, node graphs, maps, rendering scale, cross-language libraries |
 | `pixelcraft-accessibility` | WCAG 2.2 floor + platform translations (HIG, Material, desktop, TUI, email, game) and verification split |
 | `pixelcraft-review` | Audit / critique / polish: heuristic scoring with evidence + confidence, persona walkthroughs, slop scan script |
 | `pixelcraft-visual-qa` | Quality-layer render/screenshot/critique/fix loop, cross-surface capture guidance, contrast/overflow/clipping evidence, performance budgets |

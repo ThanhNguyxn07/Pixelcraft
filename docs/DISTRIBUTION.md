@@ -115,6 +115,7 @@ skills/
 ├── pixelcraft-tokens/
 ├── pixelcraft-ux/
 ├── pixelcraft-patterns/
+├── pixelcraft-dataviz/
 ├── pixelcraft-accessibility/
 ├── pixelcraft-review/
 ├── pixelcraft-visual-qa/
