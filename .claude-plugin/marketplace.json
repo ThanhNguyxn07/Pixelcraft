@@ -21,6 +21,7 @@
         "./skills/pixelcraft-craft",
         "./skills/pixelcraft-tokens",
         "./skills/pixelcraft-ux",
+        "./skills/pixelcraft-patterns",
         "./skills/pixelcraft-accessibility",
         "./skills/pixelcraft-review",
         "./skills/pixelcraft-visual-qa",
