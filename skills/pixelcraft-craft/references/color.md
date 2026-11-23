@@ -59,3 +59,9 @@ Color meanings are locale/domain dependent. Validate finance gain/loss, mourning
 ## Palette rejection test
 
 Reject the palette if removing the subject makes the same choices equally plausible for a bank, game, clinic, and AI chatbot. Also reject it if the only novelty is hue: composition, type, material, and motion must participate in the direction.
+
+## Rendered palette inventory
+
+After rendering, inventory quantized background and ink colors weighted by visible area. Separate intentional semantic colors from image pixels, antialiasing noise, shadows, charts, media, and third-party content. In the live corpus the median rendered inventory contained approximately **6–7 distinct quantized color groups**, with the upper quartile near **9**; light and dark surfaces were both common. Treat this only as calibration for how restrained strong work can remain despite rich media.
+
+Record palette posture numerically in the direction card: base surface count, ink levels, semantic accent count, state/data colors, exceptions, and mode-specific substitutions. A typical restrained posture is one background family, one ink family, and one or two semantic accents, but subject matter may justify more. Reject accent proliferation when each addition does not have a semantic role, state pair, contrast evidence, and token owner.

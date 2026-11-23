@@ -57,3 +57,9 @@ Complexity is not a moral quality. Dense expert tooling can be correct; sparse m
 - Do not break learned operational patterns merely to look distinctive.
 - Do not optimize one static breakpoint while destroying resize/reflow behavior.
 - Do not use overlay text on busy imagery unless contrast and reading priority remain measurable in the real asset.
+
+## Measurable geometry inventory
+
+When rendered evidence is available, measure rather than guess: estimated uncovered viewport ratio, content centroid/asymmetry, repeated overlap count, maximum content width, visible grid count, and resize behavior. In the live corpus the estimated whitespace median was approximately **0.57** with a middle half around **0.42–0.68**; obvious content-center deviation appeared in roughly **18%** of pages, while some positive overlap appeared in roughly **76%** because heroes, cards, media, and sticky controls overlap intentionally. Median maximum content width was approximately **784 px**, with an upper quartile around **1073 px** at a 1440 px viewport.
+
+These measurements are not targets. High whitespace can mean emptiness; low whitespace can mean density done well; overlap can be intentional layering or a defect. Calibrate interpretation by mode: dense Operate surfaces, editorial Read surfaces, and expressive Persuade scenes should not share one whitespace expectation. Use numbers to locate regions for inspection and compare before/after states. Full-bleed media is an explicit exception, while body text and operational controls need deliberate measure constraints.

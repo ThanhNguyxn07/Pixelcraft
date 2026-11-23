@@ -56,3 +56,15 @@ Declare fallback behavior per script, not just `sans-serif`: Latin extended/comb
 ## Platform transfer
 
 Web: preload only critical files, reserve metrics/space, use `font-display` intentionally. iOS/macOS: Dynamic Type-compatible scaling. Android: respect sp scaling/type roles. Flutter/RN/Compose/SwiftUI: map semantic roles once rather than copying CSS pixels. TUI: weight/color/underline/inverse only; no assumed ligatures. Email: robust fallback stacks; custom fonts cannot carry meaning. Game UI: validate SDF/bitmap atlases, memory, localization glyphs, and viewing distance.
+
+## Rendered typography inventory
+
+Measure what the browser actually rendered rather than counting only the authored scale. Record active families, weight/style faces, distinct rendered sizes, dominant line-heights, display letter-spacing, and maximum-to-minimum rendered size ratio. In the live corpus the median page used **2 active families** (upper quartile **3**), **4 distinct rendered sizes** (upper quartile **7**), and a rendered max/min ratio near **4.6** (middle half roughly **2.6–5.7**). These are calibration ranges for strong examples, not quotas.
+
+Audit rules:
+
+- inventory every loaded/rendered family-weight-style face and delete faces without a hierarchy role;
+- separate modular-step ratio from the observed display/body extreme ratio;
+- verify display letter-spacing only at rendered sizes where it occurs;
+- preload only critical font files, choose `font-display` deliberately, subset required scripts, and never preload every face;
+- canvas-rendered display type still needs semantic text and a fallback type specification.

@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft-craft` behavior when the prompt matches its trigger.
 - uses material/typography/color/motion with clear rationale.
+- includes a rendered inventory plan for font faces/sizes, palette count by role, whitespace/width geometry, motion signals, and reduced-motion fallbacks without treating calibration ranges as targets.
 - specifies palette construction, type pairing roles, motion budget, fallback, and reduced-motion path.
 - assigns a mode-appropriate visual-complexity budget instead of equating novelty with clutter or sparse output with quality.
 - avoids derivative interface tropes.

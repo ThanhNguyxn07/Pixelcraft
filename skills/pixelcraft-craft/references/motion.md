@@ -4,7 +4,7 @@ Evidence base: usability research, platform motion/accessibility guidance, rende
 
 ## Purpose before spectacle
 
-Motion earns its cost only when it acknowledges input, shows causality, preserves orientation, communicates progress/state, or creates the direction's single signature moment. Apple gives the same constraint: purposeful, brief, precise, optional motion—not motion for its own sake. Award-showcase spectacle is not permission to sacrifice usability: Awwwards usability is 30% of the score and CSSDA scores UX separately.
+Motion earns its cost only when it acknowledges input, shows causality, preserves orientation, communicates progress/state, or creates the direction's single signature moment. Apple gives the same constraint: purposeful, brief, precise, optional motion—not motion for its own sake. Showcase spectacle is not permission to sacrifice usability; celebrated interfaces are still wrong when motion blocks comprehension, control, or access.
 
 ## Budgets
 
@@ -59,3 +59,17 @@ Deleting feedback is not a reduced-motion path. Motion-triggering vestibular ris
 - frame budget verified on a mid-tier device, not only a developer workstation;
 - reduced-motion, forced-colors, high-contrast, RTL, 200% text, and narrow viewport paths inspected;
 - one sentence recorded for why each signature motion exists and what replaces it when motion is unavailable.
+
+## Detectable motion inventory
+
+Before preserving a motion system, inventory what the rendered page actually exposes: animation and transition counts, canvas/WebGL presence, smooth-scroll libraries, scroll-driven CSS, view transitions, custom cursor styles, and detectable `prefers-reduced-motion` rules. In the live corpus, a detectable reduced-motion stylesheet appeared on only about **58%** of pages, while likely scroll manipulation appeared on about **21%** and custom cursor styles on about **30%**. Use those figures as prevalence evidence for verification failure, never as permission.
+
+Detection is heuristic. Script/global inspection can false-positive library names, cross-origin CSS may be unreadable, and a media query does not prove correct behavior. Absence of a detectable media query is a lead, not a violation; presence is not proof either. Verify reduced motion by rendering the actual setting.
+
+Required gate:
+
+1. audit Lenis/Locomotive or equivalent smooth-scroll libraries, hidden overflow, wheel/touch input remapping, pinned scroll regions, and missing or broken direct section links;
+2. scroll manipulation requires a user-facing functional reason and explicit waiver;
+3. custom cursors require keyboard/touch parity plus an ordinary system-cursor fallback;
+4. canvas/WebGL content requires semantic text, static fallback, pause/mute control where applicable, and a measured performance budget;
+5. every signature motion names its reduced-motion replacement before implementation.
