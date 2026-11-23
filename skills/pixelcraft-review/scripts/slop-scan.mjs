@@ -314,24 +314,33 @@ function parseOutlineShorthand(value) {
 }
 
 function analyzeOutline(decls) {
-  let style = 'none', width = 'medium', removal = null, unknown = false;
+  let style = 'none', width = 'medium', removal = null;
+  let styleUnknown = false, widthUnknown = false;
   for (const decl of decls) {
     const value = cleanValue(decl.value);
     if (decl.prop === 'outline') {
       const parsed = parseOutlineShorthand(value);
-      style = parsed.style;
-      width = parsed.width;
-      unknown = unknown || parsed.unknown;
+      if (parsed.unknown) {
+        styleUnknown = true;
+        widthUnknown = true;
+        style = 'none';
+        width = 'medium';
+      } else {
+        style = parsed.style;
+        width = parsed.width;
+        styleUnknown = false;
+        widthUnknown = false;
+      }
       if (parsed.removes && !removal) removal = decl;
     } else if (decl.prop === 'outline-style') {
       style = value;
-      unknown = unknown || hasUnresolvedTokens(value);
+      styleUnknown = hasUnresolvedTokens(value);
     } else if (decl.prop === 'outline-width') {
       width = value;
-      unknown = unknown || hasUnresolvedTokens(value);
+      widthUnknown = hasUnresolvedTokens(value);
     }
   }
-  return { removal, visible: unknown || (visibleOutlineStyles.has(style) && isVisibleWidth(width)) };
+  return { removal, visible: styleUnknown || widthUnknown || (visibleOutlineStyles.has(style) && isVisibleWidth(width)) };
 }
 
 function borderShorthandProp(prop) {
