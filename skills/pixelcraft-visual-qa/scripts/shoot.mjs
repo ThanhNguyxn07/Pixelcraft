@@ -69,7 +69,8 @@ async function createStaticTarget(target) {
   const resolved = path.resolve(target);
   if (!fs.existsSync(resolved)) throw new Error(`target is neither an http(s) URL nor an existing file/directory: ${target}`);
   const stat = fs.statSync(resolved);
-  const root = stat.isDirectory() ? resolved : path.dirname(resolved);
+  const root = fs.realpathSync(stat.isDirectory() ? resolved : path.dirname(resolved));
+  const rootPrefix = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
   const initialPath = stat.isDirectory() ? '/' : `/${encodeURIComponent(path.basename(resolved))}`;
   const server = http.createServer((request, response) => {
     let pathname;
@@ -86,18 +87,24 @@ async function createStaticTarget(target) {
       return;
     }
     let fileStat;
+    let realFile;
     try {
-      fileStat = fs.statSync(file);
+      realFile = fs.realpathSync(file);
+      fileStat = fs.statSync(realFile);
     } catch {
       response.writeHead(404).end('not found');
+      return;
+    }
+    if (realFile !== root && !realFile.startsWith(rootPrefix)) {
+      response.writeHead(403).end('forbidden');
       return;
     }
     if (!fileStat.isFile()) {
       response.writeHead(404).end('not found');
       return;
     }
-    response.writeHead(200, { 'content-type': mimeTypes.get(path.extname(file).toLowerCase()) || 'application/octet-stream', 'cache-control': 'no-store' });
-    fs.createReadStream(file).pipe(response);
+    response.writeHead(200, { 'content-type': mimeTypes.get(path.extname(realFile).toLowerCase()) || 'application/octet-stream', 'cache-control': 'no-store' });
+    fs.createReadStream(realFile).pipe(response);
   });
   await new Promise((resolve, reject) => {
     server.once('error', reject);
