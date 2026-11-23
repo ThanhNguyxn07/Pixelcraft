@@ -97,7 +97,7 @@ Declare tolerance before comparing. Use the `pixelcraft-visual-qa` skill for the
 7. repair semantic/accessibility defects before pixel geometry;
 8. rerun only changed comparisons.
 
-Antialiasing, font shaping, platform rendering, and dynamic content make exact byte equality inappropriate. Use region-aware tolerances plus measurements: offset, size delta, clipping, contrast delta, missing border/focus, and state mismatch.
+Antialiasing, font shaping, platform rendering, and dynamic content make exact byte equality inappropriate. Use the region-aware tolerance schema, hard-failure rules, normalization requirements, and deterministic fixture contract in `references/fidelity-tolerance.md`. Record tolerances before inspecting the diff.
 
 ## Acceptance report
 

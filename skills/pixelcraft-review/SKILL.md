@@ -15,6 +15,7 @@ Review is evidence work, not taste commentary. Never say “looks good” or “
 - Read [references/heuristics.md](references/heuristics.md) when translating Nielsen's 10 heuristics into concrete checks.
 - Read [references/personas.md](references/personas.md) for structured persona walkthroughs. Treat personas as hypothesis generators.
 - Read [references/polish.md](references/polish.md) for final optical/state/copy/motion/dark-mode/long-string inspection.
+- Read [references/critique-protocol.md](references/critique-protocol.md) before structured critique/design decision review.
 - Read [references/audit-report.md](references/audit-report.md) before writing an audit report.
 - Run `node scripts/slop-scan.mjs --help` for deterministic fingerprint scanning. The scanner is evidence input, not a judge of good design.
 
@@ -44,7 +45,7 @@ Every finding requires: severity, evidence (`file:line`, screenshot region/devic
 1. Establish scope, mode, direction card/project system, commit/build state, target platforms, locales, and user tasks.
 2. Gather deterministic evidence first: run scanners/tests/builds; inspect files; capture rendered/device states where possible.
 3. Walk primary flows using personas as hypotheses; do not claim they are users.
-4. Apply heuristics and floor checks. Separate actual violation from risk/opportunity.
+4. Apply heuristics and floor checks. Separate actual violation from risk/opportunity; use the structured critique protocol when the output informs a design decision.
 5. Compare against slop fingerprints and `.pixelcraft/history.json`; identify repetition or absence of subject commitment.
 6. Rank by user impact and floor authority, not ease of fixing.
 7. Report verified positives only when material; prioritize actionable findings and unverified scope.

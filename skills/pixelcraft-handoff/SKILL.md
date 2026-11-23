@@ -15,10 +15,11 @@ Design handoff is translation under uncertainty, not screenshot copying. Visual 
 ## References
 
 - Read [references/design-translation.md](references/design-translation.md) for the translation contract, evidence hierarchy, component reuse, token mapping, stack-specific translation, missing states, accessibility preservation, and the visual-qa fidelity loop.
+- Read [references/fidelity-tolerance.md](references/fidelity-tolerance.md) before declaring acceptance tolerance, freezing fixtures, or interpreting visual diffs.
 
 ## Required workflow
 
-1. **Establish the contract.** Record provenance/version/frame or asset, approval state, target stack, breakpoint/mode/locale/input, exact scope, and acceptance tolerance.
+1. **Establish the contract.** Record provenance/version/frame or asset, approval state, target stack, breakpoint/mode/locale/input, exact scope, deterministic fixture requirements, and region-aware acceptance tolerance.
 2. **Inspect implementation first.** Inventory existing components/tokens/routes/state/data ownership. Reuse is the default; divergence from architecture must be justified.
 3. **Gather structured evidence.** Prefer semantic variables, component metadata, variants, constraints, comments, and production mappings over screenshot inference; use screenshots as visual evidence rather than sole truth.
 4. **Map before generating.** Match elements to existing components, variables, assets, and platform primitives. Resolve missing hover/focus/disabled/loading/empty/error/overflow/localization states or label them assumptions.
@@ -44,5 +45,5 @@ Design handoff is translation under uncertainty, not screenshot copying. Visual 
 - [ ] semantic variables/modes map to project tokens or deliberate overrides;
 - [ ] missing hover/focus/disabled/loading/error/empty/overflow states are resolved or labeled assumptions;
 - [ ] implementation uses real data/state behavior rather than static screenshot structure;
-- [ ] rendered output was compared at target sizes using the `pixelcraft-visual-qa` skill where available;
+- [ ] rendered output was compared at target sizes using the `pixelcraft-visual-qa` skill where available, with normalized fixture/scale and declared region tolerances;
 - [ ] intentional deviations and residual uncertainty are reported.

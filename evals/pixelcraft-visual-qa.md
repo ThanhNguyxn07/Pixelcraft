@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft-visual-qa` behavior when the prompt matches its trigger.
 - renders target sizes and inspects screenshot evidence rather than build success only.
+- executes the primary user task or explicitly labels behavior not run; captures feedback/end state/failure trace rather than only a loaded page.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -37,6 +38,7 @@
 
 - Selects or applies `pixelcraft-visual-qa` behavior when the prompt matches its trigger.
 - uses inspect-critique-fix loop and re-checks only affected evidence.
+- calibrates critic confidence, suppresses duplicate/root-cause findings, avoids low-confidence churn, and governs baseline updates by cause rather than making checks pass.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 

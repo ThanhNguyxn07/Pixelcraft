@@ -37,7 +37,8 @@
 **Expected behaviors**
 
 - Selects or applies `pixelcraft-handoff` behavior when the prompt matches its trigger.
-- classifies screenshot evidence as partial specification, documents assumptions/missing states, translates into the actual project stack, and validates fidelity with declared tolerance.
+- classifies screenshot evidence as partial specification, documents assumptions/missing states, translates into the actual project stack, and validates fidelity with declared region-aware tolerance.
+- normalizes viewport/scale/theme/locale/data fixtures before diffing and treats clipping/focus/contrast/state mismatch as hard failures independent of pixel tolerance.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 

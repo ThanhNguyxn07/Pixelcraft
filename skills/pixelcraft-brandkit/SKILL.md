@@ -100,6 +100,7 @@ Before presenting the result, perform the self-critique in `references/qa-checkl
 - Never use generic lightning bolts, random animals, fake luxury crests, copied famous marks, clipart, meaningless sparkles, or inconsistent logo variants.
 - Keep the system quiet, sharp, symbolic, coherent, premium, art-directed, and implementation-friendly.
 - Report the actual output size/aspect ratio; never promise unsupported dimensions.
+- Treat generated imagery as draft material until provenance, licensing, small-size behavior, contrast pairs, clearspace/minimum size, and ownership/versioning are recorded.
 
 ## Reference routing
 
@@ -111,3 +112,4 @@ Before presenting the result, perform the self-critique in `references/qa-checkl
 - Read [references/prompt-template.md](references/prompt-template.md) before prompting any image model.
 - Read [references/qa-checklist.md](references/qa-checklist.md) before delivering or selecting a generated result.
 - Read [references/asset-pipeline.md](references/asset-pipeline.md) when turning the identity into favicons, app icons, optimized SVG, font subsets, or production raster assets.
+- Read [references/brand-governance.md](references/brand-governance.md) before finalizing usage rules, asset naming/versioning, licensing/provenance records, clearspace, minimum sizes, or incorrect-use guidance.

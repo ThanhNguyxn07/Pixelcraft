@@ -49,3 +49,17 @@ Residual: physical touch target not checked.
 - Cropping captures to avoid edge defects.
 - Treating a full-page screenshot as proof of keyboard, screen-reader, motion, or runtime behavior.
 - Redesigning the product during a QA pass; report direction-level concerns separately.
+
+## Critic calibration and iteration control
+
+Model-based screenshot critique is useful but unreliable. Treat each finding as a hypothesis until tied to observable evidence:
+
+1. **Require localization.** Name capture, region/element/state, expected behavior, actual pixels/behavior, and why it matters.
+2. **Assign confidence.** `high` means directly visible/deterministic; `medium` means strong inference but context-dependent; `low` means speculative and must not drive layout churn.
+3. **Separate defect from preference.** A defect violates task/floor/platform/direction evidence. Preference requires explicit authority before redesign.
+4. **Suppress duplicates.** Group symptoms with the same layout/token/root cause rather than generating many independent-looking findings.
+5. **Track false positives.** If inspection disproves a critic finding, record the false positive and tighten subsequent prompts/criteria instead of repeating it.
+6. **Do not degrade across iterations.** Each repair round must address a specific deterministic defect and recapture only affected evidence. Stop when new findings are low-confidence, contradictory, or increasingly cosmetic.
+7. **Preserve positives.** Do not fix one defect by destroying hierarchy, contrast, spacing rhythm, accessibility, or performance elsewhere; inspect regression risk after repair.
+
+Stopping is valid when the remaining findings are speculative, require user/business evidence, or cost more than their user impact. Mark them `not-checked` or deferred with consequence.

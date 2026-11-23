@@ -39,6 +39,7 @@
 - tests silhouette/scaling/meaning/trademark risk/visual consistency.
 - includes appropriateness, distinctiveness, simplicity, monochrome behavior, mascot/pixel-art constraints when relevant, and rendered 16/32/64 px evidence.
 - documents QA evidence.
+- records asset naming/versioning, provenance/licensing, clearspace/minimum size, approved/incorrect use, contrast pairs, and ownership before treating generated imagery as final brand assets.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
 **Failure signals**

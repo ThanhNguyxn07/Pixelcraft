@@ -18,6 +18,31 @@ fs.mkdirSync(skillDir, { recursive: true });
 fs.mkdirSync(path.join(tmp, 'evals'), { recursive: true });
 fs.copyFileSync(validatorSource, validator);
 fs.writeFileSync(path.join(tmp, 'evals/case.md'), '# Evaluation\n\n## Case\n\nPrompt.\n');
+fs.mkdirSync(path.join(tmp, 'evals/fixtures'), { recursive: true });
+const validFixture = JSON.stringify({
+  schemaVersion: 1,
+  id: 'case-valid',
+  skill: 'case',
+  title: 'Valid fixture',
+  contextSnapshot: {
+    surface: 'settings',
+    platform: 'web',
+    mode: 'Operate',
+    states: ['error'],
+    constraints: ['keyboard only']
+  },
+  prompt: 'Verify the settings form.',
+  expectedRouting: ['case'],
+  forbiddenBehaviors: ['claims without evidence'],
+  rubricDimensions: [
+    { dimension: 'routing', pass: 'uses expected skill', fail: 'generic implementation' }
+  ],
+  negativeControls: [
+    { name: 'build only', input: 'build passes without interaction', mustNot: 'claim rendered behavior' }
+  ],
+  baseline: { withoutSkill: 'generic output', withSkill: 'constrained behavior' }
+}, null, 2);
+fs.writeFileSync(path.join(tmp, 'evals/fixtures/case-valid.json'), `${validFixture}\n`);
 
 function runValidator(frontmatter) {
   fs.writeFileSync(skillFile, `---\n${frontmatter}\n---\n\n# Case\n`);
@@ -73,6 +98,18 @@ try {
     expectFailure(frontmatter, /must be a scalar string/, label);
   }
   console.log('ok 7 - name and description must be scalar strings');
+
+  const validEvalRun = runValidator('name: case\ndescription: Handles YAML\nlicense: MIT');
+  assert.equal(validEvalRun.status, 0, validEvalRun.stderr);
+  console.log('ok 8 - valid evaluation fixture passes');
+
+  const brokenFixture = JSON.parse(validFixture);
+  brokenFixture.id = 'case-broken';
+  delete brokenFixture.negativeControls;
+  fs.writeFileSync(path.join(tmp, 'evals/fixtures/case-broken.json'), `${JSON.stringify(brokenFixture, null, 2)}\n`);
+  expectFailure('name: case\ndescription: Handles YAML\nlicense: MIT', /negativeControls must be a nonempty array/, 'missing negative controls');
+  fs.rmSync(path.join(tmp, 'evals/fixtures/case-broken.json'));
+  console.log('ok 9 - evaluation fixture negative controls are required');
 
   console.log('validator YAML tests passed');
 } finally {

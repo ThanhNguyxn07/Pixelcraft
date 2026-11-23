@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft-review` behavior when the prompt matches its trigger.
 - ranks evidence-backed findings and separates visual/UX/accessibility defects.
+- distinguishes defect, behavioral risk, requirement conflict, hypothesis, preference, and scope expansion rather than flattening everything into taste critique.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -37,6 +38,7 @@
 
 - Selects or applies `pixelcraft-review` behavior when the prompt matches its trigger.
 - checks states/accessibility/truthfulness/responsive behavior using evidence labels.
+- records decision owner/outcome/rationale and calibrates confidence/false positives instead of endless speculative critique.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 

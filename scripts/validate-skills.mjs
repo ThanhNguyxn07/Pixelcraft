@@ -351,6 +351,108 @@ function checkScriptHelp(file) {
   }
 }
 
+function isNonEmptyString(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function checkStringArray(file, value, field) {
+  if (!Array.isArray(value) || value.length === 0) {
+    fail(file, `${field} must be a nonempty array`);
+    return;
+  }
+  for (const [index, item] of value.entries()) {
+    if (!isNonEmptyString(item)) fail(file, `${field}[${index}] must be a nonempty string`);
+  }
+}
+
+function checkEvalFixture(file, skillNames, seenIds) {
+  let fixture;
+  try {
+    fixture = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch (error) {
+    fail(file, `invalid JSON: ${error.message}`);
+    return;
+  }
+  if (!fixture || Array.isArray(fixture) || typeof fixture !== 'object') {
+    fail(file, 'fixture root must be a JSON object');
+    return;
+  }
+
+  if (fixture.schemaVersion !== 1) fail(file, 'schemaVersion must be 1');
+  if (!isNonEmptyString(fixture.id)) fail(file, 'id must be a nonempty string');
+  else {
+    if (!namePattern.test(fixture.id)) fail(file, `id is not valid lowercase-hyphen: ${fixture.id}`);
+    if (fixture.id !== path.basename(file, '.json')) fail(file, `id (${fixture.id}) must match filename`);
+    if (seenIds.has(fixture.id)) fail(file, `duplicate fixture id: ${fixture.id}`);
+    seenIds.add(fixture.id);
+  }
+  if (!isNonEmptyString(fixture.skill)) fail(file, 'skill must be a nonempty string');
+  else if (!skillNames.has(fixture.skill)) fail(file, `fixture references unknown skill: ${fixture.skill}`);
+  if (!isNonEmptyString(fixture.title)) fail(file, 'title must be a nonempty string');
+  if (!isNonEmptyString(fixture.prompt)) fail(file, 'prompt must be a nonempty string');
+
+  const context = fixture.contextSnapshot;
+  if (!context || Array.isArray(context) || typeof context !== 'object') {
+    fail(file, 'contextSnapshot must be an object');
+  } else {
+    for (const key of ['surface', 'platform', 'mode']) {
+      if (!isNonEmptyString(context[key])) fail(file, `contextSnapshot.${key} must be a nonempty string`);
+    }
+    checkStringArray(file, context.states, 'contextSnapshot.states');
+    checkStringArray(file, context.constraints, 'contextSnapshot.constraints');
+  }
+
+  checkStringArray(file, fixture.expectedRouting, 'expectedRouting');
+  checkStringArray(file, fixture.forbiddenBehaviors, 'forbiddenBehaviors');
+
+  if (!Array.isArray(fixture.rubricDimensions) || fixture.rubricDimensions.length === 0) {
+    fail(file, 'rubricDimensions must be a nonempty array');
+  } else {
+    for (const [index, item] of fixture.rubricDimensions.entries()) {
+      if (!item || Array.isArray(item) || typeof item !== 'object') {
+        fail(file, `rubricDimensions[${index}] must be an object`);
+        continue;
+      }
+      for (const key of ['dimension', 'pass', 'fail']) {
+        if (!isNonEmptyString(item[key])) fail(file, `rubricDimensions[${index}].${key} must be a nonempty string`);
+      }
+    }
+  }
+
+  if (!Array.isArray(fixture.negativeControls) || fixture.negativeControls.length === 0) {
+    fail(file, 'negativeControls must be a nonempty array');
+  } else {
+    for (const [index, item] of fixture.negativeControls.entries()) {
+      if (!item || Array.isArray(item) || typeof item !== 'object') {
+        fail(file, `negativeControls[${index}] must be an object`);
+        continue;
+      }
+      for (const key of ['name', 'input', 'mustNot']) {
+        if (!isNonEmptyString(item[key])) fail(file, `negativeControls[${index}].${key} must be a nonempty string`);
+      }
+    }
+  }
+
+  const baseline = fixture.baseline;
+  if (!baseline || Array.isArray(baseline) || typeof baseline !== 'object') {
+    fail(file, 'baseline must be an object');
+  } else {
+    for (const key of ['withoutSkill', 'withSkill']) {
+      if (!isNonEmptyString(baseline[key])) fail(file, `baseline.${key} must be a nonempty string`);
+    }
+  }
+}
+
+function checkEvalFixtures(skillNames) {
+  const fixturesRoot = path.join(evalsRoot, 'fixtures');
+  if (!fs.existsSync(fixturesRoot)) return;
+  const seenIds = new Set();
+  for (const entry of fs.readdirSync(fixturesRoot, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+    if (!entry.isFile() || !entry.name.endsWith('.json')) continue;
+    checkEvalFixture(path.join(fixturesRoot, entry.name), skillNames, seenIds);
+  }
+}
+
 if (!fs.existsSync(skillsRoot)) {
   console.error('skills/ directory not found');
   process.exit(1);
@@ -399,6 +501,8 @@ for (const entry of skillDirs) {
     }
   }
 }
+
+checkEvalFixtures(new Set(skillDirs.map((entry) => entry.name)));
 
 if (errors.length) {
   console.error(`Skill validation failed (${errors.length} problem${errors.length === 1 ? '' : 's'}):`);

@@ -20,4 +20,4 @@ This directory contains lightweight behavioral evaluations for every skill. Each
 
 ## Validator contract
 
-`npm run validate` requires every skill folder in `skills/` to have a matching `evals/<skill-name>.md` file containing at least one `## Case` heading. The validator enforces presence only; evaluators judge semantic quality.
+`npm run validate` requires every skill folder in `skills/` to have a matching `evals/<skill-name>.md` file containing at least one `## Case` heading. It also validates the structure of machine-readable JSON fixtures under `evals/fixtures/`: unique filename-matched IDs, existing skill references, context snapshots, expected routing, forbidden behaviors, rubric dimensions, negative controls, and baselines. The validator enforces presence/structure only; evaluators judge semantic quality.
