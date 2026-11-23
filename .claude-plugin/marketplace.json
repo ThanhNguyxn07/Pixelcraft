@@ -35,6 +35,7 @@
         "./skills/pixelcraft-email",
         "./skills/pixelcraft-document",
         "./skills/pixelcraft-media",
+        "./skills/pixelcraft-chat-ui",
         "./skills/pixelcraft-game-ui",
         "./skills/pixelcraft-brandkit"
       ]
