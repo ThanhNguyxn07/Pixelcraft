@@ -667,7 +667,12 @@ const extract = String.raw`(() => {
   const distinctColors = new Set([...backgroundColors.keys(), ...inkColors.keys()]);
   const dominantKey = backgroundEntries[0]?.[0] || '255,255,255';
   const dominantParts = dominantKey.split(',').map(Number);
-  const dominantColor = { r: dominantParts[0] || 255, g: dominantParts[1] || 255, b: dominantParts[2] || 255, a: 1 };
+  const dominantColor = {
+    r: Number.isFinite(dominantParts[0]) ? dominantParts[0] : 255,
+    g: Number.isFinite(dominantParts[1]) ? dominantParts[1] : 255,
+    b: Number.isFinite(dominantParts[2]) ? dominantParts[2] : 255,
+    a: 1,
+  };
 
   const geometryLeaf = leaf.slice(0, 1000);
   const occupiedArea = unionArea(geometryLeaf.map((item) => item.rect));

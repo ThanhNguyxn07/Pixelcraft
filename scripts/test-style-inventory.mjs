@@ -9,18 +9,23 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const script = path.join(root, 'skills/pixelcraft-visual-qa/scripts/style-inventory.mjs');
 const fixture = path.join(root, 'skills/pixelcraft-visual-qa/scripts/fixtures/style-inventory.html');
+const edgeFixture = path.join(root, 'skills/pixelcraft-visual-qa/scripts/fixtures/style-inventory-edge.html');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pixelcraft-style-inventory-'));
 
 function browserUnavailable(output) {
   return /Executable doesn't exist|browser executable|playwright install chromium|chrome-headless-shell/i.test(output);
 }
 
-try {
-  const out = path.join(tmp, 'inventory.json');
+function runInventory(target, outPath, extra = []) {
   const extraArgs = [];
   if (process.env.PIXELCRAFT_TEST_PLAYWRIGHT_PROJECT) extraArgs.push('--project', process.env.PIXELCRAFT_TEST_PLAYWRIGHT_PROJECT);
   if (process.env.PIXELCRAFT_TEST_CHROMIUM) extraArgs.push('--executable-path', process.env.PIXELCRAFT_TEST_CHROMIUM);
-  const result = spawnSync(process.execPath, [script, fixture, '--out', out, '--breakpoints=390x500,800x600', '--wait-ms=100', ...extraArgs], { encoding: 'utf8', cwd: root });
+  return spawnSync(process.execPath, [script, target, '--out', outPath, ...extra, ...extraArgs], { encoding: 'utf8', cwd: root });
+}
+
+try {
+  const out = path.join(tmp, 'inventory.json');
+  const result = runInventory(fixture, out, ['--breakpoints=390x500,800x600', '--wait-ms=100']);
   const combined = `${result.stdout}\n${result.stderr}`;
   const skipped = (result.status === 2 && /Playwright is not installed/.test(combined)) || (result.status !== 0 && browserUnavailable(combined));
   if (skipped) console.log('ok 1 - Playwright unavailable; style inventory test skipped cleanly');
@@ -69,6 +74,16 @@ try {
     assert.match(report.measurement.payloadPhase, /before the document load event/);
     assert.match(narrow.color.dominant, /^#[0-9a-f]{6}$/);
     console.log('ok 1 - local fixture produces style inventory JSON');
+
+    const edgeOut = path.join(tmp, 'edge.json');
+    const edgeResult = runInventory(edgeFixture, edgeOut, ['--breakpoints=800x600', '--wait-ms=100']);
+    assert.equal(edgeResult.status, 0, `${edgeResult.stdout}\n${edgeResult.stderr}`);
+    const edgeReport = JSON.parse(fs.readFileSync(edgeOut, 'utf8'));
+    const edge = edgeReport.viewports[0];
+    assert.equal(edge.color.dominant, '#000000');
+    assert.equal(edge.color.mode, 'dark');
+    console.log('ok 2 - zero-channel dominant background preserves dark mode');
+
     console.log('style inventory tests passed');
   }
 } finally {
