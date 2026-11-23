@@ -47,9 +47,9 @@ Hybrid surfaces pick one primary mode per screen or region. Do not let a persuas
 
 1. **Frame** — detect stack/surface/input modality; identify audience, job-to-be-done, real material inventory, constraints, locale scope, and existing design system. Ask only for information that materially changes the design.
 2. **Diverge** — use the `pixelcraft-direction` skill to generate 3–5 far-apart directions with probabilities, score them, select one, record why the others lost, and inspect repetition history.
-3. **Specify** — produce the direction card; use `pixelcraft-tokens` for DTCG tokens; when available use `pixelcraft-ux` for flows and state matrix. Do not start with component trivia before direction and constraints exist.
+3. **Specify** — produce the direction card; use `pixelcraft-tokens` for DTCG tokens and `pixelcraft-ux` for flows plus the state matrix. Do not start with component trivia before direction and constraints exist.
 4. **Build** — use the appropriate platform skill by name when installed (`pixelcraft-web`, `pixelcraft-mobile`, `pixelcraft-python-ui`, `pixelcraft-desktop`, `pixelcraft-tui`, `pixelcraft-email`, or `pixelcraft-game-ui`). If absent, translate the direction idiomatically yourself without importing web assumptions.
-5. **Verify** — when available use `pixelcraft-review`; otherwise apply the floor manually, run deterministic checks, inspect rendered output where the environment permits, and label every claim honestly.
+5. **Verify** — use `pixelcraft-review` for slop scanning, heuristic critique, accessibility/state review, and evidence-ranked findings; inspect rendered output where the environment permits and label every claim honestly.
 6. **Report** — decisions, verification evidence, unresolved risks, and waived items using the report contract.
 
 Do not loop forever. One repair round is normal for clear deterministic failures; report remaining uncertainty rather than claiming completion.

@@ -18,7 +18,10 @@
         "./skills/pixelcraft",
         "./skills/pixelcraft-direction",
         "./skills/pixelcraft-craft",
-        "./skills/pixelcraft-tokens"
+        "./skills/pixelcraft-tokens",
+        "./skills/pixelcraft-ux",
+        "./skills/pixelcraft-accessibility",
+        "./skills/pixelcraft-review"
       ]
     }
   ]
