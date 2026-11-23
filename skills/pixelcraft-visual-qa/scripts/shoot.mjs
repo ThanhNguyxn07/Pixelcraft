@@ -18,6 +18,9 @@ Options:
   --root DIR            Static server root for local targets (default: nearest
                         ancestor containing package.json or .git)
   --timeout MS          Navigation timeout in milliseconds (default: 30000)
+  --wait-for SELECTOR   Wait for a selector after page load
+  --wait-ms MS          Maximum post-load selector/network/font settle time
+                        (default: 5000)
   --light-only          Skip dark-mode captures
   --no-reduced-motion   Skip reduced-motion captures
   --help                Show this help
@@ -33,7 +36,7 @@ Install Playwright in the target project when capture is desired, for example:
 }
 
 function parse(args) {
-  const options = { out: 'visual-qa', breakpoints: '390x844,768x1024,1440x900', timeout: 30000, project: process.cwd(), root: null, lightOnly: false, reducedMotion: true };
+  const options = { out: 'visual-qa', breakpoints: '390x844,768x1024,1440x900', timeout: 30000, waitFor: null, waitMs: 5000, project: process.cwd(), root: null, lightOnly: false, reducedMotion: true };
   const positional = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -50,9 +53,14 @@ function parse(args) {
     else if (arg.startsWith('--root=')) options.root = arg.slice(7);
     else if (arg === '--timeout') options.timeout = Number(args[++index]);
     else if (arg.startsWith('--timeout=')) options.timeout = Number(arg.slice(10));
+    else if (arg === '--wait-for') options.waitFor = args[++index];
+    else if (arg.startsWith('--wait-for=')) options.waitFor = arg.slice(11);
+    else if (arg === '--wait-ms') options.waitMs = Number(args[++index]);
+    else if (arg.startsWith('--wait-ms=')) options.waitMs = Number(arg.slice(10));
     else if (arg.startsWith('-')) throw new Error(`unknown option: ${arg}`);
     else positional.push(arg);
   }
+  if (!Number.isFinite(options.waitMs) || options.waitMs < 0) throw new Error('--wait-ms must be a non-negative number');
   return { positional, options };
 }
 
@@ -266,6 +274,42 @@ const auditSource = `() => {
   return { viewportWidth: vw, documentWidth: document.documentElement.scrollWidth, findings };
 }`;
 
+function trackDataRequests(page) {
+  let pending = 0;
+  const isDataRequest = (request) => ['fetch', 'xhr'].includes(request.resourceType());
+  page.on('request', (request) => {
+    if (isDataRequest(request)) pending += 1;
+  });
+  const finish = (request) => {
+    if (isDataRequest(request) && pending > 0) pending -= 1;
+  };
+  page.on('requestfinished', finish);
+  page.on('requestfailed', finish);
+  return () => pending;
+}
+
+async function settlePage(page, options, pendingRequests) {
+  const deadline = Date.now() + options.waitMs;
+  const remaining = () => Math.max(0, deadline - Date.now());
+  if (options.waitFor) {
+    try {
+      await page.waitForSelector(options.waitFor, { timeout: Math.max(1, remaining()) });
+    } catch {
+      throw new Error(`--wait-for selector did not appear within ${options.waitMs}ms: ${options.waitFor}`);
+    }
+  }
+  while (pendingRequests() > 0 && remaining() > 0) await page.waitForTimeout(Math.min(100, remaining()));
+  const fontBudget = Math.min(1000, remaining());
+  if (fontBudget > 0) {
+    await Promise.race([
+      page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve())).catch(() => {}),
+      new Promise((resolve) => setTimeout(resolve, fontBudget)),
+    ]);
+  }
+  const paintSettle = Math.min(300, remaining());
+  if (paintSettle > 0) await page.waitForTimeout(paintSettle);
+}
+
 async function main() {
   const { positional, options } = parse(process.argv.slice(2));
   if (options.help) {
@@ -300,12 +344,9 @@ async function main() {
       for (const colorScheme of options.lightOnly ? ['light'] : ['light', 'dark']) {
         for (const reducedMotion of options.reducedMotion ? ['no-preference', 'reduce'] : ['no-preference']) {
           const page = await browser.newPage({ viewport, colorScheme, reducedMotion });
+          const pendingRequests = trackDataRequests(page);
           await page.goto(staticTarget.url, { waitUntil: 'load', timeout: options.timeout });
-          await Promise.race([
-            page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve())).catch(() => {}),
-            new Promise((resolve) => setTimeout(resolve, 1000)),
-          ]);
-          await page.waitForTimeout(300);
+          await settlePage(page, options, pendingRequests);
           const name = `${viewport.width}x${viewport.height}-${colorScheme}-${reducedMotion === 'reduce' ? 'reduced-motion' : 'motion'}.png`;
           const file = path.join(out, name);
           await page.screenshot({ path: file, fullPage: true });
