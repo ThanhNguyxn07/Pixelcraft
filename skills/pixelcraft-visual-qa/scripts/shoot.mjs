@@ -318,7 +318,8 @@ async function settlePage(page, options, pendingRequests, allowMissingSelector =
   if (options.waitFor) {
     try {
       await page.waitForSelector(options.waitFor, { timeout: Math.max(1, remaining()) });
-    } catch {
+    } catch (error) {
+      if (error?.name !== 'TimeoutError') throw error;
       if (!allowMissingSelector) throw new Error(`--wait-for selector did not appear within ${options.waitMs}ms: ${options.waitFor}`);
       waitForTimedOut = true;
     }
