@@ -130,6 +130,7 @@ skills/
 ├── pixelcraft-media/
 ├── pixelcraft-chat-ui/
 ├── pixelcraft-constrained/
+├── pixelcraft-handoff/
 ├── pixelcraft-game-ui/
 └── pixelcraft-brandkit/
 adapters/

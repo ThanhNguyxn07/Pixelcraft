@@ -37,6 +37,7 @@
         "./skills/pixelcraft-media",
         "./skills/pixelcraft-chat-ui",
         "./skills/pixelcraft-constrained",
+        "./skills/pixelcraft-handoff",
         "./skills/pixelcraft-game-ui",
         "./skills/pixelcraft-brandkit"
       ]
