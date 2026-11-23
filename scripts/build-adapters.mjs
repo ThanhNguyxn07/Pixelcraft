@@ -19,12 +19,12 @@ Options:
 }
 
 function parse(args) {
-  const options = { out: 'dist', help: false };
+  const options = { out: 'dist', help: false, explicitOut: false };
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === '--help' || arg === '-h') options.help = true;
-    else if (arg === '--out') options.out = args[++index];
-    else if (arg.startsWith('--out=')) options.out = arg.slice(6);
+    else if (arg === '--out') { options.out = args[++index]; options.explicitOut = true; }
+    else if (arg.startsWith('--out=')) { options.out = arg.slice(6); options.explicitOut = true; }
     else throw new Error(`unknown option: ${arg}`);
   }
   return options;
@@ -107,9 +107,9 @@ function windsurfRule(skills) {
 
 ${routingText}
 
-Rules stay deliberately small. Read the authoritative self-contained skill under \`.windsurf/pixelcraft/skills/\` before detailed work; do not inline large generated content here:
+Rules stay deliberately small. Read the authoritative self-contained skill under \`.windsurf/skills/\` before detailed work; do not inline large generated content here:
 
-${skillList(skills, '.windsurf/pixelcraft/skills')}
+${skillList(skills, '.windsurf/skills')}
 `;
 }
 
@@ -176,7 +176,14 @@ function build() {
   }
   const skills = catalog();
   if (!skills.length) throw new Error('no skills found under skills/');
+  if (!String(options.out ?? '').trim()) throw new Error('--out must not be empty');
   const dist = path.resolve(root, options.out);
+  const rootRelative = path.relative(dist, root);
+  if (dist === root || (rootRelative && !rootRelative.startsWith('..') && !path.isAbsolute(rootRelative))) throw new Error(`refusing to remove repository root or ancestor: ${dist}`);
+  if (dist.split(path.sep).includes('skills')) throw new Error(`refusing output path containing a skills component: ${dist}`);
+  const defaultDist = path.join(root, 'dist');
+  const insideDefault = !path.relative(defaultDist, dist).startsWith('..') && !path.isAbsolute(path.relative(defaultDist, dist));
+  if (!insideDefault && !options.explicitOut) throw new Error(`refusing implicit output outside dist/: ${dist}`);
   fs.rmSync(dist, { recursive: true, force: true });
   fs.mkdirSync(dist, { recursive: true });
 
@@ -190,7 +197,7 @@ function build() {
     devin: '.agents/skills',
   };
   for (const [agent, relative] of Object.entries(fragments)) copyAllSkills(skills, path.join(dist, agent), relative);
-  copyAllSkills(skills, path.join(dist, 'windsurf'), '.windsurf/pixelcraft/skills');
+  copyAllSkills(skills, path.join(dist, 'windsurf'), '.windsurf/skills');
   copyAllSkills(skills, path.join(dist, 'kiro'), '.kiro/pixelcraft/skills');
 
   for (const [command, skill, task] of actions.slice(0, 4)) {
