@@ -72,4 +72,5 @@ Required gate:
 2. scroll manipulation requires a user-facing functional reason and explicit waiver;
 3. custom cursors require keyboard/touch parity plus an ordinary system-cursor fallback;
 4. canvas/WebGL content requires semantic text, static fallback, pause/mute control where applicable, and a measured performance budget;
-5. every signature motion names its reduced-motion replacement before implementation.
+5. every signature motion names its reduced-motion replacement before implementation;
+6. keep initial-viewport idle looping animations at zero on operational/product surfaces—concentrate motion budget on short, compositor-only interactive transitions (`transform`/`opacity`) and prefer browser-native CSS Scroll-Driven Animations, `@starting-style`, and View Transitions API with progressive fallbacks over heavy JS animation runtimes.
