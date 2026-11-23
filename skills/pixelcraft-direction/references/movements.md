@@ -52,7 +52,7 @@ Use movements as materials, not costumes. Translate their structural logic into 
 
 ## Award-level technique references
 
-Use these as constraints that raise execution quality; they are not styles to copy. Awwwards weights usability almost as heavily as visual design, CSSDA separates UI aesthetics from UX functionality and innovation, and FWA jurors repeatedly emphasize uniqueness, interactivity, and smart use of available technology.
+Use these as constraints that raise execution quality; they are not styles to copy. Strong juried interface work usually balances visual authorship with usability, technical execution, uniqueness, interactivity, and appropriate use of the medium. Spectacle does not excuse confusion.
 
 | Technique reference | Compatible catalog families | Execution constraint | Slop risk |
 |---|---|---|---|

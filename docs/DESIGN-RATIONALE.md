@@ -130,6 +130,14 @@ Structured fixture metadata exists to make negative controls explicit. A passing
 
 Brand governance exists because generated imagery is not yet a usable identity system. Ownership/versioning, provenance and licensing boundaries, clearspace, minimum sizes, incorrect-use rules, contrast pairs, and small-size artifacts prevent a strong concept from fragmenting into inconsistent exports. Legal clearance remains outside the agent's authority and must be escalated rather than implied.
 
+## Live interface measurement
+
+**Rule:** visual direction and critique must be grounded in rendered measurements as well as principles. Typography, palette, geometry, motion, cursor behavior, payload, and basic semantics should be inventoried when a browser runtime is available.
+
+**Why:** live inspection of strongly art-directed interfaces showed a consistent separation between transferable mechanisms and harmful surface excess. Restrained type/palette inventories, controlled scale contrast, object-led composition, editorial indexing, intentional overlap, and motion used for spatial continuity can be measured. The same evidence also exposed heavy payloads, scroll manipulation, missing reduced-motion behavior, custom cursors, canvas-hidden semantics, and accessibility defects that visual acclaim can mask.
+
+**Trade-off:** measurements can be misread as targets or false proof. Pixelcraft therefore treats corpus ranges as calibration, labels heuristic extraction limits, and requires human inspection plus task verification. The goal is not imitation by number; it is preventing taste adjectives and celebrated surfaces from overriding evidence.
+
 ## Changing these rules
 
 Do not weaken a rule merely because a task is inconvenient. Change the rule when the underlying trade-off changed, when evidence shows the rule produces worse outcomes, or when a platform/standard changed. Record the reason in the commit and update affected skills, evals, and verification tooling together.

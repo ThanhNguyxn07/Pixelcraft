@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft-direction` behavior when the prompt matches its trigger.
 - produces genuinely far-apart directions with probabilities/tradeoffs.
+- names the mechanism being borrowed, its failure mode, measurable geometry/type/color checks, and explicitly rejects award-site payload, scrolljacking, cursor, and accessibility excess.
 - selects a named composition family and explains its structural grid, fallback behavior, and cliché risk.
 - scores prototypicality, hierarchy clarity, visual complexity, localization risk, implementation cost, content truth, and distinctiveness rather than relying on taste adjectives.
 - records losing rationale.

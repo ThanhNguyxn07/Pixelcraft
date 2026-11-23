@@ -1,6 +1,6 @@
 # Layout composition library
 
-Use this library when choosing the structural idea for a direction. It distills recurring techniques visible across award juries and curated galleries without copying any winning site. Evidence frame: Awwwards weights Design 40%, Usability 30%, Creativity 20%, Content 10%; CSSDA separately scores UI, UX, and Innovation; FWA explicitly rewards boundary-pushing creativity and technology. Recent showcase/corpus scans recur around expressive typography, experimental navigation, narrative scroll, WebGL or shader accents, strong brand consistency, asymmetric editorial structure, and content-led restraint. Treat as secondary survey evidence, not a canonical census.
+Use this library when choosing the structural idea for a direction. It distills recurring techniques visible across strongly art-directed interfaces and curated visual collections without copying any particular site. Recurring evidence centers on expressive typography, experimental navigation, narrative scroll, bounded WebGL or shader accents, strong brand consistency, asymmetric editorial structure, and content-led restraint. Treat these patterns as secondary survey evidence, not a canonical census.
 
 ## Selection contract
 
@@ -34,8 +34,8 @@ Use this library when choosing the structural idea for a direction. It distills 
 - **Innovation is structural or behavioral before it is graphical.** Experimental navigation, scroll choreography, WebGL, and shader details recur in showcase work, but juries still score usability/function explicitly.
 - **Typography often carries identity before imagery.** Use scale, measure, spacing, casing, numerals, and editorial sequencing; do not merely purchase an unusual font.
 - **Content quality is part of the score.** Missing proof, thin copy, stock imagery, and hallucinated case studies cannot be hidden by composition.
-- **Gallery minimalism is not absence of design.** SiteInspire/Minimal Gallery/Httpster-style restraint depends on exact spacing, alignment, type detail, and image curation.
-- **One-page clarity is a decision structure, not a long landing template.** One Page Love's premise is directness: remove navigational debt and order the decision.
+- **Curated minimalism is not absence of design.** Restrained gallery-style composition depends on exact spacing, alignment, type detail, and image curation.
+- **One-page clarity is a decision structure, not a long landing template.** Direct single-surface work removes navigational debt and orders the decision.
 
 ## Floor checklist
 
@@ -57,3 +57,26 @@ Before implementation, assign each screen/region a complexity posture: low, medi
 - Play/Experience may use richer sensory layering only when orientation, target legibility, reduced-motion behavior, and performance survive.
 
 Complexity must be controlled by structure: grouping, focal hierarchy, whitespace/rhythm, progressive disclosure, and stable landmarks. If reducing clutter requires removing essential information, redesign the information architecture; do not simply shrink type or hide controls.
+
+## Recurring high-end mechanisms observed in live inspection
+
+The following mechanisms recur across strongly art-directed interfaces. Corpus numbers represent the typical range in strong examples as calibration, never targets to hit: 1–3 active families were typical; rendered max/min type ratios clustered around 2.6–5.7; restrained rendered palettes clustered around 6–9 quantized color groups; estimated whitespace commonly fell around 0.42–0.68; payload and accessibility outcomes varied widely and often exposed what not to copy.
+
+| Pattern and mechanism | When to use it | Why it works | How it fails | Measurable checks |
+|---|---|---|---|---|
+| Controlled spectacle plus quiet utility — concentrate novelty in one memorable scene while navigation, actions, and content structure remain conventional | a memorable object/scene must sell or explain one idea while navigation remains ordinary | novelty is concentrated in one layer, so orientation and actions remain legible | every control becomes experimental; spectacle delays content or hides the action | one named focal spectacle; navigation/controls use familiar anatomy; payload/CLS/LCP budget recorded |
+| Expressive scale contrast — let display type create architecture while body text, metadata, and actions remain stable | short decisive copy or editorial voice can carry structure | display type becomes architecture while metadata/actions remain stable | long translated copy clips; ratio becomes illegibility or a giant-word cliché | inventory rendered size extremes, line-length, clipping at 200% text/mobile, and semantic reading order |
+| Object-led composition — use a real artifact as the spatial anchor for annotation, sequence, and evidence | a real product/specimen/place/artifact has meaningful detail | scale cues and orbiting annotation make evidence spatial | generic floating object or stock visual; overlay text loses contrast | object provenance, annotation mapping, contrast over real assets, fallback image/text equivalence |
+| Editorial indexing — make inventory structure, aligned metadata, filtering, and row anatomy carry the design | archive/catalog/research inventory is itself the content | aligned rows, metadata, numbering, and filtering create craft through information structure | sterile brutalism or impossible scan density; filters hide state | row anatomy stability, sort/filter recovery, keyboard order, empty/error states, density/grouping inspection |
+| Intentional asymmetry/overlap — break selected edges or layer elements inside a documented parent grid | cultural/editorial/portfolio direction needs tension | a parent grid makes deviation legible and controlled | random offsets, clipped translations, focus order contradicts visual order | parent grid documented; overlap count localized; centroid deviation intentional; focus/DOM order unaffected |
+| Motion as material continuity — animate identity/state changes only where motion explains causality or space | object identity or spatial state genuinely changes | motion explains causality and preserves orientation | decorative fades everywhere, scroll trapping, vestibular risk, payload cost | named purpose per motion; concurrency budget; reduced-motion replacement; frame/payload measurement |
+
+## Measured prototype critique
+
+Before defending asymmetry, overlap, or a wide/narrow composition as intentional, record the rendered geometry: maximum text-content measure independent of viewport width, estimated centroid deviation, overlap count, visible grid count, and behavior at desktop plus narrow widths. Full-bleed media must be named as an exception; body text, forms, controls, and dense data still need deliberate measure constraints. Treat the numbers as evidence to inspect, not scores to maximize.
+
+## Do not copy from award sites
+
+Copy the mechanism, never the surface or the excess. Do not copy multi-megabyte initial payloads, hundreds of requests, scroll hijacking, hidden scrollbars, disabled selection/zoom, cursor replacement without parity, canvas-only text, autoplaying sound/motion, mystery navigation, interaction-dependent essential content, or inaccessible contrast merely because they appear in celebrated work.
+
+A direction inspired by high-end work must pass the ordinary floor first: semantic HTML/platform idioms, direct navigation links, normal input behavior, keyboard/focus visibility, reduced-motion equivalence, stable loading, readable type, truthful content, and measurable performance. If removing the visual effect reveals no content structure, the direction was decoration. If preserving the effect requires sacrificing usability, change the effect.
