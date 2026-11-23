@@ -228,24 +228,48 @@ const auditSource = `() => {
     for (let index = layers.length - 1; index >= 0; index -= 1) composite = alphaBlend(layers[index], composite);
     return composite;
   };
-  const isRenderedText = (element, rect) => {
-    if (rect.width <= 0 || rect.height <= 0) return false;
-    const viewportHeight = document.documentElement.clientHeight;
-    if (rect.right <= 0 || rect.bottom <= 0 || rect.left >= vw || rect.top >= viewportHeight) return false;
-    let node = element;
+  const documentBounds = {
+    right: Math.max(document.documentElement.scrollWidth, vw),
+    bottom: Math.max(document.documentElement.scrollHeight, document.documentElement.clientHeight),
+  };
+  const clippedByAncestor = (parent, rect) => {
+    let node = parent;
     while (node && node.nodeType === 1) {
       const nodeStyle = getComputedStyle(node);
-      if (nodeStyle.display === 'none' || nodeStyle.visibility === 'hidden' || nodeStyle.visibility === 'collapse' || Number.parseFloat(nodeStyle.opacity) === 0) return false;
-      if (node !== element) {
+      if (nodeStyle.display !== 'contents') {
         const clip = node.getBoundingClientRect();
         const clippedHorizontally = /hidden|clip/.test(nodeStyle.overflowX) && (rect.right <= clip.left || rect.left >= clip.right);
         const clippedVertically = /hidden|clip/.test(nodeStyle.overflowY) && (rect.bottom <= clip.top || rect.top >= clip.bottom);
-        if (clippedHorizontally || clippedVertically) return false;
+        if (clippedHorizontally || clippedVertically) return true;
       }
       node = node.parentElement;
     }
-    return true;
+    return false;
   };
+  const textNodeIsRendered = (node) => {
+    const parent = node.parentElement;
+    if (!parent) return false;
+    if (typeof parent.checkVisibility === 'function') {
+      if (!parent.checkVisibility({ opacityProperty: true, visibilityProperty: true })) return false;
+    } else {
+      let ancestor = parent;
+      while (ancestor && ancestor.nodeType === 1) {
+        const ancestorStyle = getComputedStyle(ancestor);
+        if (ancestorStyle.display === 'none' || ancestorStyle.visibility === 'hidden' || ancestorStyle.visibility === 'collapse' || Number.parseFloat(ancestorStyle.opacity) === 0) return false;
+        ancestor = ancestor.parentElement;
+      }
+    }
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const rects = Array.from(range.getClientRects()).filter((rect) => rect.width > 0 && rect.height > 0);
+    if (range.detach) range.detach();
+    return rects.some((rect) => {
+      const documentRect = { left: rect.left + window.scrollX, right: rect.right + window.scrollX, top: rect.top + window.scrollY, bottom: rect.bottom + window.scrollY };
+      const withinDocument = documentRect.right > 0 && documentRect.bottom > 0 && documentRect.left < documentBounds.right && documentRect.top < documentBounds.bottom;
+      return withinDocument && !clippedByAncestor(parent, rect);
+    });
+  };
+  const hasRenderedText = (element) => Array.from(element.childNodes).some((node) => node.nodeType === 3 && node.textContent.trim() && textNodeIsRendered(node));
   for (const element of elements) {
     const rect = element.getBoundingClientRect();
     const style = getComputedStyle(element);
@@ -255,7 +279,7 @@ const auditSource = `() => {
       const clippedY = element.scrollHeight > element.clientHeight + 2 && /hidden|clip/.test(style.overflowY);
       if ((clippedX || clippedY) && element.textContent.trim()) add('clipped-text', 'medium', 'text content may be clipped by hidden overflow', element);
     }
-    if (isRenderedText(element, rect) && element.childNodes.length && Array.from(element.childNodes).some((node) => node.nodeType === 3 && node.textContent.trim())) {
+    if (hasRenderedText(element)) {
       const fg = parseColor(style.color);
       if (fg) {
         const background = backgroundFor(element);
