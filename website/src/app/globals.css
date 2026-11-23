@@ -2,7 +2,8 @@
 @import "../styles/theme-tokens.css";
 
 @theme {
-  --font-display: var(--font-syne), "Space Grotesk", sans-serif;
+  --font-display: var(--font-space), "Plus Jakarta Sans", sans-serif;
+  --font-serif: var(--font-cormorant), Georgia, serif;
   --font-sans: var(--font-jakarta), -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: var(--font-mono-code), ui-monospace, SFMono-Regular, monospace;
 }
@@ -32,6 +33,10 @@
 
 .font-display {
   font-family: var(--font-display);
+}
+
+.font-serif {
+  font-family: var(--font-serif);
 }
 
 .font-mono {

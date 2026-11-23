@@ -1,11 +1,24 @@
 import type { Metadata } from 'next';
-import { Syne, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
+import {
+  Space_Grotesk,
+  Cormorant_Garamond,
+  Plus_Jakarta_Sans,
+  JetBrains_Mono,
+} from 'next/font/google';
 import './globals.css';
 
-const syne = Syne({
-  subsets: ['latin'],
-  weight: ['600', '700', '800'],
-  variable: '--font-syne',
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['500', '600', '700'],
+  variable: '--font-space',
+  display: 'swap',
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-cormorant',
   display: 'swap',
 });
 
@@ -17,7 +30,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 const jetbrains = JetBrains_Mono({
-  subsets: ['latin'],
+  subsets: ['latin', 'vietnamese'],
   weight: ['400', '500', '600'],
   variable: '--font-mono-code',
   display: 'swap',
@@ -37,7 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       data-theme="dark"
-      className={`${syne.variable} ${jakarta.variable} ${jetbrains.variable}`}
+      className={`${spaceGrotesk.variable} ${cormorant.variable} ${jakarta.variable} ${jetbrains.variable}`}
     >
       <body>
         <a
