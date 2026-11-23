@@ -5,7 +5,7 @@ import http from 'node:http';
 import { createRequire } from 'node:module';
 
 function help() {
-  return `Usage: node shoot.mjs <url-or-file> [options]
+  return `Usage: node shoot.mjs <url-file-or-directory> [options]
 
 Capture optional dependency-free browser visual QA evidence. Playwright is used
 only when already installed; otherwise install guidance is printed and nothing
@@ -15,6 +15,8 @@ Options:
   --out DIR             Artifact directory (default: visual-qa)
   --breakpoints LIST    Width x height list (default: 390x844,768x1024,1440x900)
   --project DIR         Dependency resolution root (default: current directory)
+  --root DIR            Static server root for local targets (default: nearest
+                        ancestor containing package.json or .git)
   --timeout MS          Navigation timeout in milliseconds (default: 30000)
   --light-only          Skip dark-mode captures
   --no-reduced-motion   Skip reduced-motion captures
@@ -31,7 +33,7 @@ Install Playwright in the target project when capture is desired, for example:
 }
 
 function parse(args) {
-  const options = { out: 'visual-qa', breakpoints: '390x844,768x1024,1440x900', timeout: 30000, project: process.cwd(), lightOnly: false, reducedMotion: true };
+  const options = { out: 'visual-qa', breakpoints: '390x844,768x1024,1440x900', timeout: 30000, project: process.cwd(), root: null, lightOnly: false, reducedMotion: true };
   const positional = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -44,6 +46,8 @@ function parse(args) {
     else if (arg.startsWith('--breakpoints=')) options.breakpoints = arg.slice(14);
     else if (arg === '--project') options.project = args[++index];
     else if (arg.startsWith('--project=')) options.project = arg.slice(10);
+    else if (arg === '--root') options.root = args[++index];
+    else if (arg.startsWith('--root=')) options.root = arg.slice(7);
     else if (arg === '--timeout') options.timeout = Number(args[++index]);
     else if (arg.startsWith('--timeout=')) options.timeout = Number(arg.slice(10));
     else if (arg.startsWith('-')) throw new Error(`unknown option: ${arg}`);
@@ -64,14 +68,32 @@ const mimeTypes = new Map(Object.entries({
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.ico': 'image/x-icon', '.woff': 'font/woff', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.wasm': 'application/wasm',
 }));
 
-async function createStaticTarget(target) {
-  if (/^https?:\/\//i.test(target)) return { url: target, async close() {} };
+function findDefaultRoot(start) {
+  let current = start;
+  while (true) {
+    if (fs.existsSync(path.join(current, 'package.json')) || fs.existsSync(path.join(current, '.git'))) return current;
+    const parent = path.dirname(current);
+    if (parent === current) return start;
+    current = parent;
+  }
+}
+
+async function createStaticTarget(target, options) {
+  if (/^https?:\/\//i.test(target)) return { url: target, local: false, async close() {} };
   const resolved = path.resolve(target);
   if (!fs.existsSync(resolved)) throw new Error(`target is neither an http(s) URL nor an existing file/directory: ${target}`);
   const stat = fs.statSync(resolved);
-  const root = fs.realpathSync(stat.isDirectory() ? resolved : path.dirname(resolved));
+  const fallbackRoot = stat.isDirectory() ? resolved : path.dirname(resolved);
+  const configuredRoot = path.resolve(options.root || findDefaultRoot(fallbackRoot));
+  if (!fs.existsSync(configuredRoot) || !fs.statSync(configuredRoot).isDirectory()) throw new Error(`static server root is not a directory: ${configuredRoot}`);
+  const root = fs.realpathSync(configuredRoot);
   const rootPrefix = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
-  const initialPath = stat.isDirectory() ? '/' : `/${encodeURIComponent(path.basename(resolved))}`;
+  const realTarget = fs.realpathSync(resolved);
+  const relativeTarget = path.relative(root, realTarget);
+  if (relativeTarget.startsWith('..') || path.isAbsolute(relativeTarget)) throw new Error(`local target is outside the static server root: target=${realTarget}; root=${root}`);
+  const encodedTarget = relativeTarget.split(path.sep).map(encodeURIComponent).join('/');
+  let initialPath = encodedTarget ? `/${encodedTarget}` : '/';
+  if (stat.isDirectory() && !initialPath.endsWith('/')) initialPath += '/';
   const server = http.createServer((request, response) => {
     let pathname;
     try {
@@ -113,6 +135,7 @@ async function createStaticTarget(target) {
   const { port } = server.address();
   return {
     url: `http://127.0.0.1:${port}${initialPath}`,
+    local: true,
     close: () => new Promise((resolve) => server.close(resolve)),
   };
 }
@@ -270,7 +293,7 @@ async function main() {
   const out = path.resolve(options.out);
   fs.mkdirSync(out, { recursive: true });
   const browser = await chromium.launch({ headless: true });
-  const staticTarget = await createStaticTarget(target);
+  const staticTarget = await createStaticTarget(target, options);
   const report = { target, generatedAt: new Date().toISOString(), captures: [], heuristic: true };
   try {
     for (const viewport of breakpoints) {
