@@ -49,7 +49,7 @@ Hybrid surfaces pick one primary mode per screen or region. Do not let a persuas
 1. **Frame** — detect stack/surface/input modality; identify audience, job-to-be-done, real material inventory, constraints, locale scope, and existing design system. Ask only for information that materially changes the design.
 2. **Diverge** — use the `pixelcraft-direction` skill to generate 3–5 far-apart directions with probabilities, score them, select one, record why the others lost, and inspect repetition history. For brand-kit, identity-board, logo-system, moodboard, or visual-identity image generation, use the `pixelcraft-brandkit` skill by name and its 2–3 brand-world divergence flow before image prompting.
 3. **Specify** — produce the direction card; use `pixelcraft-tokens` for DTCG tokens, `pixelcraft-ux` for flows plus the state matrix, `pixelcraft-patterns` when the work matches a named product pattern, and `pixelcraft-dataviz` when the work communicates quantitative data, dashboards, maps, graphs, or visualization-heavy interfaces. Do not start with component trivia before direction and constraints exist.
-4. **Build** — use the appropriate platform skill by name when installed (`pixelcraft-web`, `pixelcraft-mobile`, `pixelcraft-data-apps`, `pixelcraft-desktop`, `pixelcraft-tui`, `pixelcraft-email`, `pixelcraft-document`, `pixelcraft-media`, `pixelcraft-chat-ui`, `pixelcraft-game-ui`, or `pixelcraft-extensions`). If absent, translate the direction idiomatically yourself without importing web assumptions.
+4. **Build** — use the appropriate platform skill by name when installed (`pixelcraft-web`, `pixelcraft-mobile`, `pixelcraft-data-apps`, `pixelcraft-desktop`, `pixelcraft-tui`, `pixelcraft-email`, `pixelcraft-document`, `pixelcraft-media`, `pixelcraft-chat-ui`, `pixelcraft-constrained`, `pixelcraft-game-ui`, or `pixelcraft-extensions`). If absent, translate the direction idiomatically yourself without importing web assumptions.
 5. **Verify** — use `pixelcraft-review` for slop scanning, heuristic critique, accessibility/state review, and evidence-ranked findings; use `pixelcraft-visual-qa` for the render → screenshot → self-critique → fix loop and performance budgets. Inspect rendered output where the environment permits and label every claim honestly.
 6. **Report** — decisions, verification evidence, unresolved risks, and waived items using the report contract.
 
@@ -70,6 +70,7 @@ After detecting the stack, use the matching platform skill by name and read only
 | `pixelcraft-document` | `print-css`, `pdf-tools`, `archetypes`, `slides` |
 | `pixelcraft-media` | `social-cards`, `og-generation`, `banners-video` |
 | `pixelcraft-chat-ui` | `slack-discord`, `mobile-business-platforms`, `conversation-design` |
+| `pixelcraft-constrained` | `tv-wearables`, `specialized-hardware`, `voice-ui` |
 | `pixelcraft-game-ui` | `unity-ui-toolkit`, `godot`, `unreal-umg`, `hud-principles`, `love2d`, `bevy`, `monogame` |
 | `pixelcraft-extensions` | `browser-extensions`, `vscode-webviews`, `raycast`, `figma-office` |
 
