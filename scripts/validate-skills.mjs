@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const skillsRoot = path.join(root, 'skills');
+const evalsRoot = path.join(root, 'evals');
 const errors = [];
 const namePattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -104,6 +105,14 @@ for (const entry of skillDirs) {
   else if (data.description.length > 1024) fail(file, `description is ${data.description.length} characters; limit is 1024`);
   if (bodyLines.length > 500) fail(file, `body has ${bodyLines.length} lines; limit is 500`);
   checkLinks(file, skillDir, skillName, text);
+
+  const evalFile = path.join(evalsRoot, `${skillName}.md`);
+  if (!fs.existsSync(evalFile)) {
+    fail(evalFile, `missing evaluation file for ${skillName}`);
+  } else {
+    const evalText = fs.readFileSync(evalFile, 'utf8');
+    if (!/^##\s+Case\b/m.test(evalText)) fail(evalFile, 'missing at least one `## Case` evaluation prompt');
+  }
 
   const scriptsDir = path.join(skillDir, 'scripts');
   if (fs.existsSync(scriptsDir)) {
