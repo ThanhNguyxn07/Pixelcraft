@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,6 +22,21 @@ function runInventory(target, outPath, extra = []) {
   if (process.env.PIXELCRAFT_TEST_PLAYWRIGHT_PROJECT) extraArgs.push('--project', process.env.PIXELCRAFT_TEST_PLAYWRIGHT_PROJECT);
   if (process.env.PIXELCRAFT_TEST_CHROMIUM) extraArgs.push('--executable-path', process.env.PIXELCRAFT_TEST_CHROMIUM);
   return spawnSync(process.execPath, [script, target, '--out', outPath, ...extra, ...extraArgs], { encoding: 'utf8', cwd: root });
+}
+
+function runInventoryAsync(target, outPath, extra = []) {
+  const extraArgs = [];
+  if (process.env.PIXELCRAFT_TEST_PLAYWRIGHT_PROJECT) extraArgs.push('--project', process.env.PIXELCRAFT_TEST_PLAYWRIGHT_PROJECT);
+  if (process.env.PIXELCRAFT_TEST_CHROMIUM) extraArgs.push('--executable-path', process.env.PIXELCRAFT_TEST_CHROMIUM);
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [script, target, '--out', outPath, ...extra, ...extraArgs], { cwd: root });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', (chunk) => { stdout += chunk; });
+    child.stderr.on('data', (chunk) => { stderr += chunk; });
+    child.on('error', reject);
+    child.on('close', (status) => resolve({ status, stdout, stderr }));
+  });
 }
 
 try {
@@ -130,6 +146,28 @@ window.addEventListener('load', () => {
     assert.ok(totalShiftSum > 0.1, `expected two real layout shifts, got sum=${totalShiftSum}`);
     assert.ok(clsViewport.cls > 0 && clsViewport.cls < totalShiftSum * 0.75, `expected max session-window CLS (${clsViewport.cls}) < 75% of cumulative sum (${totalShiftSum})`);
     console.log('ok 3 - CLS uses max session window instead of cumulative sum');
+
+    const navServer = http.createServer((req, res) => {
+      if (req.url === '/iframe-404') {
+        res.writeHead(404, { 'content-type': 'text/html; charset=utf-8' });
+        res.end('<!doctype html><title>Missing frame</title><p>Not found</p>');
+        return;
+      }
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      res.end('<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Main 200</title></head><body><main><h1>Main</h1><iframe src="/iframe-404"></iframe></main></body></html>');
+    });
+    await new Promise((resolve) => navServer.listen(0, '127.0.0.1', resolve));
+    try {
+      const { port } = navServer.address();
+      const navOut = path.join(tmp, 'nav-status.json');
+      const navResult = await runInventoryAsync(`http://127.0.0.1:${port}/`, navOut, ['--breakpoints=800x600', '--wait-ms=100']);
+      assert.equal(navResult.status, 0, `${navResult.stdout}\n${navResult.stderr}`);
+      const navViewport = JSON.parse(fs.readFileSync(navOut, 'utf8')).viewports[0];
+      assert.equal(navViewport.network.status, 200, `expected main document status 200, got ${navViewport.network.status}`);
+      console.log('ok 4 - subframe document responses do not overwrite main navigation status');
+    } finally {
+      await new Promise((resolve) => navServer.close(resolve));
+    }
 
     console.log('style inventory tests passed');
   }

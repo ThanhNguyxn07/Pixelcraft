@@ -207,7 +207,7 @@ function emptyNetworkPhase() {
   return { requests: 0, transferBytes: 0, jsBytes: 0 };
 }
 
-function observeNetwork(session) {
+function observeNetwork(session, mainFrameId = null) {
   let loadEventSeen = false;
   const active = new Map();
   const network = {
@@ -256,7 +256,9 @@ function observeNetwork(session) {
     resourceBucket(type).requests += 1;
   });
   session.on('Network.responseReceived', (event) => {
-    if (event.type === 'Document') network.status = event.response.status;
+    if (event.type === 'Document' && (!mainFrameId || event.frameId === mainFrameId)) {
+      network.status = event.response.status;
+    }
   });
   session.on('Network.loadingFinished', (event) => {
     const record = active.get(event.requestId);
@@ -949,9 +951,11 @@ async function measurePage(page, target, viewport, options) {
   await page.setViewportSize(viewport);
   await page.addInitScript(initObserver);
   const session = await page.context().newCDPSession(page);
-  const tracker = observeNetwork(session);
   await session.send('Page.enable');
   await session.send('Network.enable');
+  const { frameTree } = await session.send('Page.getFrameTree');
+  const mainFrameId = frameTree?.frame?.id || null;
+  const tracker = observeNetwork(session, mainFrameId);
   const response = await page.goto(target, { waitUntil: 'load', timeout: options.timeout });
   if (options.waitFor) await page.waitForSelector(options.waitFor, { timeout: options.timeout });
   if (options.waitMs > 0) await page.waitForTimeout(options.waitMs);
