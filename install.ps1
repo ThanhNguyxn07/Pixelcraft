@@ -10,6 +10,7 @@ param(
   [string]$Archive
 )
 
+& {
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
@@ -203,4 +204,5 @@ try {
   }
 } finally {
   Remove-Item -LiteralPath $tmpRoot -Recurse -Force -ErrorAction SilentlyContinue
+}
 }
