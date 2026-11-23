@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft-ux` behavior when the prompt matches its trigger.
 - covers happy path plus empty/error/permission/offline/loading states.
+- uses cognitive-walkthrough questions for intent, visibility, association, and feedback instead of asserting that users will figure it out.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -37,6 +38,8 @@
 
 - Selects or applies `pixelcraft-ux` behavior when the prompt matches its trigger.
 - preserves input/context and gives truthful retry/idempotency behavior.
+- specifies adaptive validation timing, error summary/focus behavior, tolerant parsing, autocomplete/input-mode behavior, and paste/autofill preservation.
+- distinguishes inspection/model judgment from real-user evidence and escalates unresolved behavioral uncertainty rather than fabricating testing.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 

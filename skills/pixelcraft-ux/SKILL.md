@@ -13,6 +13,8 @@ UX precedes styling. Establish user intent, task sequence, state coverage, and r
 ## References
 
 - Read [references/flows-ia.md](references/flows-ia.md) for JTBD, task analysis, flow shape, IA depth, entry points, deep links, and navigation conventions.
+- Read [references/cognitive-walkthrough.md](references/cognitive-walkthrough.md) when judging first-use learnability or step-by-step task completion.
+- Read [references/usability-testing.md](references/usability-testing.md) when behavioral uncertainty requires real-user evidence rather than inspection.
 - Read [references/state-matrix.md](references/state-matrix.md) whenever data, network, permission, input, or async behavior exists.
 - Read [references/forms.md](references/forms.md) for labels, validation, input preservation, autofill, paste, mobile keyboards, redundant entry, authentication, and error recovery.
 - Read [references/feedback-performance.md](references/feedback-performance.md) for response-time limits, undo/destructive behavior, loading strategy, and perceived performance.
@@ -24,12 +26,13 @@ UX precedes styling. Establish user intent, task sequence, state coverage, and r
 
 1. **Define job:** actor, triggering situation, desired outcome, constraints, success signal, frequency, expertise, locale/accessibility needs.
 2. **Map task:** current steps, decision points, interruptions, handoffs, errors, and recovery. Remove steps before decorating them.
-3. **Shape flow/IA:** minimize depth and ambiguous branches; preserve context; make entry/deep-link state explicit.
-4. **Complete state matrix:** do not implement only the happy path.
-5. **Design interaction copy and feedback:** action language, timing, progress, undo/recovery.
-6. **Reduce cognitive load:** smart defaults, recognition, progressive disclosure, grouped decisions.
-7. **Validate against platform conventions:** back/escape, scroll restoration, shortcuts, gestures, focus/controller behavior.
-8. **Record unresolved UX risks** with evidence labels in the final Pixelcraft report.
+3. **Walk the task:** use the cognitive-walkthrough contract for first-use intent, visibility, association, and feedback; escalate behavioral uncertainty to real-user evidence instead of inventing validation.
+4. **Shape flow/IA:** minimize depth and ambiguous branches; preserve context; make entry/deep-link state explicit.
+5. **Complete state matrix:** do not implement only the happy path.
+6. **Design interaction copy and feedback:** action language, timing, progress, undo/recovery.
+7. **Reduce cognitive load:** smart defaults, recognition, progressive disclosure, grouped decisions.
+8. **Validate against platform conventions:** back/escape, scroll restoration, shortcuts, gestures, focus/controller behavior.
+9. **Record unresolved UX risks** with evidence labels in the final Pixelcraft report.
 
 ## Non-negotiable checks
 

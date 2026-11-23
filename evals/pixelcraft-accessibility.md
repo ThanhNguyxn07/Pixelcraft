@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft-accessibility` behavior when the prompt matches its trigger.
 - checks semantics/focus/contrast/error identification.
+- tests WCAG 2.2 additions for focus occlusion, dragging alternatives, target size exceptions, consistent help, redundant entry, and accessible authentication.
 - uses platform-appropriate verification.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -37,6 +38,7 @@
 
 - Selects or applies `pixelcraft-accessibility` behavior when the prompt matches its trigger.
 - covers touch target/screen reader/text scaling/reduced motion.
+- requires complete composite-widget interaction contracts for dialogs/menus/tabs/comboboxes/disclosures rather than role-only ARIA.
 - distinguishes verified from unchecked claims.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 

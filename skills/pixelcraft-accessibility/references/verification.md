@@ -30,3 +30,30 @@ Automated zero means “no detected violations in scanned scope,” never “acc
 Use: “axe-core scan of `<scope>` reported zero violations `static`; keyboard checkout flow completed through payment step `rendered`; VoiceOver not tested `not-checked`.”
 
 Never use: “WCAG compliant” unless the full scoped conformance process actually happened and legal/conformance language is intended.
+
+## Composite-widget scripts
+
+For custom dialogs, menus, tabs, comboboxes, disclosures, grids, trees, carousels, live regions, tooltips, and drag/drop, write the expected interaction contract before manual testing. At minimum verify:
+
+- entry: how focus/attention enters the widget and whether context is announced;
+- movement: arrows/tab/home/end/escape/controller equivalents and direction reversal;
+- activation vs selection: when each happens and whether async state is pending;
+- exit/restoration: where focus goes after close, delete, submit, error, or route change;
+- hidden state: inactive content is neither focusable nor announced as active;
+- async refresh: focus does not disappear and status is concise/truthful;
+- mode stress: text scaling, RTL, high contrast/forced colors, reduced motion, touch target behavior.
+
+Record exact assistive technology/platform versions when available. If only keyboard inspection is possible, do not infer screen-reader quality from it.
+
+## Regression minimum
+
+When fixing one accessibility defect, retest:
+
+1. the original failing task path;
+2. reverse navigation/focus restoration;
+3. one error/recovery path;
+4. smallest supported geometry or text scaling;
+5. relevant dark/high-contrast/forced-colors mode;
+6. any composite-widget state touched by the fix.
+
+Do not close a defect because the automated scanner became quiet.
