@@ -19,7 +19,7 @@ copying self-contained skill folders into an agent skills directory.
 
 Options:
   --agent NAME     claude, codex, agents, devin, cursor, gemini, copilot,
-                   windsurf, opencode, or all. Comma-separated names allowed.
+                   windsurf, opencode, kiro, or all. Comma-separated names allowed.
                    Default: agents.
   --skills LIST    Comma-separated skill names, or all. Default: all.
   --global         Install in the user-level skills directory.
@@ -120,13 +120,13 @@ canonical_agent() {
 
 valid_agent() {
   case "$1" in
-    claude|codex|agents|devin|cursor|gemini|copilot|windsurf|opencode|all) return 0 ;;
+    claude|codex|agents|devin|cursor|gemini|copilot|windsurf|opencode|kiro|all) return 0 ;;
     *) return 1 ;;
   esac
 }
 
 agents=()
-all_agents=(claude codex agents devin cursor gemini copilot windsurf opencode)
+all_agents=(claude codex agents devin cursor gemini copilot windsurf opencode kiro)
 IFS=',' read -r -a raw_agents <<< "$agents_arg"
 use_all_agents=0
 for raw in ${raw_agents[@]+"${raw_agents[@]}"}; do
@@ -232,8 +232,12 @@ target_for() {
   if [[ "$scope" == "project" ]]; then
     case "$agent" in
       claude) printf '%s/.claude/skills\n' "$PWD" ;;
-      codex|agents|devin|cursor|gemini|copilot) printf '%s/.agents/skills\n' "$PWD" ;;
-      windsurf) printf '%s/.windsurf/skills\n' "$PWD" ;;
+      codex|agents|devin) printf '%s/.agents/skills\n' "$PWD" ;;
+      cursor) printf '%s/.cursor/skills\n' "$PWD" ;;
+      gemini) printf '%s/.gemini/skills\n' "$PWD" ;;
+      copilot) printf '%s/.github/skills\n' "$PWD" ;;
+      windsurf) printf '%s/.windsurf/pixelcraft/skills\n' "$PWD" ;;
+      kiro) printf '%s/.kiro/pixelcraft/skills\n' "$PWD" ;;
       opencode) printf '%s/.opencode/skills\n' "$PWD" ;;
     esac
   else
@@ -243,8 +247,9 @@ target_for() {
       cursor) printf '%s/.cursor/skills\n' "$HOME" ;;
       gemini) printf '%s/.gemini/skills\n' "$HOME" ;;
       copilot) printf '%s/.copilot/skills\n' "$HOME" ;;
-      windsurf) printf '%s/.codeium/windsurf/skills\n' "$HOME" ;;
+      windsurf) printf '%s/.codeium/windsurf/pixelcraft/skills\n' "$HOME" ;;
       opencode) printf '%s/.config/opencode/skills\n' "$HOME" ;;
+      kiro) printf '%s/.kiro/pixelcraft/skills\n' "$HOME" ;;
     esac
   fi
 }
@@ -317,18 +322,98 @@ copy_skill() {
   echo "installed: $name -> $destination"
 }
 
+write_adapter_file() {
+  local file="$1"
+  shift
+  local dir
+  dir="$(dirname "$file")"
+  assert_target_path_safe "$dir"
+  [[ ! -L "$file" ]] || die "adapter output is a symlink: $file; refusing to install through it"
+  if [[ -e "$file" && $force -eq 0 ]]; then
+    local prefix=""
+    (( dry_run )) && prefix="dry-run: "
+    echo "${prefix}skipped existing adapter: $file (use --force to replace)"
+    return
+  fi
+  if (( dry_run )); then
+    echo "dry-run: adapter $file"
+    return
+  fi
+  mkdir -p "$dir"
+  assert_target_path_safe "$dir"
+  printf '%s\n' "$@" > "$file"
+  echo "installed adapter: $file"
+}
+
+workflow_task() {
+  case "$1" in
+    pixelcraft-plan) printf '%s' 'Run Pixelcraft step-zero planning before UI work' ;;
+    pixelcraft-review) printf '%s' 'Audit or critique UI with Pixelcraft evidence rules' ;;
+    pixelcraft-visual-qa) printf '%s' 'Capture and inspect rendered UI evidence' ;;
+    pixelcraft-direction) printf '%s' 'Generate divergent visual directions' ;;
+    *) printf '%s' 'Run the Pixelcraft orchestrator for UI design/build work' ;;
+  esac
+}
+
+write_shell_adapters() {
+  local agent="$1"
+  local root="$2"
+  local base action task
+  case "$agent" in
+    claude)
+      base="${root%/skills}"
+      for action in pixelcraft pixelcraft-plan pixelcraft-review pixelcraft-visual-qa; do
+        task="$(workflow_task "$action")"
+        write_adapter_file "$base/commands/$action.md" '---' "description: $task" '---' '' "$task. Read and follow the self-contained \`$action\` skill. Preserve user requirements, project conventions, accessibility, and evidence labels."
+      done
+      ;;
+    cursor)
+      base="${root%/skills}"
+      write_adapter_file "$base/rules/pixelcraft.mdc" '---' 'description: Route UI design and review through Pixelcraft' 'alwaysApply: true' '---' '' '# Pixelcraft router' '' "Use Pixelcraft for interface design, implementation, review, and visual QA. Start with pixelcraft-plan and read the matching self-contained skill under $root; do not inline large generated content."
+      ;;
+    copilot)
+      base="${root%/skills}"
+      write_adapter_file "$base/copilot-instructions.md" '# Pixelcraft router' '' "Use Pixelcraft for interface design, implementation, review, and visual QA. Start with pixelcraft-plan and read the matching self-contained skill under $root; do not inline large generated content."
+      write_adapter_file "$base/instructions/pixelcraft.instructions.md" '---' 'applyTo: "**/*.{html,css,scss,js,jsx,ts,tsx,vue,svelte,astro,py,rb,php,cs,java,kt,swift,dart,rs,go,lua,ex,exs,clj,cljs,elm,fs,scala}"' '---' '' 'When editing interface or user-facing behavior, follow copilot-instructions.md and read the matching Pixelcraft skill before implementation or review.'
+      for action in pixelcraft-plan pixelcraft-review pixelcraft-visual-qa pixelcraft-direction; do
+        task="$(workflow_task "$action")"
+        write_adapter_file "$base/prompts/$action.prompt.md" '---' "description: $task" '---' '' "$task. Read and follow the self-contained \`$action\` skill. Preserve user requirements, project conventions, accessibility, and evidence labels."
+      done
+      ;;
+    windsurf|kiro)
+      base="${root%/pixelcraft/skills}"
+      if [[ "$agent" == "windsurf" ]]; then
+        write_adapter_file "$base/rules/pixelcraft.md" '# Pixelcraft router' '' "Use Pixelcraft for interface design, implementation, review, and visual QA. Start with pixelcraft-plan and read the matching self-contained skill under $root."
+        for action in pixelcraft-plan pixelcraft-review pixelcraft-visual-qa pixelcraft-direction; do
+          task="$(workflow_task "$action")"
+          write_adapter_file "$base/workflows/$action.md" "# $task" '' "1. Read the self-contained \`$action\` skill under $root." '2. Follow its workflow and references.' '3. Preserve user requirements, accessibility, and evidence labels.'
+        done
+      else
+        write_adapter_file "$base/steering/pixelcraft.md" '# Pixelcraft steering' '' "Use Pixelcraft for interface design, implementation, review, and visual QA. Start with pixelcraft-plan and read the matching self-contained skill under $root."
+      fi
+      ;;
+  esac
+}
+
 targets=()
+target_agents=()
 for agent in ${agents[@]+"${agents[@]}"}; do
   target="$(target_for "$agent")"
   assert_target_path_safe "$target"
-  contains "$target" ${targets[@]+"${targets[@]}"} || targets+=("$target")
+  if ! contains "$target" ${targets[@]+"${targets[@]}"}; then
+    targets+=("$target")
+    target_agents+=("$agent")
+  fi
 done
 
-for target in ${targets[@]+"${targets[@]}"}; do
+for index in "${!targets[@]}"; do
+  target="${targets[$index]}"
+  agent="${target_agents[$index]}"
   for entry in ${selected[@]+"${selected[@]}"}; do
     name="${entry%%:*}"
     auto=0
     [[ "${entry##*:}" == "auto" ]] && auto=1
     copy_skill "$name" "$target" "$auto"
   done
+  write_shell_adapters "$agent" "$target"
 done
