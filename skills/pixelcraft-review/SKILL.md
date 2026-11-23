@@ -17,6 +17,7 @@ Review is evidence work, not taste commentary. Never say “looks good” or “
 - Read [references/polish.md](references/polish.md) for final optical/state/copy/motion/dark-mode/long-string inspection.
 - Read [references/critique-protocol.md](references/critique-protocol.md) before structured critique/design decision review.
 - Read [references/audit-report.md](references/audit-report.md) before writing an audit report.
+- Read [references/finish-gate.md](references/finish-gate.md) before declaring any UI implementation complete; enforces anti-laziness, zero-placeholder media, loaded-font verification, and 3-viewport bounded repair rounds.
 - Run `node scripts/slop-scan.mjs --help` for deterministic fingerprint scanning. The scanner is evidence input, not a judge of good design.
 
 ## Modes

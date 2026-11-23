@@ -41,6 +41,18 @@ Evidence base: recurring generated-UI patterns and output-homogenization evidenc
 - modal chains and cookie/banner chrome occupying the first screen;
 - responsive behavior that only scales a desktop layout down instead of restructuring.
 
+## Lazy-agent & design-theater fingerprints
+
+| Fingerprint | Why it happens | Redesign move |
+|---|---|---|
+| empty colored/gray `<div>` boxes standing in for product photos or illustrations | agent rushes past asset sourcing/generation | use real licensed/generated photography, authentic product UI, or bespoke SVG/canvas; never ship placeholder rectangles |
+| `font-serif` or custom font names declared in CSS without loading the actual font face | silent fallback to system Times New Roman or Arial | load every declared typeface explicitly and verify `document.fonts` in the rendered browser |
+| raw unstyled `<input type="range">` or default browser widgets inside a bespoke interface | agent skips control craft | style controls intentionally with semantic tokens and accessible focus/hover states |
+| gradient-clipped display text (`bg-clip-text text-transparent`) | recurring model hero cliché | build display hierarchy via scale, optical tracking, weight, and spacing |
+| floating pills/badges colliding with footer or hero content on scroll or at `390px` | fixed overlay added without testing viewports | integrate navigation into header/layout flow and verify `1440px`, `768px`, and `390px` renders |
+| eloquent direction plan paired with generic boxed card layout in code ("design theater") | reasoning diverges from implementation | audit rendered screenshots directly against the direction card before reporting completion |
+| shipping 3+ shallow pages/demos at once instead of finishing 1 surface properly | trading craft depth for count | finish, screenshot, and refine one complete surface before starting the next |
+
 ## Evaluation rule
 
 A page can have zero fingerprints and still be bad; absence of slop is not presence of design. Judge subject fit, hierarchy, craft, usability, and evidence separately.
