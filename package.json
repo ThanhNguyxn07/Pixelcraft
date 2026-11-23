@@ -11,10 +11,12 @@
     "node": ">=18"
   },
   "scripts": {
-    "validate": "node scripts/validate-skills.mjs"
+    "validate": "node scripts/validate-skills.mjs",
+    "build:adapters": "node scripts/build-adapters.mjs"
   },
   "files": [
     "bin/",
+    "scripts/",
     "skills/",
     "docs/",
     "LICENSE",

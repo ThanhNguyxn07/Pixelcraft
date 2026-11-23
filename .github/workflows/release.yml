@@ -17,12 +17,17 @@ jobs:
         with:
           node-version: 20
       - run: node scripts/validate-skills.mjs
-      - name: Package skills
+      - run: node scripts/build-adapters.mjs
+      - name: Package skills and adapters
         run: |
+          rm -rf release-package
+          mkdir -p release-package
+          cp -R skills release-package/skills
+          cp -R dist release-package/adapters
           mkdir -p dist
-          zip -qr dist/pixelcraft-skills.zip skills
-          tar -czf dist/pixelcraft-skills.tar.gz skills
-          ls -lh dist
+          (cd release-package && zip -qr "$GITHUB_WORKSPACE/dist/pixelcraft-skills.zip" skills adapters)
+          tar -czf dist/pixelcraft-skills.tar.gz -C release-package skills adapters
+          ls -lh dist/pixelcraft-skills.zip dist/pixelcraft-skills.tar.gz
       - name: Attach release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
