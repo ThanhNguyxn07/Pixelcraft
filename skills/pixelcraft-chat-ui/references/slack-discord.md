@@ -1,10 +1,8 @@
 # Slack Block Kit and Discord
 
-Exact limits change. Use these as implementation constraints only after checking the cited current official source.
+Exact limits change. Use these as implementation constraints only after checking current official platform documentation.
 
 ## Slack Block Kit
-
-Official references: Block Kit overview <https://docs.slack.dev/block-kit>, text object <https://docs.slack.dev/reference/block-kit/composition-objects/text-object>, section block <https://docs.slack.dev/reference/block-kit/blocks/section-block>.
 
 Documented core limits:
 
@@ -44,8 +42,6 @@ Slack `mrkdwn` is not standard Markdown and not HTML. Key consequences:
 - design already-handled/expired interaction states because messages can outlive the action validity or backend state.
 
 ## Discord
-
-Official references: component reference <https://docs.discord.com/developers/components/reference>, using message components <https://docs.discord.com/developers/components/using-message-components>, using modal components <https://docs.discord.com/developers/components/using-modal-components>, channel/embed resource documentation <https://docs.discord.com/developers/resources/channel>.
 
 ### Embeds and legacy messages
 

@@ -30,8 +30,10 @@ console.log(`Rendered ${flow.total} pages`);
 The polyfill build can also run in the page:
 
 ```html
-<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script src="/vendor/paged.polyfill.js"></script>
 ```
+
+Serve a pinned local/project-controlled copy rather than depending on a mutable third-party CDN in production or document-generation pipelines.
 
 Rules:
 

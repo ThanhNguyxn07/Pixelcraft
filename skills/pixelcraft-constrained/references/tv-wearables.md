@@ -2,8 +2,6 @@
 
 ## TV/console fundamentals
 
-Official sources: Android TV design foundations <https://developer.android.com/design/ui/tv/guides/foundations/design-for-tv>, layout guidance <https://developer.android.com/design/ui/tv/guides/styles/layouts>, typography guidance <https://developer.android.com/design/ui/tv/guides/styles/typography>, Apple typography table <https://developer.apple.com/design/human-interface-guidelines/typography>.
-
 Verified constraints:
 
 - Android frames TV as a typical **3 meter / 10 foot** lean-back surface.

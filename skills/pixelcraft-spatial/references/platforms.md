@@ -2,8 +2,6 @@
 
 ## visionOS
 
-Official sources: visionOS layout guidance <https://developer.apple.com/design/human-interface-guidelines/layout>, privacy/input guidance <https://developer.apple.com/design/human-interface-guidelines/privacy>, typography <https://developer.apple.com/design/human-interface-guidelines/typography>, developer documentation <https://developer.apple.com/documentation/visionos/>.
-
 Core surface model:
 
 | Surface | Use |
@@ -31,7 +29,7 @@ RealityKit/SwiftUI rules:
 
 ## WebXR, Three.js, React Three Fiber, and A-Frame
 
-WebXR Device API: <https://www.w3.org/TR/webxr/>. Core concepts:
+The WebXR Device API is a W3C browser standard surface. Core concepts:
 
 - feature-detect `navigator.xr` and `isSessionSupported(mode)`;
 - common modes are `inline`, `immersive-vr`, and `immersive-ar`;
@@ -54,8 +52,6 @@ A-Frame is entity-component HTML-like composition over Three.js. It is appropria
 
 ## Meta Quest / Interaction SDK
 
-Official guidance: Interaction SDK locomotion comfort <https://developers.meta.com/vr/documentation/unity/unity-isdk-locomotion-comfort/>, comfort design <https://latest.developers.meta.com/horizon/design/comfort/>, mixed-reality guidance <https://latest.developers.meta.com/horizon/design/mr-design-guideline/>.
-
 Use native interaction primitives instead of custom rays/colliders where possible:
 
 - ray/distance interaction for sparse distant targets;
@@ -68,8 +64,6 @@ Use native interaction primitives instead of custom rays/colliders where possibl
 Meta's locomotion tunneling implementation defines the vignette angularly rather than assuming a fixed device FOV. That principle matters generally: express comfort occlusion in visual-angle terms, not screen UV alone.
 
 ## Unity XR Interaction Toolkit
-
-Official docs: XRI tunneling vignette <https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@3.0/manual/tunneling-vignette-controller.html>, starter assets <https://docs.unity3d.com/Packages/com.unity.xr.interaction.toolkit@3.7/manual/samples-starter-assets.html>.
 
 Useful architecture:
 

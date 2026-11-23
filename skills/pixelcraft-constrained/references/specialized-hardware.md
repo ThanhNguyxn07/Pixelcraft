@@ -25,11 +25,11 @@ Kiosks are public physical systems. Model the entire session, not just screens:
 - **failure:** paper jam/payment/network/scanner failure needs plain-language recovery and staff/support path;
 - **environment:** glare, noise, wet/gloved hands, cleaning damage, camera/keyboard occlusion, and unstable mounting matter.
 
-ADA source: 2010 ADA Standards section 308 reach ranges <https://www.ada.gov/regs2010/2010ADAStandards/2010ADAstandards.htm#pgfId-1006285>. For unobstructed forward reach, the commonly cited high/low bounds are **48 inches maximum** and **15 inches minimum** above the finish floor, with separate side-reach/obstruction rules. Confirm jurisdiction, mounting geometry, obstruction depth, operable-part exemptions, and current legal interpretation with compliance counsel—do not treat screen layout alone as ADA certification.
+The 2010 ADA Standards section 308 reach-range guidance is commonly summarized for unobstructed forward reach as **48 inches maximum** and **15 inches minimum** above the finish floor, with separate side-reach/obstruction rules. Confirm jurisdiction, mounting geometry, obstruction depth, operable-part exemptions, and current legal interpretation with compliance counsel—do not treat screen layout alone as ADA certification.
 
 ## Embedded, LVGL, and low-resolution displays
 
-LVGL documentation: <https://docs.lvgl.io/>. Memory and frame budgets are configuration/platform-specific; measure the actual framebuffer, display driver, heap, DMA/cache behavior, font bitmaps, image decoders, theme, and widget tree instead of copying generic numbers.
+Memory and frame budgets are configuration/platform-specific; measure the actual framebuffer, display driver, heap, DMA/cache behavior, font bitmaps, image decoders, theme, and widget tree instead of copying generic numbers.
 
 Rules:
 
@@ -47,8 +47,6 @@ For tiny OLED/monochrome displays, think in glyphs and bitmap rows. Text width, 
 ## Automotive: CarPlay and Android Auto
 
 Automotive interfaces are template constrained because driver distraction is a safety issue.
-
-Official sources: Android for Cars App Library <https://developer.android.com/training/cars/apps/library>, template restrictions <https://developer.android.com/training/cars/apps/library/template-restrictions>, CarPlay documentation <https://developer.apple.com/carplay/documentation/>.
 
 Verified Android constraint: the host limits the number of templates in a task to a maximum of **five**, and the last template must be one of the documented terminal types such as `NavigationTemplate`, `PaneTemplate`, `MessageTemplate`, `MediaPlaybackTemplate`, `SignInTemplate`, or `LongMessageTemplate`. Exhausting the quota can show an error and close the app. Refreshes/back/reset operations have special rules—read the current official page before designing flows.
 

@@ -34,7 +34,7 @@ Modern Xcode asset catalogs normally use a single **1024×1024** App Store/icon 
 
 ### Android adaptive icons
 
-Android adaptive icons use foreground/background layers and runtime masks. The canonical design canvas is **108×108dp**, with the inner **72×72dp** treated as the visible safe zone; outer regions can be cropped by masks. Current Android also supports monochrome themed icons. Test foreground/background separation, monochrome recognizability, round/squircle masks, scaling, and themed contrast. Official guidance: <https://developer.android.com/develop/ui/views/launch/icon_design_adaptive>.
+Android adaptive icons use foreground/background layers and runtime masks. The canonical design canvas is **108×108dp**, with the inner **72×72dp** treated as the visible safe zone; outer regions can be cropped by masks. Current Android also supports monochrome themed icons. Test foreground/background separation, monochrome recognizability, round/squircle masks, scaling, and themed contrast. Verify current platform guidance before release because mask and themed-icon behavior evolves.
 
 ### macOS and Windows
 

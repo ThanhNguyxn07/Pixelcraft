@@ -2,8 +2,6 @@
 
 ## Telegram bots and Mini Apps
 
-Official references: Bot API formatting <https://core.telegram.org/bots/api/formatting.md>, `sendMessage` <https://core.telegram.org/bots/api/methods/sendmessage.md>, Mini Apps <https://core.telegram.org/bots/webapps>.
-
 Documented exact constraints:
 
 | Constraint | Current documented limit/behavior |
@@ -33,8 +31,6 @@ Mini App rules:
 
 ## Zalo Mini Apps and ZaUI
 
-Official starting points: Zalo Platform Document Hub ZaUI introduction <https://docs.zaloplatforms.com/docs/MA/zaui>, installation <https://docs.zaloplatforms.com/docs/MA/zaui/installation>, container docs <https://miniapp.zaloplatforms.com/docs/zaui/container/App/>.
-
 Current documented basics:
 
 - ZaUI components are derived from Zalo's official ZDS design system;
@@ -53,8 +49,6 @@ Design rules:
 Some Zalo documentation is primarily Vietnamese. Keep implementation artifacts in English when required by the project, but preserve exact API/component names unchanged.
 
 ## WhatsApp interactive messages
-
-Official references: interactive messages guide <https://developers.facebook.com/docs/whatsapp/guides/interactive-messages/>, Cloud API interactive object reference <https://developers.facebook.com/documentation/business-messaging/whatsapp/reference/whatsapp-business-phone-number/message-api/>.
 
 Documented constraints include:
 
@@ -78,8 +72,6 @@ Rules:
 - preserve message ordering/idempotency because users can reopen earlier interactions.
 
 ## Microsoft Teams Adaptive Cards
-
-Official references: HostConfig <https://learn.microsoft.com/en-us/adaptive-cards/rendering-cards/host-config>, agent-design schema compatibility <https://learn.microsoft.com/en-us/agents/design-guidelines/adaptive-cards-for-agent-design>, Adaptive Card schema explorer <https://adaptivecards.io/explorer/>.
 
 Current Microsoft agent-design documentation lists Teams desktop/web/mobile and Microsoft Copilot Chat at Adaptive Cards schema **1.5**, Dynamics 365 live chat at 1.5, Bot Framework Web Chat at 1.6 with `Action.Execute` unsupported, and Outlook Actionable Messages on a separate 1.0–1.2 track. Verify before release because host support changes.
 

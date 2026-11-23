@@ -40,7 +40,7 @@ Never loop the same prompt. Never blame the user. Log confidence/intent/slots fo
 
 ## SSML basics
 
-SSML is an XML vocabulary for speech synthesis control; see W3C Speech Synthesis Markup Language <https://www.w3.org/TR/speech-synthesis/>. Common tags include:
+SSML is an XML vocabulary for speech synthesis control standardized by the W3C. Common tags include:
 
 ```xml
 <speak>
