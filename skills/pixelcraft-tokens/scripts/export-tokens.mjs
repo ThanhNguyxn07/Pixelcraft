@@ -49,6 +49,21 @@ function rgbHex(rgb, alpha = 1) {
   const vals = [...rgb, alpha].map((v) => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0'));
   return `#${vals.slice(0, 3).join('')}${alpha < 1 ? vals[3] : ''}`;
 }
+function alphaByte(alpha) {
+  return Math.round(Math.max(0, Math.min(1, alpha)) * 255).toString(16).padStart(2, '0');
+}
+function argbHex(color) {
+  return `${alphaByte(color.alpha ?? 1)}${color.hex.slice(1, 7)}`;
+}
+function fmtNumber(value) {
+  return Number.isInteger(value) ? String(value) : String(Number(value.toFixed(6)));
+}
+function durationMs(value) {
+  const amount = Number(value.value);
+  if (value.unit === 'ms') return amount;
+  if (value.unit === 's') return amount * 1000;
+  throw new Error(`unsupported duration unit '${value.unit}'`);
+}
 
 function colorParts(value) {
   if (typeof value === 'string') return { hex: value, css: value, rgb: null, alpha: 1 };
@@ -59,7 +74,9 @@ function colorParts(value) {
     return { rgb, alpha, hex: rgbHex(rgb, alpha), css: rgbHex(rgb, alpha) };
   }
   if (space === 'oklch') {
-    const [L, C, H] = value.components.map(Number);
+    const [L, C] = value.components.map(Number);
+    const rawHue = value.components[2];
+    const H = rawHue === 'none' ? 0 : Number(rawHue);
     const rgb = oklchToRgb(L, C, H);
     return { rgb, alpha, hex: rgbHex(rgb, alpha), css: `oklch(${L} ${C} ${H}${alpha < 1 ? ` / ${alpha}` : ''})` };
   }
@@ -96,7 +113,18 @@ function collect(file) {
 }
 
 function entries(tokens) {
-  return tokens.map((t) => ({ ...t, name: camel(t.path), varName: kebab(t.path), value: scalar(t.token, t.type) }));
+  const list = tokens.map((t) => ({ ...t, name: camel(t.path), varName: kebab(t.path), value: scalar(t.token, t.type) }));
+  const seen = new Map();
+  for (const t of list) {
+    for (const [kind, identifier] of [['identifier', t.name], ['variable', t.varName]]) {
+      const key = `${kind}:${identifier}`;
+      const previous = seen.get(key);
+      const current = t.path.join('.');
+      if (previous) throw new Error(`token collision: '${previous}' and '${current}' both map to ${kind} '${identifier}'`);
+      seen.set(key, current);
+    }
+  }
+  return list;
 }
 
 function render(format, list) {
@@ -111,25 +139,39 @@ function render(format, list) {
         const [r, g, b] = t.value.rgb || [0, 0, 0];
         return `  public static let ${t.name} = Color(red: ${r.toFixed(4)}, green: ${g.toFixed(4)}, blue: ${b.toFixed(4)}, opacity: ${t.value.alpha ?? 1})`;
       }
+      if (t.type === 'duration' && typeof t.token.$value === 'object') {
+        const ms = durationMs(t.token.$value);
+        return `  public static let ${t.name}: TimeInterval = ${fmtNumber(ms / 1000)} // seconds`;
+      }
       if (typeof t.token.$value === 'object' && 'value' in (t.token.$value || {})) return `  public static let ${t.name}: Double = ${t.token.$value.value} // ${t.token.$value.unit}`;
       return `  public static let ${t.name} = ${JSON.stringify(String(t.value))}`;
     });
-    return `import SwiftUI\n\npublic enum PixelcraftTokens {\n${lines.join('\n')}\n}\n`;
+    return `import Foundation\nimport SwiftUI\n\npublic enum PixelcraftTokens {\n${lines.join('\n')}\n}\n`;
   }
   if (format === 'kotlin') {
+    const hasDuration = list.some((t) => t.type === 'duration');
     const lines = list.map((t) => {
-      if (t.type === 'color') return `val ${t.name} = Color(0xff${t.value.hex.slice(1, 7)})`;
+      if (t.type === 'color') return `val ${t.name} = Color(0x${argbHex(t.value)})`;
+      if (t.type === 'duration' && typeof t.token.$value === 'object') {
+        return `val ${t.name} = ${fmtNumber(durationMs(t.token.$value))}.milliseconds`;
+      }
       if (typeof t.token.$value === 'object' && 'value' in (t.token.$value || {})) {
         const unit = t.path.join('.').includes('font.size') ? 'sp' : 'dp';
         return `val ${t.name} = ${t.token.$value.value}.${unit}`;
       }
       return `val ${t.name} = ${JSON.stringify(String(t.value))}`;
     });
-    return `import androidx.compose.ui.graphics.Color\nimport androidx.compose.ui.unit.dp\nimport androidx.compose.ui.unit.sp\n\n${lines.join('\n')}\n`;
+    const durationImport = hasDuration ? 'import kotlin.time.Duration.Companion.milliseconds\n' : '';
+    return `import androidx.compose.ui.graphics.Color\nimport androidx.compose.ui.unit.dp\nimport androidx.compose.ui.unit.sp\n${durationImport}\n${lines.join('\n')}\n`;
   }
   if (format === 'dart') {
     const lines = list.map((t) => {
-      if (t.type === 'color') return `static const Color ${t.name} = Color(0xff${t.value.hex.slice(1, 7)});`;
+      if (t.type === 'color') return `static const Color ${t.name} = Color(0x${argbHex(t.value)});`;
+      if (t.type === 'duration' && typeof t.token.$value === 'object') {
+        const ms = durationMs(t.token.$value);
+        const constructor = Number.isInteger(ms) ? `Duration(milliseconds: ${fmtNumber(ms)})` : `Duration(microseconds: ${Math.round(ms * 1000)})`;
+        return `static const Duration ${t.name} = ${constructor};`;
+      }
       if (typeof t.token.$value === 'object' && 'value' in (t.token.$value || {})) return `static const double ${t.name} = ${t.token.$value.value}; // ${t.token.$value.unit}`;
       return `static const String ${t.name} = ${JSON.stringify(String(t.value))};`;
     });
@@ -167,7 +209,8 @@ try {
   if (outDir) {
     fs.mkdirSync(outDir, { recursive: true });
     for (const f of selected) {
-      const file = path.join(outDir, `tokens.${f === 'css' || f === 'tailwind' ? 'css' : f === 'python' ? 'py' : f === 'swift' ? 'swift' : f === 'kotlin' ? 'kt' : f === 'dart' ? 'dart' : f}`);
+      const extensions = { css: 'css', tailwind: 'tailwind.css', swift: 'swift', kotlin: 'kt', dart: 'dart', python: 'py', qt: 'qt', textual: 'textual' };
+      const file = path.join(outDir, `tokens.${extensions[f]}`);
       fs.writeFileSync(file, render(f, list));
       console.log(`wrote ${file}`);
     }
