@@ -13,6 +13,11 @@
 - Repository areas inspected:
 - Not inspected / uncertainty:
 - Requirement sources:
+- Design brief path/status:
+
+| Fact/requirement | Class (`user-provided` / `repo-observed` / `artifact-observed` / `analytics-research` / `assumption` / `unknown`) | Evidence scope/path | Consequence if wrong |
+|---|---|---|---|
+|  |  |  |  |
 
 ## Stack decision
 - Chosen stack:

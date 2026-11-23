@@ -40,3 +40,20 @@ Use this library when choosing the structural idea for a direction. It distills 
 ## Floor checklist
 
 Before committing a composition, verify: logical reading order without visual order; keyboard/controller focus sequence; 200% text scaling; narrow/wide layouts; long translations; empty/error/loading states; sticky-element occlusion; reduced-motion equivalent; CWV cost of large media/effects; and whether the idea still works when the signature visual effect is removed.
+
+## Prototypicality guardrail
+
+Do not interpret anti-slop as “make every structure unfamiliar.” Users recognize operational patterns—lists, tables, navigation, checkout, auth, settings—and benefit when those patterns remain predictable. Preserve learned structure when frequency, urgency, expertise, accessibility, or error cost is high. Earn distinctiveness through subject-derived material, precise hierarchy, typography, content quality, motion behavior, and one controlled signature rather than by scrambling expected task anatomy.
+
+A deviation is justified only when it improves the user's actual task or meaningfully expresses the subject without increasing interaction cost. Record the cost and fallback. If removing the novelty makes the screen easier but indistinguishable, the direction is under-specified; if the novelty blocks recognition, it is over-rotated.
+
+## Visual-complexity budget
+
+Before implementation, assign each screen/region a complexity posture: low, medium, high, or mixed. The budget covers visible element count, density, grouping depth, contour/border noise, motion concurrency, accent count, and focal competition.
+
+- Operate defaults to low/medium with strong grouping; high density is acceptable only when rows/columns/instruments remain aligned and scannable.
+- Persuade may spend complexity on one memorable scene while keeping navigation, proof, and action paths quiet.
+- Read and Communicate protect measure and contrast above decoration.
+- Play/Experience may use richer sensory layering only when orientation, target legibility, reduced-motion behavior, and performance survive.
+
+Complexity must be controlled by structure: grouping, focal hierarchy, whitespace/rhythm, progressive disclosure, and stable landmarks. If reducing clutter requires removing essential information, redesign the information architecture; do not simply shrink type or hide controls.

@@ -16,6 +16,8 @@ Divergence is a procedure, not a mood. Never ask for “the best design” in on
 - Read [references/composition-library.md](references/composition-library.md) when choosing the structural composition/grid or when hero-plus-cards feels like the default answer.
 - Read [references/slop-fingerprints.md](references/slop-fingerprints.md) before proposing directions and again before finalizing one.
 - Read [references/direction-card.md](references/direction-card.md) whenever writing the committed direction.
+- Read [references/direction-scoring.md](references/direction-scoring.md) before comparing or selecting directions.
+- Read [references/repetition-history.md](references/repetition-history.md) before generating candidates and when writing the final repetition check.
 - Read [references/wildcards.md](references/wildcards.md) when catalog directions feel repetitive, insufficiently subject-derived, or too safe.
 
 ## 1. Extract brief and material first
@@ -71,7 +73,7 @@ Score each direction 0–4 per criterion. Require evidence, not adjectives.
 | distinctiveness | is it meaningfully apart from slop fingerprints and prior project history? |
 | coherence | can one system sustain all required states/screens? |
 
-Choose the highest total unless the user brief changes weights. A floor risk is not automatically disqualifying, but must have a concrete mitigation. Log why every losing direction lost; “less pretty” is not a reason.
+Use the full scorecard in `references/direction-scoring.md`. Include prototypicality, hierarchy clarity, visual complexity, localization risk, implementation cost, and content truth alongside subject fit and distinctiveness. Choose the highest evidence-weighted result unless the user brief changes weights; hard floor/legal/truth failures are disqualifying regardless of total. Log why every losing direction lost; “less pretty” is not a reason.
 
 ## 4. Commit to one direction
 
@@ -104,7 +106,7 @@ Examples of valid signatures: a measurement scale integrated into navigation for
 
 ## 6. Repetition history
 
-Use `.pixelcraft/history.json` in the user's project when writable. Never commit it for the user unless asked. Format:
+Use `.pixelcraft/history.json` in the user's project when writable. Never commit it for the user unless asked. The canonical schema, normalization rules, recall procedure, and privacy limits live in `references/repetition-history.md`. Format:
 
 ```json
 {

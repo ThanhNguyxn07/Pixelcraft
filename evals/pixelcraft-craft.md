@@ -11,6 +11,7 @@
 - Selects or applies `pixelcraft-craft` behavior when the prompt matches its trigger.
 - uses material/typography/color/motion with clear rationale.
 - specifies palette construction, type pairing roles, motion budget, fallback, and reduced-motion path.
+- assigns a mode-appropriate visual-complexity budget instead of equating novelty with clutter or sparse output with quality.
 - avoids derivative interface tropes.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -38,6 +39,7 @@
 
 - Selects or applies `pixelcraft-craft` behavior when the prompt matches its trigger.
 - improves microtypography/spacing/imagery/state detail without destroying function.
+- inspects focal path, grouping, contour clutter, alignment, density, and resize behavior with concrete regions rather than saying spacing feels off.
 - avoids decorative motion/gradient/copycat composition while preserving usability and performance budgets.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.

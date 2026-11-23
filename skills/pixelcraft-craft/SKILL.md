@@ -15,6 +15,7 @@ Craft is controlled decision-making under constraints. Apply the committed direc
 - Read [references/typography.md](references/typography.md) when selecting type, building scales, pairing voices, handling scripts/fallbacks, or setting measure.
 - Read [references/color.md](references/color.md) when creating palettes, OKLCH ramps, semantic roles, dark mode, data color, or checking contrast.
 - Read [references/layout.md](references/layout.md) when designing grids, composition, spacing, rhythm, density, responsiveness, or hierarchy.
+- Read [references/layout-quality.md](references/layout-quality.md) before accepting a layout or judging rendered spacing/complexity.
 - Read [references/motion.md](references/motion.md) when defining animation, transitions, easing, duration, feedback, or reduced-motion behavior.
 - Read [references/imagery-icons.md](references/imagery-icons.md) when using photography, illustration, generated media, diagrams, or icon systems.
 

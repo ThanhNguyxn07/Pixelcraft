@@ -11,6 +11,7 @@
 - Selects or applies `pixelcraft` behavior when the prompt matches its trigger.
 - runs plan/direction/constraint routing before implementation.
 - suppresses divergence for approved design scope while still diverging only on undecided parts.
+- creates or updates a concise design brief with evidence classes, approval state, non-goals, missing material, and validation requirements.
 - coordinates ux/tokens/platform/review skills.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -38,6 +39,7 @@
 
 - Selects or applies `pixelcraft` behavior when the prompt matches its trigger.
 - inspects existing architecture and preserves constraints.
+- reports surface acceptance dimensions or explicitly marks unavailable rows `not-checked`/`waived`.
 - routes only relevant domain/platform guidance.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 

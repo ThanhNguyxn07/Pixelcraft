@@ -24,7 +24,7 @@ Do not infer greenfield merely because the current folder is empty; inspect pare
 
 1. **Scope the read.** Enumerate repository roots, packages/apps, generated/vendor directories, and ownership boundaries. Do not skim only `package.json`.
 2. **Inventory systematically.** Use [references/repo-discovery.md](references/repo-discovery.md): languages/frameworks, entry points, routing/screens, design tokens/theme/components, styling approach, state management, i18n, tests/visual tooling, CI, packaging, runtime constraints, accessibility evidence, and legal/privacy constraints.
-3. **Distinguish fact from inference.** Cite key files in the repo map. Mark unread/generated/ignored areas explicitly.
+3. **Distinguish fact from inference.** Cite key files in the repo map. Classify material facts as user-provided, repo-observed, artifact-observed, analytics/research, assumption, or unknown. Mark unread/generated/ignored areas explicitly.
 4. **Intake design inputs.** Use [references/design-input.md](references/design-input.md) for Figma, screenshots, mockups, existing UI, prototypes, and reference imagery: classify specification versus inspiration, record provenance/version/breakpoints/constraints, assess completeness, and decide whether `pixelcraft-handoff` is needed.
 5. **Map existing authority.** Decide whether tokens/components/conventions are authoritative, partial, inconsistent, or absent. Existing project decisions outrank Pixelcraft taste.
 6. **Write `.pixelcraft/plan.md`** using [references/plan-template.md](references/plan-template.md). Include exact platform skill/framework reference routing and available verification capabilities.
@@ -39,7 +39,7 @@ Do not infer greenfield merely because the current folder is empty; inspect pare
 
 ## Required plan contents
 
-The plan must state: chosen stack; platform skill and framework reference by name; surfaces/screens; mode per surface; UX flows/state matrices to design; existing design-system authority; design-input classification/provenance/completeness and the handoff decision; i18n/accessibility/legal constraints; risks/unknowns; verification capabilities available in the current environment; and open questions. Later skills consume this plan instead of rediscovering the repository or silently changing stack.
+The plan must state: chosen stack; platform skill and framework reference by name; surfaces/screens; mode per surface; UX flows/state matrices to design; existing design-system authority; design-input classification/provenance/completeness and the handoff decision; i18n/accessibility/legal constraints; risks/unknowns; verification capabilities available in the current environment; evidence classification for material facts; and open questions. Link or embed the design brief when one exists. Later skills consume this plan instead of rediscovering the repository or silently changing stack.
 
 ## Hard rules
 

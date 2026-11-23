@@ -11,6 +11,7 @@
 - Selects or applies `pixelcraft-direction` behavior when the prompt matches its trigger.
 - produces genuinely far-apart directions with probabilities/tradeoffs.
 - selects a named composition family and explains its structural grid, fallback behavior, and cliché risk.
+- scores prototypicality, hierarchy clarity, visual complexity, localization risk, implementation cost, content truth, and distinctiveness rather than relying on taste adjectives.
 - records losing rationale.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -38,6 +39,7 @@
 
 - Selects or applies `pixelcraft-direction` behavior when the prompt matches its trigger.
 - inspects repetition history and changes the design space rather than palette only.
+- records normalized composition/type/color/material/motion/copy axes or explains why history could not be written.
 - changes composition/grid structure, not just color or typeface.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
