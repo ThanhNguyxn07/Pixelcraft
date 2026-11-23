@@ -37,6 +37,7 @@
 
 - Selects or applies `pixelcraft-brandkit` behavior when the prompt matches its trigger.
 - tests silhouette/scaling/meaning/trademark risk/visual consistency.
+- includes appropriateness, distinctiveness, simplicity, monochrome behavior, mascot/pixel-art constraints when relevant, and rendered 16/32/64 px evidence.
 - documents QA evidence.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -44,6 +45,7 @@
 
 - accepts first image.
 -  illegible favicon.
+- blurred or misaligned pixel geometry.
 - stock icon resemblance.
 
 **With-vs-without comparison criteria**

@@ -68,6 +68,17 @@ Run this self-critique before selecting or delivering an image. Do not claim vis
 
 Reject or revise if the output contains random floating icons, generic startup gradients, overdesigned logos, meaningless blobs, messy collages, fake tiny UI, inconsistent marks, too many colors, cheap neon, stock-template boards, corporate PowerPoint behavior, or soulless SaaS dashboards. Make it quieter, sharper, and more intentional.
 
+## Logo concept and small-size critique
+
+- Is the mark appropriate, distinctive/memorable, and simple rather than overloaded with explanation?
+- Was the silhouette tested solid black at thumbnail size before detail was added?
+- Does the mark survive monochrome/reversed output and removal of gradients/texture?
+- Were rendered 16/32/64 px outputs inspected on light and dark backgrounds?
+- Does the app/favicon/icon crop avoid nonessential text and preserve one focal metaphor?
+- For a mascot: are personality adjectives explicit; does posture/expression match them; is the character consistent rather than redrawn per panel?
+- For pixel art: is every cell integer-aligned; are palette steps/curated colors deliberate; is there no blur, stray antialiasing, random noise, or accidental near-duplicate color?
+- Is there a sanctioned small-size reduction rather than a shrunken master file?
+
 ## Final output standard
 
 The image must look like a premium identity deck, senior designer's presentation board, brand-system case study, visual launch direction, or professional logo concept board. It should be clean, strategic, symbolic, minimal, coherent, premium, art-directed, implementation-friendly, and stronger than ordinary AI-generated brand visuals.

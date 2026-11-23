@@ -103,7 +103,9 @@ Before presenting the result, perform the self-critique in `references/qa-checkl
 
 ## Reference routing
 
-- Read [references/logo-methods.md](references/logo-methods.md) when creating or evaluating a logo concept.
+- Read [references/logo-methods.md](references/logo-methods.md) when selecting the structural method for a new logo.
+- Read [references/logo-concepting.md](references/logo-concepting.md) when running strategy-to-metaphor concepting, mascot/character design, reduction, or scalability critique.
+- Read [references/pixel-art-logos.md](references/pixel-art-logos.md) when the identity uses pixel art, bitmap lettering, sprite/mascot geometry, stepped gradients, dithering, or tiny icon reduction.
 - Read [references/layouts.md](references/layouts.md) when choosing panels, adapting to canvas size, writing text/taglines, directing imagery/mockups, or enforcing palette discipline.
 - Read [references/visual-modes.md](references/visual-modes.md) when selecting the visual world.
 - Read [references/prompt-template.md](references/prompt-template.md) before prompting any image model.

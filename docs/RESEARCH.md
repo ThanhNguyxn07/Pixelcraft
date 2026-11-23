@@ -817,6 +817,19 @@ Citation notation: bracketed IDs such as `[S01]` refer to the numbered source re
 - `[S117]` MDN prefers-reduced-motion — https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion
 - `[S118]` web.dev why animations are slow — https://web.dev/articles/animations-overview
 - `[S119]` web.dev CSS for Web Vitals — https://web.dev/articles/css-web-vitals
+- `[S120]` PRINT interview with Chermayeff, Geismar, and Haviv — https://www.printmag.com/branding-identity-design/marks-men-an-interview-with-ivan-chermayeff-tom-geismar-and-sagi-haviv-of-chermayeff-geisma/
+- `[S121]` Paul Rand, Logos, Flags, and Escutcheons — https://www.paulrand.design/writing/articles/1991-logos-flags-and-escutcheons.html
+- `[S122]` Pentagram OPPO identity case study — https://www.pentagram.com/work/oppo/story
+- `[S123]` Wolff Olins Lloyds identity case study — https://wolffolins.com/work/lloyds
+- `[S124]` Brand New about — https://www.underconsideration.com/brandnew/about
+- `[S125]` LogoLounge 2026 Logo Trend Report — https://www.logolounge.com/trend/2026-logo-trend-report
+- `[S126]` Logo Design Love, what makes a truly great logo — https://www.logodesignlove.com/what-makes-a-truly-great-logo
+- `[S127]` Microsoft app icon design guidance — https://learn.microsoft.com/en-us/windows/apps/design/iconography/app-icon-design
+- `[S128]` Apple Human Interface Guidelines app icons — https://developer.apple.com/design/human-interface-guidelines/app-icons.md
+- `[S129]` Living the Grid, small-grid pixel-art tricks — https://living-the-grid.net/guides/small-grid-pixel-art-tricks
+- `[S130]` Adobe mascot logo design guide — https://www.adobe.com/creativecloud/design/discover/mascot-logo-design.html
+- `[S131]` Lospec pixel-art tutorials/palette resources — https://lospec.com/pixel-art-tutorials/
+- `[S132]` Lopsy 8-bit logo tutorial — https://lopsy.art/tutorials/8-bit-coyote-game-studio-logo/
 
 ## 8. Immediate implications for the next implementation step
 
