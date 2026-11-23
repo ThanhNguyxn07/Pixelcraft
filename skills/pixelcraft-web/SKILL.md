@@ -68,3 +68,4 @@ Be explicit: browser rendering and interaction can be inspected here when a brow
 - Read [references/fsharp-fable.md](references/fsharp-fable.md) for F#/Fable Feliz/Elmish.
 - Read [references/scala-laminar.md](references/scala-laminar.md) for Scala.js/Laminar.
 - Read [references/java-web.md](references/java-web.md) for Vaadin and Thymeleaf.
+- Read [references/pwa.md](references/pwa.md) whenever the browser app must be installable, offline-capable, push-enabled, cache-managed, update-aware, or evaluated on iOS/iPadOS home-screen behavior.
