@@ -41,12 +41,21 @@ try {
   assert.doesNotMatch(dark.stdout, /colorSpace/);
   console.log('ok 1 - mode override inherits the original alias target type');
 
-  for (const modeArg of ['--mode', '--mode=']) {
-    const missing = run([fixture, '--format', 'css', modeArg]);
-    assert.notEqual(missing.status, 0, `${modeArg} unexpectedly succeeded`);
-    assert.match(missing.stderr, /--mode requires a value/);
+  const missingValueCases = [
+    [['--format'], /--format requires a value/],
+    [['--format='], /--format requires a value/],
+    [['--format', '--out-dir', 'x'], /--format requires a value/],
+    [['--out-dir'], /--out-dir requires a value/],
+    [['--out-dir='], /--out-dir requires a value/],
+    [['--mode'], /--mode requires a value/],
+    [['--mode='], /--mode requires a value/]
+  ];
+  for (const [optionArgs, message] of missingValueCases) {
+    const missing = run([fixture, ...optionArgs]);
+    assert.notEqual(missing.status, 0, `${optionArgs.join(' ')} unexpectedly succeeded`);
+    assert.match(missing.stderr, message);
   }
-  console.log('ok 2 - missing --mode value is rejected');
+  console.log('ok 2 - missing option values are rejected');
 
   console.log('token exporter tests passed');
 } finally {

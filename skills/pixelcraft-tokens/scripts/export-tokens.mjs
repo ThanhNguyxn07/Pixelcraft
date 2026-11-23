@@ -221,6 +221,7 @@ try {
   if (args.includes('--help') || args.includes('-h')) { console.log(help()); process.exit(0); }
   const input = args.find((a) => !a.startsWith('-'));
   if (!input) throw new Error('missing tokens.json input');
+  const valueOptions = ['--format', '--mode', '--out-dir'];
   const getOpt = (name) => {
     const i = args.indexOf(name);
     if (i >= 0) {
@@ -230,12 +231,14 @@ try {
     const inline = args.find((a) => a.startsWith(`${name}=`));
     return inline?.slice(name.length + 1);
   };
+  for (const name of valueOptions) {
+    const specified = args.includes(name) || args.some((a) => a.startsWith(`${name}=`));
+    if (specified && !getOpt(name)) throw new Error(`${name} requires a value`);
+  }
   const format = getOpt('--format') || 'all';
   if (![...formats, 'all'].includes(format)) throw new Error(`unknown --format ${format}`);
   const selected = format === 'all' ? formats : [format];
   const mode = getOpt('--mode');
-  const modeSpecified = args.includes('--mode') || args.some((a) => a.startsWith('--mode='));
-  if (modeSpecified && !mode) throw new Error('--mode requires a value');
   const list = entries(collect(input, mode));
   const outDir = getOpt('--out-dir');
   if (outDir) {
