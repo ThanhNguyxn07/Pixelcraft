@@ -222,11 +222,12 @@ try {
   const input = args.find((a) => !a.startsWith('-'));
   if (!input) throw new Error('missing tokens.json input');
   const valueOptions = ['--format', '--mode', '--out-dir'];
+  const knownOptions = new Set([...valueOptions, '--help', '-h']);
   const getOpt = (name) => {
     const i = args.indexOf(name);
     if (i >= 0) {
       const value = args[i + 1];
-      return value !== undefined && !value.startsWith('-') ? value : '';
+      return value !== undefined && !knownOptions.has(value) ? value : '';
     }
     const inline = args.find((a) => a.startsWith(`${name}=`));
     return inline?.slice(name.length + 1);

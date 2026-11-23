@@ -10,8 +10,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const exporter = path.join(root, 'skills/pixelcraft-tokens/scripts/export-tokens.mjs');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'pixelcraft-export-tokens-'));
 
-function run(args) {
-  return spawnSync(process.execPath, [exporter, ...args], { encoding: 'utf8' });
+function run(args, cwd = root) {
+  return spawnSync(process.execPath, [exporter, ...args], { encoding: 'utf8', cwd });
 }
 
 try {
@@ -56,6 +56,12 @@ try {
     assert.match(missing.stderr, message);
   }
   console.log('ok 2 - missing option values are rejected');
+
+  const dashOutDir = run([fixture, '--format', 'css', '--mode', 'dark', '--out-dir', '-generated'], tmp);
+  assert.equal(dashOutDir.status, 0, dashOutDir.stderr);
+  assert.ok(fs.existsSync(path.join(tmp, '-generated', 'tokens.dark.css')), 'dash-prefixed output directory was not used');
+  assert.match(dashOutDir.stdout, /wrote -generated[\/]tokens\.dark\.css/);
+  console.log('ok 3 - dash-prefixed option values are accepted');
 
   console.log('token exporter tests passed');
 } finally {
