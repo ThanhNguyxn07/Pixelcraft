@@ -412,11 +412,71 @@ const extract = String.raw`(() => {
     map.set(key, (map.get(key) || 0) + area);
   }
 
-  function clippedRect(rect) {
-    const left = Math.max(0, rect.left);
-    const top = Math.max(0, rect.top);
-    const right = Math.min(viewportWidth, rect.right);
-    const bottom = Math.min(viewportHeight, rect.bottom);
+  function isZeroClip(style) {
+    return /^rect\(\s*0(?:px)?\s*,\s*0(?:px)?\s*,\s*0(?:px)?\s*,\s*0(?:px)?\s*\)$/i.test(style.clip || '')
+      || /^inset\(\s*(?:50%|100%)\s*\)$/i.test((style.clipPath || '').trim());
+  }
+
+  function establishesFixedContainingBlock(style) {
+    return (style.transform && style.transform !== 'none')
+      || (style.filter && style.filter !== 'none')
+      || (style.perspective && style.perspective !== 'none')
+      || /paint|layout|strict|content/.test(style.contain || '')
+      || /transform|filter|perspective/.test(style.willChange || '');
+  }
+
+  function clippedRect(element) {
+    const rect = element.getBoundingClientRect();
+    let left = Math.max(0, rect.left);
+    let top = Math.max(0, rect.top);
+    let right = Math.min(viewportWidth, rect.right);
+    let bottom = Math.min(viewportHeight, rect.bottom);
+    const ownStyle = styleOf(element);
+    if (isZeroClip(ownStyle)) {
+      return { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, elementWidth: rect.width, elementHeight: rect.height, area: 0 };
+    }
+    let positioned = ownStyle.position;
+    let node = element.parentElement;
+    while (node && node.nodeType === 1 && node !== document.documentElement && right > left && bottom > top) {
+      const ancStyle = styleOf(node);
+      const fixedCB = establishesFixedContainingBlock(ancStyle);
+      if (positioned === 'fixed') {
+        if (!fixedCB) {
+          node = node.parentElement;
+          continue;
+        }
+        positioned = ancStyle.position;
+      } else if (positioned === 'absolute') {
+        if (ancStyle.position === 'static' && !fixedCB) {
+          node = node.parentElement;
+          continue;
+        }
+        positioned = ancStyle.position;
+      } else {
+        positioned = ancStyle.position;
+      }
+      if (isZeroClip(ancStyle)) {
+        left = 0;
+        top = 0;
+        right = 0;
+        bottom = 0;
+        break;
+      }
+      const clipsX = /^(hidden|clip|scroll|auto)$/.test(ancStyle.overflowX);
+      const clipsY = /^(hidden|clip|scroll|auto)$/.test(ancStyle.overflowY);
+      if (clipsX || clipsY) {
+        const ancRect = node.getBoundingClientRect();
+        if (clipsX) {
+          left = Math.max(left, ancRect.left);
+          right = Math.min(right, ancRect.right);
+        }
+        if (clipsY) {
+          top = Math.max(top, ancRect.top);
+          bottom = Math.min(bottom, ancRect.bottom);
+        }
+      }
+      node = node.parentElement;
+    }
     const width = Math.max(0, right - left);
     const height = Math.max(0, bottom - top);
     return { left, top, right, bottom, width, height, elementWidth: rect.width, elementHeight: rect.height, area: width * height };
@@ -579,7 +639,7 @@ const extract = String.raw`(() => {
 
   for (const element of roots.slice(0, scanLimit)) {
     const style = styleOf(element);
-    const rect = clippedRect(element.getBoundingClientRect());
+    const rect = clippedRect(element);
     if (rect.area <= 0.5) continue;
     if (style.visibility === 'hidden' || style.visibility === 'collapse') continue;
     if (hasTransparentAncestor(element)) continue;

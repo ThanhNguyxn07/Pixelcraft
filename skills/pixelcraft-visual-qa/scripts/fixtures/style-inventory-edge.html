@@ -22,6 +22,15 @@ h1 {
 .faded {
   opacity: 0.25;
 }
+.clipped-box {
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.clipped-box p {
+  color: #111111;
+  background: #000000;
+}
 </style>
 </head>
 <body>
@@ -29,6 +38,7 @@ h1 {
   <h1>Zero-channel dark surface</h1>
   <p>Pure black background must resolve as dark mode with #000000 dominant color.</p>
   <p class="faded">Low opacity text must fail contrast even though its color is light.</p>
+  <div class="clipped-box"><p>Clipped low-contrast text inside zero-size overflow hidden ancestor.</p></div>
 </main>
 </body>
 </html>
