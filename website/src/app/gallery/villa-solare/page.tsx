@@ -25,7 +25,7 @@ const SUITES: SuiteSpec[] = [
     area: '78 m²',
     exposure: 'South-West · Sea Horizon',
     rateEur: 940,
-    image: '/demos/villa-solare/suite.jpg',
+    image: '/gallery/villa-solare/suite.jpg',
     imageAlt: 'Whitewashed arched coastal terrace with two woven chairs overlooking the Mediterranean sea',
     summary:
       'Framed by a vaulted lime-plaster loggia, the Belvedere opens directly onto a private stone terrace suspended above the coastline. Hand-troweled walls keep the interior cool through midday heat.',
@@ -42,7 +42,7 @@ const SUITES: SuiteSpec[] = [
     area: '112 m²',
     exposure: 'West · Mountain & Gulf',
     rateEur: 1380,
-    image: '/demos/villa-solare/pool.jpg',
+    image: '/gallery/villa-solare/pool.jpg',
     imageAlt: 'Dark slate saltwater infinity pool overlooking coastal hills and the ocean horizon',
     summary:
       'Set at the quietest edge of the estate beside the dark-slate saltwater basin, pairing uninterrupted horizon lines with shaded teak loungers and direct garden access.',
@@ -59,7 +59,7 @@ const SUITES: SuiteSpec[] = [
     area: '64 m²',
     exposure: 'East · Botanical Garden',
     rateEur: 760,
-    image: '/demos/villa-solare/dining.jpg',
+    image: '/gallery/villa-solare/dining.jpg',
     imageAlt: 'Sunlit Mediterranean courtyard garden with palms, stone paths, and blooming wisteria',
     summary:
       'Tucked beneath century-old wisteria trellises and Mediterranean palms, designed for quiet mornings, long reading afternoons, and cool evening breezes off the cliff.',
@@ -106,7 +106,7 @@ export default function VillaSolareDemo() {
       {/* FULL-BLEED 100SVH EDITORIAL HERO */}
       <section className="relative flex min-h-[100svh] flex-col justify-between overflow-hidden bg-[#1a1714] text-[#f6f2ea]">
         <img
-          src="/demos/villa-solare/hero.jpg"
+          src="/gallery/villa-solare/hero.jpg"
           alt="Limestone cliffside terrace with marble busts overlooking the Mediterranean coastline"
           className="absolute inset-0 h-full w-full object-cover object-center brightness-[0.82] contrast-[1.05]"
         />
@@ -232,7 +232,7 @@ export default function VillaSolareDemo() {
             <figure className="lg:col-span-7">
               <div className="overflow-hidden">
                 <img
-                  src="/demos/villa-solare/dining.jpg"
+                  src="/gallery/villa-solare/dining.jpg"
                   alt="Terraced botanical courtyard with palms and blooming wisteria"
                   className="aspect-[4/3] w-full object-cover"
                 />
@@ -333,7 +333,7 @@ export default function VillaSolareDemo() {
         {/* SECTION 03 — FULL-WIDTH SALTWATER SANCTUARY PLATE */}
         <section id="sanctuary" className="relative overflow-hidden bg-[#1a1714] text-white">
           <img
-            src="/demos/villa-solare/pool.jpg"
+            src="/gallery/villa-solare/pool.jpg"
             alt="Dark slate infinity pool overlooking mountains and coastal horizon"
             className="h-[68vh] min-h-[460px] w-full object-cover brightness-[0.75]"
           />

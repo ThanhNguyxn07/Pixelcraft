@@ -29,7 +29,7 @@ export const DEMOS: DemoEntry[] = [
     category: 'Hospitality / Editorial',
     mode: 'Persuade / Read',
     theme: 'light',
-    coverImage: '/demos/villa-solare/hero.jpg',
+    coverImage: '/gallery/villa-solare/hero.jpg',
     coverAlt: 'Villa Solare limestone cliffside terrace overlooking the Mediterranean sea',
     techStack: ['Next.js 15', 'React 19', 'Tailwind v4', 'Cormorant Garamond', 'Open Photography'],
     skillsUsed: ['pixelcraft-direction', 'pixelcraft-craft', 'pixelcraft-ux', 'pixelcraft-accessibility'],

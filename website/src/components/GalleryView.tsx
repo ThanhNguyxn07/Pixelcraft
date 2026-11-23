@@ -72,7 +72,7 @@ export function GalleryView() {
               <div className="grid grid-cols-1 lg:grid-cols-12">
                 {/* Real Photograph Preview */}
                 <div className="flex flex-col border-b border-white/10 lg:col-span-5 lg:border-b-0 lg:border-r">
-                  <Link href={`/demos/${demo.slug}`} className="group relative block flex-1 overflow-hidden">
+                  <Link href={`/gallery/${demo.slug}`} className="group relative block flex-1 overflow-hidden">
                     <img
                       src={demo.coverImage}
                       alt={demo.coverAlt}
@@ -176,10 +176,10 @@ export function GalleryView() {
                     </div>
 
                     <Link
-                      href={`/demos/${demo.slug}`}
+                      href={`/gallery/${demo.slug}`}
                       className="inline-flex h-11 items-center gap-2 rounded-full bg-cyan-300 px-6 font-mono text-xs font-semibold uppercase tracking-wider text-black no-underline transition-opacity hover:opacity-90"
                     >
-                      Open Live Demo
+                      Open Live Showcase
                       <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                     </Link>
                   </div>
