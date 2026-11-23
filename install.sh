@@ -168,12 +168,16 @@ fi
 
 tar -xzf "$bundle" -C "$tmp" || die "failed to extract repository tarball"
 source_root=""
-for dir in "$tmp"/*; do
-  if [[ -d "$dir/skills" ]]; then
-    source_root="$dir"
-    break
-  fi
-done
+if [[ -d "$tmp/skills" ]]; then
+  source_root="$tmp"
+else
+  for dir in "$tmp"/*; do
+    if [[ -d "$dir/skills" ]]; then
+      source_root="$dir"
+      break
+    fi
+  done
+fi
 [[ -n "$source_root" ]] || die "archive does not contain a skills directory"
 
 available=()

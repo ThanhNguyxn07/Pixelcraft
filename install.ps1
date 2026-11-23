@@ -105,9 +105,13 @@ try {
   }
 
   Expand-Archive -LiteralPath $zipPath -DestinationPath $tmpRoot -Force
-  $sourceRoot = Get-ChildItem -LiteralPath $tmpRoot -Directory |
-    Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName 'skills') -PathType Container } |
-    Select-Object -First 1
+  if (Test-Path -LiteralPath (Join-Path $tmpRoot 'skills') -PathType Container) {
+    $sourceRoot = Get-Item -LiteralPath $tmpRoot
+  } else {
+    $sourceRoot = Get-ChildItem -LiteralPath $tmpRoot -Directory |
+      Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName 'skills') -PathType Container } |
+      Select-Object -First 1
+  }
   if ($null -eq $sourceRoot) { throw 'archive does not contain a skills directory' }
   $skillsRoot = Join-Path $sourceRoot.FullName 'skills'
 
