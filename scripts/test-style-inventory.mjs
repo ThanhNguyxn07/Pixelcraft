@@ -98,7 +98,8 @@ try {
     const edge = edgeReport.viewports[0];
     assert.equal(edge.color.dominant, '#000000');
     assert.equal(edge.color.mode, 'dark');
-    console.log('ok 2 - zero-channel dominant background preserves dark mode');
+    assert.equal(edge.accessibility.contrastFailures, 1, `expected 1 opacity contrast failure, got ${edge.accessibility.contrastFailures}`);
+    console.log('ok 2 - zero-channel dominant background and opacity-aware contrast work');
 
     const clsFile = path.join(tmp, 'cls-windows.html');
     fs.writeFileSync(clsFile, `<!doctype html>

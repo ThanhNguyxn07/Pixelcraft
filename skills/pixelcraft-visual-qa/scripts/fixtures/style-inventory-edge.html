@@ -19,12 +19,16 @@ h1 {
   margin: 0 0 12px;
   font-size: 32px;
 }
+.faded {
+  opacity: 0.25;
+}
 </style>
 </head>
 <body>
 <main>
   <h1>Zero-channel dark surface</h1>
   <p>Pure black background must resolve as dark mode with #000000 dominant color.</p>
+  <p class="faded">Low opacity text must fail contrast even though its color is light.</p>
 </main>
 </body>
 </html>

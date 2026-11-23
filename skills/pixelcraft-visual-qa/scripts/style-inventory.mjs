@@ -761,20 +761,30 @@ const extract = String.raw`(() => {
   const cursorList = [...cursorValues].filter(Boolean).slice(0, 20);
   const customImageCursors = cursorList.filter((value) => value.includes('url('));
 
-  function effectiveBackground(element) {
-    const layers = [];
+  function effectiveContrastColors(element, foregroundColor) {
+    const chain = [];
     let node = element;
     while (node && node.nodeType === 1) {
-      const color = parseColor(styleOf(node).backgroundColor);
-      if (color && color.a > 0) {
-        layers.push(color);
-        if (color.a >= 0.999) break;
-      }
+      chain.push(node);
       node = node.parentElement;
     }
-    let composite = { r: 255, g: 255, b: 255, a: 1 };
-    for (let index = layers.length - 1; index >= 0; index -= 1) composite = alphaBlend(layers[index], composite);
-    return composite;
+    let bg = { r: 0, g: 0, b: 0, a: 0 };
+    let fg = foregroundColor;
+    for (const current of chain) {
+      const style = styleOf(current);
+      const layerBg = parseColor(style.backgroundColor) || { r: 0, g: 0, b: 0, a: 0 };
+      const parsedOpacity = Number.parseFloat(style.opacity);
+      const opacity = Number.isFinite(parsedOpacity) ? clamp(parsedOpacity, 0, 1) : 1;
+      const innerBg = layerBg.a > 0 ? alphaBlend(bg, layerBg) : bg;
+      const innerFg = layerBg.a > 0 ? alphaBlend(fg, layerBg) : fg;
+      bg = opacity < 1 ? { ...innerBg, a: innerBg.a * opacity } : innerBg;
+      fg = opacity < 1 ? { ...innerFg, a: innerFg.a * opacity } : innerFg;
+    }
+    const canvas = { r: 255, g: 255, b: 255, a: 1 };
+    return {
+      background: alphaBlend(bg, canvas),
+      foreground: alphaBlend(fg, canvas),
+    };
   }
 
   let contrastChecked = 0;
@@ -787,8 +797,7 @@ const extract = String.raw`(() => {
       contrastUnparsed += 1;
       continue;
     }
-    const background = effectiveBackground(item.element);
-    const foreground = foregroundColor.a < 1 ? alphaBlend(foregroundColor, background) : foregroundColor;
+    const { background, foreground } = effectiveContrastColors(item.element, foregroundColor);
     const ratio = contrastRatio(foreground, background);
     if (!Number.isFinite(ratio)) continue;
     contrastChecked += 1;
