@@ -28,9 +28,9 @@ Evidence: Apple HIG `[S62]`, Material `[S63]`, WCAG `[S57]`, generated-code acce
 - Flutter: Semantics widgets/labels/liveRegion/button/header flags; test TalkBack/VoiceOver rather than trusting compile-time semantics. TextScaler and focus traversal must survive custom painters.
 - React Native: accessibilityRole/Label/State/Hint, importantForAccessibility, accessibilityLiveRegion; native components first. Do not strip focus or rely on nested text hacks.
 
-## Python UIs
+## Data-app UIs
 
-Streamlit/Gradio/Reflex/NiceGUI/Dash/Panel/Shiny/Flet expose varying semantic control. Inspect actual DOM/native output where possible; label inputs, preserve keyboard path, avoid canvas/image-only output, provide tables/text alternatives, and state framework limits honestly.
+Streamlit/Gradio/Reflex/NiceGUI/Dash/Panel/Shiny/Jupyter widgets/R Shiny/Genie/Observable Framework/Evidence expose varying semantic control. Inspect actual DOM/native output where possible; label inputs, preserve keyboard path, avoid canvas/image-only output, provide tables/text alternatives, and state framework limits honestly.
 
 ## Desktop
 

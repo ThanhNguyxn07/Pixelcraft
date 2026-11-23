@@ -31,7 +31,7 @@ Use hard gates before weights: unsupported target platform, missing legal/access
 | Mobile | SwiftUI/UIKit, Kotlin Compose, Flutter, React Native/Expo, Kotlin Multiplatform, Ionic, .NET MAUI, Uno | Platform fidelity vs shared code; store/accessibility/input behavior decide |
 | Cross-platform app | Flutter, React Native, Kotlin Multiplatform/Compose Multiplatform, .NET MAUI, Uno, Tauri/Electron for desktop-centric use | “Write once” does not erase platform conventions |
 | Desktop | Tauri, Electron, Qt C++/PySide/QML, WinUI/WPF, AppKit, GTK, Avalonia, Uno, JavaFX/Swing, Rust egui/Slint/iced/Dioxus, Go Fyne/Wails/Gio | Native integration, memory/startup, accessibility, signing, menus/windowing matter |
-| Internal tool/data app | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny for Python/R, Jupyter widgets, Genie (Julia), CRUD server-rendered frameworks | Choose speed/clarity/reproducibility, but inspect session/concurrency/security limits |
+| Internal tool/data app | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny for Python/R, Jupyter widgets, Genie (Julia), Observable Framework, Evidence, CRUD server-rendered frameworks | Choose speed/clarity/reproducibility, but inspect session/concurrency/security/freshness limits |
 | CLI/TUI | Textual/Rich (Python), Ink (Node), Bubble Tea/Lip Gloss (Go), Ratatui (Rust), language-native CLI libraries | Character grid, keyboard behavior, terminal capability fallback, snapshot tests |
 | Game UI | Unity, Godot, Unreal, Bevy (Rust), MonoGame (C#), LÖVE2D (Lua), custom engine | Engine/gameplay architecture comes first; UI accessibility/certification constraints follow |
 | Email | HTML tables, MJML, React Email | Client fragmentation dominates framework preference; plaintext parity mandatory |

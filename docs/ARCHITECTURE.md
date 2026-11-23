@@ -13,7 +13,7 @@ produce distinctive UI and rigorous UX on **any** frontend stack. Evidence base:
    localization, responsiveness, performance and verifiability are mandatory; heroes, cards,
    palettes, fonts and layout shapes are not.
 3. **Design once, translate per stack** — core skills speak design language (roles, scales, units,
-   rules). Platform skills translate them into idioms of web, mobile, Python UI, desktop, TUI, email
+   rules). Platform skills translate them into idioms of web, mobile, data apps, desktop, TUI, email
    and game UI. Never assume React/Tailwind.
 4. **Honest verification** — every claim names its evidence: rendered, static inspection,
    model judgment, not checked, or waived.
@@ -36,8 +36,8 @@ accessibility floor → Pixelcraft guidance → model taste.
 | `pixelcraft-accessibility` | WCAG 2.2 floor + platform translations (HIG, Material, desktop, TUI, email, game) and verification split |
 | `pixelcraft-review` | Audit / critique / polish: heuristic scoring with evidence + confidence, persona walkthroughs, slop scan script |
 | `pixelcraft-web` | HTML/CSS, React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, server-rendered (Rails, Laravel, Django, Phoenix, Blazor, templ), Rust/Kotlin/Elm/Clojure/F#/Scala/Java web |
-| `pixelcraft-mobile` | SwiftUI, UIKit, Jetpack Compose, Flutter, React Native/Expo, KMP, Ionic, .NET MAUI |
-| `pixelcraft-python-ui` | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny, Flet, Kivy, Jupyter widgets |
+| `pixelcraft-mobile` | SwiftUI, UIKit, Jetpack Compose, Flutter, React Native/Expo, KMP, Ionic, .NET MAUI, Flet, Kivy |
+| `pixelcraft-data-apps` | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny, Jupyter widgets, R Shiny, Julia Genie, Observable Framework, Evidence |
 | `pixelcraft-desktop` | Tauri, Electron, Qt/PySide/QML, WinUI/WPF, AppKit, GTK, Avalonia, Rust GUIs, JavaFX/Swing, C++ Qt/ImGui/wx, Go GUI, Uno |
 | `pixelcraft-tui` | Textual, Rich, Ink, Bubble Tea, Ratatui |
 | `pixelcraft-email` | HTML email / MJML / React Email: tables, inline CSS, dark mode, image blocking, plaintext parity |

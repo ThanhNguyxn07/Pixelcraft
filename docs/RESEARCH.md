@@ -13,7 +13,7 @@ Citation notation: bracketed IDs such as `[S01]` refer to the numbered source re
 5. Cross-agent support is converging on `.agents/skills/` for project skills, but Claude Code, Gemini, Copilot, Devin, and Cursor differ in canonical/global paths; publish once in a repository layout that both Vercel's CLI and `gh skill install` discover. `[S08]` `[S10]` `[S12]`
 6. Claude plugin packaging is additive distribution metadata: `.claude-plugin/marketplace.json` lists plugin entries and their skill paths; it does not replace `SKILL.md`. `[S04]` `[S05]`
 7. The competitive field proves that agents can produce less generic UI when forced to choose among far-apart directions, commit to real material, and verify rendered output; it does not yet solve cross-stack UX. `[S15]` `[S16]` `[S19]` `[S20]`
-8. Existing leaders are web-centric even when they claim cross-platform scope. Native mobile coverage exists in Impeccable and UI UX Pro Max, but Python UI, Qt/Tauri, TUI, email, game UI, server-rendered frameworks, and localization are mostly absent. `[S16]` `[S18]`
+8. Existing leaders are web-centric even when they claim cross-platform scope. Native mobile coverage exists in Impeccable and UI UX Pro Max, but data-app frameworks, Qt/Tauri, TUI, email, game UI, server-rendered frameworks, and localization are mostly absent. `[S16]` `[S18]`
 9. The strongest competitor pattern is not “more rules”; it is a closed loop: interpret the brief, generate divergent candidates, commit, build, inspect rendered truth, repair, and report unresolved checks. `[S15]` `[S19]` `[S20]`
 10. Randomness alone is not enough. Taste-skill and Hallmark use dealt catalogs plus history/rotation to avoid repeating the same layout/material across builds; Pixelcraft should generalize this beyond websites. `[S19]` `[S20]`
 11. Mode collapse has two distinct meanings in the literature: inference-time output homogenization after alignment/decoding, and recursive training-data collapse. Pixelcraft mainly fights the former; do not conflate them. `[S26]` `[S27]` `[S32]`
@@ -130,7 +130,7 @@ Citation notation: bracketed IDs such as `[S01]` refer to the numbered source re
 
 ### 1.6 Packaging implications for Pixelcraft
 
-- Use valid kebab-case names under 64 chars and matching directories: `pixelcraft`, `pixelcraft-visual-direction`, `pixelcraft-ux-review`, `pixelcraft-accessibility`, `pixelcraft-tokens`, `pixelcraft-web`, `pixelcraft-mobile`, `pixelcraft-python-ui`, `pixelcraft-desktop`, `pixelcraft-tui`, `pixelcraft-email`, `pixelcraft-game-ui`. `[S01]`
+- Use valid kebab-case names under 64 chars and matching directories: `pixelcraft`, `pixelcraft-visual-direction`, `pixelcraft-ux-review`, `pixelcraft-accessibility`, `pixelcraft-tokens`, `pixelcraft-web`, `pixelcraft-mobile`, `pixelcraft-data-apps`, `pixelcraft-desktop`, `pixelcraft-tui`, `pixelcraft-email`, `pixelcraft-game-ui`. `[S01]`
 - Keep `pixelcraft` as the small router/orchestrator and let the specialized skills carry their own triggers; a pack is more discoverable and cheaper than one giant trigger-everything skill. `[S02]` `[S03]`
 - Use `metadata` for pack version, homepage, locale coverage, and upstream schema version; avoid nonstandard top-level fields except deliberate host-specific companion copies. `[S01]`
 - Avoid hard runtime dependencies in the core. Detect and use Node/Python/browser when present, but degrade honestly when validators cannot run. `[S01]` `[S20]`
@@ -145,7 +145,7 @@ Citation notation: bracketed IDs such as `[S01]` refer to the numbered source re
 | Skill | Primary architecture | Strongest idea | Principal gap |
 |---|---|---|---|
 | Anthropic `frontend-design` | one 71-line prose skill | brief-grounded direction + explicit generated-default clusters | no executable gate/assets; web/hero bias; shallow UX/platform/i18n coverage |
-| Impeccable | compact router + ~40 references + Rust binary/detector/hooks | modes (Persuade/Operate/Read/Experience) + project context + visual verification | complex runtime; web/mobile focus; no Python UI/TUI/email/game modules |
+| Impeccable | compact router + ~40 references + Rust binary/detector/hooks | modes (Persuade/Operate/Read/Experience) + project context + visual verification | complex runtime; web/mobile focus; no data-app/TUI/email/game modules |
 | UI UX Pro Max | local CSV catalog + dependency-free Python BM25 search | broadest stack/data coverage + RTL metadata + DTCG token export | catalog can genericize taste; weak rendered verification; uneven freshness |
 | taste-skill | opinionated page system + asset kit + deterministic browser/copy gate | copy-first, dealt variation/history, real material, hard finish loop | extremely prescriptive; company/landing sites only; Node/Chrome weight |
 | Hallmark | 50 material themes + draw/deal/log + tiered sloplint gates | rotation away from convergence; floor/reflex/finish separation | websites/HTML/CSS only; catalog itself can become monoculture |
@@ -199,7 +199,7 @@ Citation notation: bracketed IDs such as `[S01]` refer to the numbered source re
 - RTL metadata (`full`, `partial`, `caveats`) is rare among competitors and directly relevant to international Pixelcraft. `[S18]`
 - DTCG and CSS token export demonstrates machine-readable handoff rather than copying hex values through prose. `[S18]` `[S72]`
 - Mobile pre-delivery checklist covers safe areas, dynamic type, dark-mode contrast parity, target sizes, screen readers, focus obscuring, dragging alternatives, authentication, and error summaries. `[S18]`
-- Stack list includes web frameworks plus SwiftUI, React Native, Flutter, Compose, JavaFX, WPF/WinUI/Avalonia/UWP—but not the requested Python UI/TUI/email/game ecosystems. `[S18]`
+- Stack list includes web frameworks plus SwiftUI, React Native, Flutter, Compose, JavaFX, WPF/WinUI/Avalonia/UWP—but not the requested data-app/TUI/email/game ecosystems. `[S18]`
 - Gap: keyword-search catalogs can steer different products into the same rows, recreating sameness unless divergence/history is layered on top. `[S18]`
 - Gap: no built-in rendered screenshot gate comparable to taste/Hallmark/Impeccable; many rules remain textual advice. `[S18]`
 - Gap: heavy GSAP/Tailwind/React/shadcn material reinforces TS/web gravity even though catalog breadth is greater. `[S18]`
@@ -625,7 +625,7 @@ Citation notation: bracketed IDs such as `[S01]` refer to the numbered source re
 - `pixelcraft-tokens`: DTCG authoring, schema validation, theme/mode layering, Style Dictionary/export adapters and token provenance.
 - `pixelcraft-web`: DOM/browser implementation idioms, responsive rendering validation, semantic HTML, CSS constraints, server-rendered/framework notes.
 - `pixelcraft-mobile`: SwiftUI/Compose/Flutter/React Native platform translation, safe areas, dynamic type/sp scaling, navigation gestures, target sizes.
-- `pixelcraft-python-ui`: Streamlit/Gradio/Reflex/NiceGUI constraints, state reruns, component limitations, accessible labeling, layout/theme customization escape hatches.
+- `pixelcraft-data-apps`: Streamlit/Gradio/Reflex/NiceGUI/Dash/Panel/Shiny/Jupyter/R/Julia/JS data-app constraints, state reruns/loaders/query freshness, component limitations, accessible labeling, and layout/theme escape hatches.
 - `pixelcraft-desktop`: Qt/QML/Tauri/native desktop/windows/menu/keyboard/high-DPI/multiwindow/resizable layout guidance.
 - `pixelcraft-tui`: Textual/Ratatui terminal constraints: grid, keyboard-first navigation, focus/selection semantics, color/unicode fallbacks, width/height adaptation.
 - `pixelcraft-email`: table/inline-CSS/client quirks, dark-mode behavior, accessibility, image blocking/alt text, narrow mobile rendering, plaintext parity.
@@ -680,7 +680,7 @@ Citation notation: bracketed IDs such as `[S01]` refer to the numbered source re
 4. Implement visual-direction catalog as data (movement/constraints/taboos/platform transferability) rather than hardcoded prompts. `[S79]` `[S80]`
 5. Implement UX/accessibility floor as separate concise checklists keyed by surface/platform/input modality. `[S47]` `[S57]`
 6. Implement web adapter and rendered verification because it is easiest to validate end-to-end. `[S19]` `[S20]`
-7. Add Python UI/TUI/email adapters next because they are underserved and their constraints differ sharply from DOM assumptions.
+7. Add data-app/TUI/email adapters next because they are underserved and their constraints differ sharply from DOM assumptions.
 8. Add mobile/desktop/game adapters with explicit capability detection; do not pretend simulator/device verification exists when unavailable. `[S16]` `[S62]` `[S63]`
 9. Build a golden evaluation corpus and report per-axis metrics; tune content against failures rather than adding more prose reflexively. `[S35]` `[S36]`
 10. Only after evidence of stability, package Claude marketplace/plugin metadata and installer smoke tests for `npx skills`/`gh skill install`. `[S04]` `[S08]` `[S10]`

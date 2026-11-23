@@ -23,7 +23,7 @@ Read broadly before narrowing. Exclude generated/vendor/build output only after 
 
 | Ecosystem | Signals |
 |---|---|
-| TS/JS web | `package.json`, lockfiles, `next.config.*`, `vite.config.*`, `nuxt.config.*`, `svelte.config.*`, `angular.json`, `astro.config.*`, `tailwind.config.*`, router directories |
+| TS/JS web/data | `package.json`, lockfiles, `next.config.*`, `vite.config.*`, `nuxt.config.*`, `svelte.config.*`, `angular.json`, `astro.config.*`, `tailwind.config.*`, router directories, `observablehq.config.*`, `evidence.config.yaml`, `theme.yaml`, `pages/`, `sources/` |
 | Rust web/GUI/TUI/game | `Cargo.toml`, `Leptos.toml`, `Trunk.toml`, `Dioxus.toml`; deps `leptos`, `yew`, `egui`, `slint`, `iced`, `dioxus`, `ratatui`, `bevy` |
 | Kotlin | `build.gradle(.kts)`, `settings.gradle*`, Compose/Android/KMP plugins, Kobweb deps/config |
 | Swift/Apple | `Package.swift`, `*.xcodeproj`, Xcode workspace, asset catalogs, entitlements, Info.plist |

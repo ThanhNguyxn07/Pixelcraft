@@ -43,23 +43,25 @@ Detect from concrete files; do not infer from repository age, buzzwords, or one 
 | Kotlin Multiplatform/Compose Multiplatform source sets | `pixelcraft-mobile` → `kotlin-multiplatform` |
 | Ionic/Capacitor config/dependencies | `pixelcraft-mobile` → `ionic-capacitor` |
 | MAUI `.csproj`/XAML/AppShell references | `pixelcraft-mobile` → `dotnet-maui` |
+| `flet` controls/page | `pixelcraft-mobile` → `flet` |
+| `kivy`/KV language/App classes | `pixelcraft-mobile` → `kivy` |
 
-## Python UI signals
+## Data-app signals
 
 | Signal | Platform skill → framework reference |
 |---|---|
-| `streamlit` import/dependency or `.streamlit/config.toml` | `pixelcraft-python-ui` → `streamlit` |
-| `gradio`/`gr.Blocks`/`gr.Interface` | `pixelcraft-python-ui` → `gradio` |
-| `reflex`/`rx.App` | `pixelcraft-python-ui` → `reflex` |
-| `nicegui`/`from nicegui import ui` | `pixelcraft-python-ui` → `nicegui` |
-| `dash`/Dash layout callbacks | `pixelcraft-python-ui` → `dash` |
-| `panel`/`import panel as pn` | `pixelcraft-python-ui` → `panel` |
-| Shiny for Python (`shiny` UI/server/reactive) | `pixelcraft-python-ui` → `shiny` |
-| `flet` controls/page | `pixelcraft-python-ui` → `flet` |
-| `kivy`/KV language/App classes | `pixelcraft-python-ui` → `kivy` |
-| `ipywidgets`/notebook widget traits | `pixelcraft-python-ui` → `jupyter-widgets` |
-| R `DESCRIPTION`/`app.R` with `shiny`/`bslib` | `pixelcraft-python-ui` → `r-shiny` |
-| Julia `Project.toml` with Genie/Stipple | `pixelcraft-python-ui` → `julia-genie` |
+| `streamlit` import/dependency or `.streamlit/config.toml` | `pixelcraft-data-apps` → `streamlit` |
+| `gradio`/`gr.Blocks`/`gr.Interface` | `pixelcraft-data-apps` → `gradio` |
+| `reflex`/`rx.App` | `pixelcraft-data-apps` → `reflex` |
+| `nicegui`/`from nicegui import ui` | `pixelcraft-data-apps` → `nicegui` |
+| `dash`/Dash layout callbacks | `pixelcraft-data-apps` → `dash` |
+| `panel`/`import panel as pn` | `pixelcraft-data-apps` → `panel` |
+| Shiny for Python (`shiny` UI/server/reactive) | `pixelcraft-data-apps` → `shiny` |
+| `ipywidgets`/notebook widget traits | `pixelcraft-data-apps` → `jupyter-widgets` |
+| R `DESCRIPTION`/`app.R` with `shiny`/`bslib` | `pixelcraft-data-apps` → `r-shiny` |
+| Julia `Project.toml` with Genie/Stipple | `pixelcraft-data-apps` → `julia-genie` |
+| `observablehq.config.*`, Framework Markdown/data loaders | `pixelcraft-data-apps` → `observable-framework` |
+| `evidence.config.yaml`, `theme.yaml`, Evidence `pages/`/`sources/` | `pixelcraft-data-apps` → `evidence` |
 
 ## Desktop signals
 
@@ -113,27 +115,27 @@ Detect from concrete files; do not infer from repository age, buzzwords, or one 
 
 | Language | Frameworks/surfaces | Skill → reference |
 |---|---|---|
-| TS/JS | React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, Electron/Tauri webview, Ink | web/desktop/TUI matching reference |
-| Python | Streamlit, Gradio, Reflex, NiceGUI, Dash, Panel, Shiny, Flet, Kivy, Jupyter, Textual/Rich, Qt/PySide | python-ui/desktop/TUI matching reference |
-| Java | Vaadin, Thymeleaf, JavaFX, Swing | web `java-web`; desktop `javafx-swing` |
-| Kotlin | Compose Android/KMP, Compose Web/Kobweb | mobile; web `kotlin-web` |
-| Swift | SwiftUI, UIKit, AppKit | mobile/desktop matching reference |
-| Dart | Flutter mobile/desktop/web | mobile `flutter`; use web skill guidance when browser surface dominates |
-| C# | Blazor, MAUI, WinUI/WPF, Avalonia, Uno, MonoGame | web/desktop/mobile/game matching reference |
-| F# | Fable/Feliz/Elmish, .NET desktop | web `fsharp-fable`; desktop by actual XAML framework |
-| Go | templ, Bubble Tea, Fyne/Wails/Gio | web `server-rendered`; TUI; desktop `go-gui` |
-| Rust | Leptos/Yew, egui/Slint/Dioxus/iced, Ratatui, Bevy | web `leptos-yew`; desktop `rust-gui`; TUI `ratatui`; game `bevy` |
-| C++ | Qt/QML, Dear ImGui, wxWidgets | desktop `cpp-gui` |
-| PHP | Laravel Blade/Livewire | web `server-rendered` |
-| Ruby | Rails/Hotwire | web `server-rendered` |
-| Elixir | Phoenix LiveView | web `server-rendered` |
-| Scala | Laminar/Scala.js | web `scala-laminar` |
-| Clojure | Reagent/re-frame/ClojureScript | web `clojurescript` |
-| Elm | Elm Browser UI | web `elm` |
-| R | Shiny/bslib | python-ui `r-shiny` (data-app routing) |
-| Julia | Genie/Stipple | python-ui `julia-genie` (data-app routing) |
-| Lua | LÖVE2D | game-ui `love2d` |
-| Zig | no substantive dedicated reference yet | plan manually; inspect actual UI/library constraints |
+| C# | Blazor, MAUI, WinUI/WPF, Avalonia, Uno, MonoGame | `pixelcraft-web` → `server-rendered`; `pixelcraft-mobile` → `dotnet-maui`; `pixelcraft-desktop` → `winui-wpf`/`avalonia`/`uno-platform`; `pixelcraft-game-ui` → `monogame` |
+| C++ | Qt/QML, Dear ImGui, wxWidgets | `pixelcraft-desktop` → `cpp-gui` |
+| Clojure | ClojureScript/Reagent/re-frame | `pixelcraft-web` → `clojurescript` |
+| Dart | Flutter mobile/desktop/web | `pixelcraft-mobile` → `flutter`; apply `pixelcraft-web` checks for browser-dominant surfaces |
+| Elm | Elm Browser UI | `pixelcraft-web` → `elm` |
+| Elixir | Phoenix LiveView | `pixelcraft-web` → `server-rendered` |
+| F# | Fable/Feliz/Elmish, .NET desktop | `pixelcraft-web` → `fsharp-fable`; desktop by actual XAML framework |
+| Go | templ/templates, Bubble Tea/Lip Gloss, Fyne/Wails/Gio | `pixelcraft-web` → `server-rendered`; `pixelcraft-tui` → `bubbletea-lipgloss`; `pixelcraft-desktop` → `go-gui` |
+| Java | Vaadin/Thymeleaf, JavaFX/Swing | `pixelcraft-web` → `java-web`; `pixelcraft-desktop` → `javafx-swing` |
+| Julia | Genie/Stipple | `pixelcraft-data-apps` → `julia-genie` |
+| Kotlin | Compose Android/KMP, Compose Web/Kobweb | `pixelcraft-mobile` → `jetpack-compose`/`kotlin-multiplatform`; `pixelcraft-web` → `kotlin-web` |
+| Lua | LÖVE2D | `pixelcraft-game-ui` → `love2d` |
+| PHP | Laravel Blade/Livewire | `pixelcraft-web` → `server-rendered` |
+| Python | Streamlit/Gradio/Reflex/NiceGUI/Dash/Panel/Shiny/Jupyter; Flet/Kivy; Qt/PySide; Textual/Rich | `pixelcraft-data-apps` matching reference; `pixelcraft-mobile` → `flet`/`kivy`; `pixelcraft-desktop` → `qt-pyside-qml`; `pixelcraft-tui` → `textual`/`rich` |
+| R | Shiny/bslib | `pixelcraft-data-apps` → `r-shiny` |
+| Ruby | Rails/Hotwire | `pixelcraft-web` → `server-rendered` |
+| Rust | Leptos/Yew, egui/Slint/Dioxus/iced, Ratatui, Bevy | `pixelcraft-web` → `leptos-yew`; `pixelcraft-desktop` → `rust-gui`; `pixelcraft-tui` → `ratatui`; `pixelcraft-game-ui` → `bevy` |
+| Scala | Laminar/Scala.js | `pixelcraft-web` → `scala-laminar` |
+| Swift | SwiftUI, UIKit, AppKit | `pixelcraft-mobile` → `swiftui`/`uikit`; `pixelcraft-desktop` → `appkit` |
+| TS/JS | React/Next, Vue/Nuxt, Svelte, Solid, Angular, Astro, Qwik, htmx/Alpine, Lit, Observable Framework, Evidence, Electron/Tauri, Ink | `pixelcraft-web` matching reference; `pixelcraft-data-apps` → `observable-framework`/`evidence`; `pixelcraft-desktop`/`pixelcraft-tui` matching reference |
+| Zig | no substantive dedicated reference yet | plan manually in `pixelcraft-plan`; inspect actual UI/library constraints |
 
 ## Brand identity signals
 

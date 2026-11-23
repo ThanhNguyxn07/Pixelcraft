@@ -61,3 +61,5 @@ Rendered verification requires running the actual app/windowing stack or platfor
 - Read [references/cpp-gui.md](references/cpp-gui.md) for Qt C++/QML, Dear ImGui, and wxWidgets.
 - Read [references/go-gui.md](references/go-gui.md) for Fyne, Wails, and Gio.
 - Read [references/uno-platform.md](references/uno-platform.md) for Uno Platform/XAML cross-platform desktop.
+
+For Flet or Kivy desktop targets, use the canonical framework reference in `pixelcraft-mobile` together with the desktop window/menu/high-DPI rules in this skill; do not duplicate those framework files here.

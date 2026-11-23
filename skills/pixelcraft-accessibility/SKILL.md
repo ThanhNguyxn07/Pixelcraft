@@ -13,7 +13,7 @@ Accessibility is a floor built during design, not a final repair pass. Meet the 
 ## References
 
 - Read [references/wcag22-checks.md](references/wcag22-checks.md) for the concrete WCAG 2.2 AA floor and pass/fail checks.
-- Read [references/platforms.md](references/platforms.md) when translating the floor to web, iOS, Android, Flutter/React Native, Python UI, desktop, TUI, email, or game UI.
+- Read [references/platforms.md](references/platforms.md) when translating the floor to web, iOS, Android, Flutter/React Native, data apps, desktop, TUI, email, or game UI.
 - Read [references/verification.md](references/verification.md) before claiming compliance; separate automated evidence from manual judgment.
 
 ## Core rules

@@ -1,6 +1,6 @@
 ---
 name: pixelcraft-mobile
-description: Translates Pixelcraft direction, tokens, UX, and floor requirements into idiomatic mobile UI across SwiftUI, UIKit, Jetpack Compose, Flutter, React Native/Expo, Kotlin Multiplatform, Ionic/Capacitor, and .NET MAUI. Use for native or cross-platform app screens, navigation, safe areas, Dynamic Type/sp scaling, touch targets, gestures, haptics, platform conventions, forms, states, motion, accessibility, and device verification.
+description: Translates Pixelcraft direction, tokens, UX, and floor requirements into idiomatic mobile UI across SwiftUI, UIKit, Jetpack Compose, Flutter, React Native/Expo, Kotlin Multiplatform, Ionic/Capacitor, .NET MAUI, Flet, and Kivy. Use for native or cross-platform app screens, navigation, safe areas, Dynamic Type/sp scaling, touch targets, gestures, haptics, platform conventions, forms, states, motion, accessibility, and device verification.
 license: MIT
 metadata:
   version: 0.1.0
@@ -12,11 +12,11 @@ Use this skill when the surface is a phone/tablet/foldable/watch-adjacent app. R
 
 ## Detection signals
 
-`Package.swift`, Xcode projects/workspaces, SwiftUI/UIKit imports, `build.gradle(.kts)` Compose dependencies, `pubspec.yaml`, React Native/Expo config, KMP shared modules, Ionic/Capacitor config, `.csproj` MAUI references, platform folders (`ios/`, `android/`), and target/device family declarations.
+`Package.swift`, Xcode projects/workspaces, SwiftUI/UIKit imports, `build.gradle(.kts)` Compose dependencies, `pubspec.yaml`, React Native/Expo config, KMP shared modules, Ionic/Capacitor config, `.csproj` MAUI references, Flet controls/page setup, Kivy KV/App classes, platform folders (`ios/`, `android/`), and target/device family declarations.
 
 ## Translate direction to mobile idioms
 
-1. Map DTCG semantic roles to native theme systems: SwiftUI asset catalogs/environment, UIKit trait-aware colors, Compose `MaterialTheme`, Flutter `ThemeData`/`ColorScheme`, RN theme context, Ionic CSS variables, or MAUI resources.
+1. Map DTCG semantic roles to native theme systems: SwiftUI asset catalogs/environment, UIKit trait-aware colors, Compose `MaterialTheme`, Flutter `ThemeData`/`ColorScheme`, RN theme context, Ionic CSS variables, MAUI resources, Flet theme objects, or Kivy KV/Python constants.
 2. Recompose for touch and reach: primary actions within reach, no desktop hover dependence, dense information only where expert use justifies it.
 3. Use platform navigation rather than web metaphors: navigation stack/tab bar/sheet on iOS; navigation bar/rail/drawer/predictive back on Android; large-title behavior only where idiomatic.
 4. Scale type using Dynamic Type or sp scaling; restructure instead of truncating essential content at accessibility sizes.
@@ -57,3 +57,5 @@ Rendered verification is possible only through simulator/emulator/device tooling
 - Read [references/kotlin-multiplatform.md](references/kotlin-multiplatform.md) for Compose Multiplatform/KMP shared UI.
 - Read [references/ionic-capacitor.md](references/ionic-capacitor.md) for Ionic/Capacitor hybrid apps.
 - Read [references/dotnet-maui.md](references/dotnet-maui.md) for .NET MAUI.
+- Read [references/flet.md](references/flet.md) for Flet cross-platform app surfaces.
+- Read [references/kivy.md](references/kivy.md) for Kivy cross-platform app surfaces.
