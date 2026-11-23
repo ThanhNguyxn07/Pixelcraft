@@ -14,6 +14,9 @@ Tokens are design decisions in portable form. They encode hierarchy and semantic
 
 - Read [references/format.md](references/format.md) when authoring DTCG structure, references, modes, themes, or token tiers.
 - Read [references/theme-presets.md](references/theme-presets.md) when designing light/dark/high-contrast modes, dark elevation/accent behavior, forced-colors behavior, or exporter-supported DTCG mode overrides.
+- Read [references/state-tokens.md](references/state-tokens.md) whenever defining interactive control states or validating state coverage across modes.
+- Read [references/governance.md](references/governance.md) before renaming, removing, versioning, deprecating, or meaningfully redefining tokens.
+- Read [references/adoption.md](references/adoption.md) when migrating consumers, inventorying hardcoded values, or improving documentation/usage of an existing system.
 - Use [assets/tokens.example.json](assets/tokens.example.json) as the canonical small example and [assets/tokens.modes.example.json](assets/tokens.modes.example.json) for mode overrides.
 - Run `node scripts/export-tokens.mjs --help` for exporter usage. The exporter supports `css`, `tailwind`, `swift`, `kotlin`, `dart`, `python`, `qt`, and `textual`.
 
@@ -42,7 +45,9 @@ Before implementation or export:
 
 - every reference resolves and has no cycle;
 - contrast pairs are defined by role, not guessed later;
-- focus/selection/disabled states exist;
+- focus/selection/disabled states exist and realistic combinations such as invalid+focus or selected+disabled are considered;
+- state behavior is validated across supported modes rather than only in the base theme;
+- ownership, deprecation, rollback, and consumer-impact notes exist for breaking or behavioral changes;
 - dark/high-contrast behavior is explicit or marked absent;
 - type roles cover display/body/UI/data/caption and required script fallbacks;
 - localization expansion and directionality do not depend on fixed widths;

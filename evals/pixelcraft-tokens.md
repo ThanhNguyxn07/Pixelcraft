@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft-tokens` behavior when the prompt matches its trigger.
 - separates primitive/semantic/component layers and preserves mode behavior.
+- inventories consumers/direct primitive usage and records migration or waiver state instead of assuming a rewrite is safe.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -37,6 +38,7 @@
 
 - Selects or applies `pixelcraft-tokens` behavior when the prompt matches its trigger.
 - maps semantic roles across modes without breaking consumers.
+- validates realistic state combinations such as invalid+focus and selected+disabled and records ownership/rollback/deprecation consequences for behavioral changes.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
