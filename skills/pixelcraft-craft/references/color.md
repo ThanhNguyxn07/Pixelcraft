@@ -1,58 +1,61 @@
-# Color
+# Color and palette building
 
-Evidence base: OKLab/OKLCH `[S78]`, WCAG 2.2 `[S57]`, APCA caveats `[S76]` `[S77]`, Material color roles `[S63]`.
+Evidence base: first-impression research `[S105]`, visual complexity/colorfulness models `[S106]` `[S107]`, aesthetic-usability halo `[S108]`, OKLab/OKLCH `[S78]`, APCA caveats `[S76]` `[S77]`, WCAG 2.2 `[S57]`, Material color `[S65]`.
 
-## Use OKLCH as a design space
+## Evidence constraints
 
-Specify color posture by lightness (`L`), chroma (`C`), and hue (`H`) rather than manipulating random hex values:
+Users form aesthetic judgments extremely quickly—Lindgaard et al. found visual appeal judgments within about 50ms—so the first visible field must be intentional before users read details `[S105]`. Reinecke/Gajos show colorfulness and perceived visual complexity predict appeal, but peak preferences vary by demographic/culture; there is no universal “premium palette” `[S106]` `[S107]`. Tractinsky's aesthetic-usability effect means polished visuals can increase perceived usability, but it does not fix actual usability and must never be used as camouflage `[S108]`.
 
-- keep hue/chroma coherent across a scale while changing lightness;
-- reduce chroma at very light/dark ends to avoid clipping and visual harshness;
-- inspect actual rendered output because gamut mapping differs by platform/display;
-- store/export exact values through tokens rather than copying screenshots.
+## Build process
 
-Example ramp posture:
+1. Define semantic roles before picking colors: background/surface/raised/sunken/ink/muted/link/focus/accent/on-accent/border/scrim/selection/success/warning/danger/info/data.
+2. Extract color evidence from real content/material: object pigment, light environment, substrate, domain signal, existing brand, cultural context. Do not invent meaning from a trend.
+3. Choose palette posture: restrained, tonal, chromatic, dark atmospheric, print/spot-color, signal/instrument, or dynamic-from-content.
+4. Build perceptual ramps in OKLCH/OKLab, then verify in the output gamut and actual product surfaces `[S78]`.
+5. Validate every state pair and mode; actual contrast is a property of foreground+background+size+weight+state, not a swatch.
+
+## Non-default accent strategies
+
+| Strategy | Use when | Construction rules | Slop risk |
+|---|---|---|---|
+| restricted palette | strong editorial/systemic direction | one ink, one paper/surface family, one or two semantic accents; invest savings in type/space/material | beige+orange “AI craft” uniform |
+| duotone/monochrome media | archival photography, editorial image systems, print-derived identity | map image shadows/highlights to palette values; preserve enough midtone detail and alt-independent meaning | duotone filter over unrelated stock photography |
+| color-from-content | product/artwork/specimen has real color identity | extract hue families manually/algorithmically, curate rather than average; accent changes only within governed ranges | random image extraction producing inconsistent UI |
+| complementary tension | need one decisive action/signal against a quiet field | use a small high-chroma complement for action; large areas remain low-chroma | equal-area complementary vibration |
+| tonal family + interruption | sophisticated but not sterile | 5–8 steps in one hue family, interrupted by a deliberate material/signal color | corporate blue ramp with one purple gradient |
+| dark atmospheric palette | media/spatial/cinematic surfaces where dark is semantically right | dark is recomputed: low-chroma surfaces, lighter/desaturated accents, layered elevation, controlled scrims; never invert light mode | near-black + neon purple AI default |
+| signal/instrument palette | safety, monitoring, industrial, scientific domains | hue allocation follows domain standards and severity; saturation reserved for abnormal/critical states | decorative red/green status without labels |
+| spot-color print logic | publishing/culture/identity-led work | treat accent like a print spot ink: limited count, consistent role, flat use, registration/texture optional | fake risograph noise over conventional SaaS layout |
+
+## OKLCH ramp method
+
+- Pick the hue(s) from evidence; do not spin the hue wheel randomly.
+- Choose chroma where the hue is strongest, then lower chroma toward very light/dark endpoints to reduce gamut clipping and harshness.
+- Keep semantic positions stable: `accent-500` means the same relative emphasis across themes even if values differ.
+- Check actual sRGB/P3 output; out-of-gamut colors must be intentionally mapped/clamped `[S78]`.
+- Use hue rotation across ramps only when it encodes material behavior (heat, depth, light); otherwise coherence matters more.
+- Do not assume equal OKLCH lightness means equal contrast. Measure actual pairs; use APCA as supplemental perceptual guidance while conforming to WCAG 2.2 requirements `[S60]` `[S76]` `[S77]`.
+
+Illustrative shape only—not a reusable palette:
 
 ```text
-accent-050 L .96 C .02 H 245
-accent-100 L .90 C .05 H 245
-accent-300 L .72 C .12 H 245
-accent-500 L .55 C .18 H 245
-accent-700 L .42 C .13 H 245
-accent-900 L .28 C .07 H 245
+surface-0 L .98 C .01 / surface-1 L .94 C .02 / ink L .24 C .03
+accent core L .58 C .16 / hover L .52 C .17 / soft-fill L .91 C .05
+dark surface L .20 C .02 / dark raised L .26 C .025 / dark accent L .72 C .11
 ```
 
-Do not treat these values as a universal palette. Derive hue/chroma from the direction and test gamut contrast.
+## Dark and high-contrast behavior
 
-## Semantic roles
+- Reassign semantic values rather than mathematically inverting.
+- Reduce large-area saturation in dark mode; use lighter foreground accents.
+- Use luminance layering/borders/scrims for elevation because shadows weaken on dark surfaces.
+- Test focus, selection, caret, placeholder, disabled, pressed, visited, chart grid, and error text independently in each mode.
+- Honor `prefers-contrast`, forced-colors, and platform high-contrast modes; do not remove system-controlled boundaries `[S57]`.
 
-Define roles before hex values:
+## Cultural and content checks
 
-- `surface`, `surface-raised`, `surface-sunken`, `overlay`;
-- `ink`, `ink-muted`, `ink-inverse`, `link`, `focus`;
-- `accent`, `accent-ink`, `accent-soft`;
-- `success`, `warning`, `danger`, `info` plus foreground/background variants;
-- `border`, `divider`, `selection`, `scrim`, `shadow`;
-- data/categorical/sequential/diverging palettes only when needed.
+Color meanings are locale/domain dependent. Validate finance gain/loss, mourning/celebration, politics/religion, safety, and brand-category conventions for target markets `[S31]` `[S82]`. Never encode meaning by hue alone; pair color with icon/text/pattern/position. For data: categorical palettes need direct labels and limited categories, sequential scales need monotonic lightness, and diverging scales need a meaningful neutral midpoint.
 
-Never use red/green alone for status. Pair color with text/icon/shape/position.
+## Palette rejection test
 
-## Contrast and states
-
-- WCAG 2.2 AA web floor: normal text 4.5:1, large text 3:1, non-text UI 3:1 unless exempt `[S57]`.
-- APCA can inform perceptual judgment but is not the final WCAG 3 standard; do not claim APCA conformance unless scoped carefully `[S76]` `[S77]`.
-- Check hover/active/focus/disabled/selected/pressed/visited and placeholder text; states often fail before base colors.
-- Do not lower contrast for “muted” metadata below usability requirements; use size/spacing/weight to de-emphasize.
-- In dark mode do not invert naïvely. Reduce large filled saturation, use lighter foreground accents, preserve semantic meaning, and test elevation/scrim/shadow visibility.
-- Honor increased-contrast and forced-colors/platform high-contrast modes where supported.
-
-## Data color
-
-- categorical: limit simultaneous categories; use label/direct annotation instead of forcing users to decode many hues;
-- sequential: monotonic lightness, not rainbow hue cycling;
-- diverging: meaningful neutral midpoint and symmetric endpoints;
-- use texture/pattern/line style/ordering in addition to hue for print, color-vision deficiency, and low-quality displays.
-
-## Cultural meaning
-
-Color symbolism is locale- and domain-dependent (finance gains/losses, mourning, luck, politics, religion, safety). Validate palette meaning for target markets instead of universalizing Western SaaS associations `[S31]` `[S82]`.
+Reject the palette if removing the subject makes the same choices equally plausible for a bank, game, clinic, and AI chatbot. Also reject it if the only novelty is hue: composition, type, material, and motion must participate in the direction.

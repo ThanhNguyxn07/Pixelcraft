@@ -1,57 +1,61 @@
-# Motion
+# Motion and interaction
 
-Evidence base: platform motion guidance `[S63]` `[S64]`; response-time constraints `[S48]`; accessibility floor `[S57]`.
+Evidence base: NN/g animation-duration and scrolljacking studies `[S109–S111]`, Apple motion/accessibility guidance `[S112]`, Material motion `[S66]`, web rendering/CWV guidance `[S118]` `[S119]`, WCAG floor `[S57]`.
 
-## Purpose first
+## Purpose before spectacle
 
-Every animation must do at least one job:
+Motion earns its cost only when it acknowledges input, shows causality, preserves orientation, communicates progress/state, or creates the direction's single signature moment. Apple gives the same constraint: purposeful, brief, precise, optional motion—not motion for its own sake `[S112]`. Award-showcase spectacle is not permission to sacrifice usability: Awwwards usability is 30% of the score and CSSDA scores UX separately `[S91]` `[S93]`.
 
-- acknowledge input immediately;
-- show causality/source/destination;
-- preserve orientation during spatial or hierarchy change;
-- communicate progress/state;
-- reinforce a deliberate signature moment.
+## Budgets
 
-Decoration-only looping motion is usually noise. Motion cannot compensate for unclear hierarchy.
-
-## Durations and posture
-
-| Interaction | Typical posture |
+| Layer | Budget posture |
 |---|---|
-| hover/press/direct feedback | immediate or roughly 50–120ms |
-| small state transition | roughly 120–250ms |
-| panel/sheet/scene transition | roughly 200–400ms |
-| orientation-critical choreography | only as long as comprehension requires |
-| loading progress | show real progress when known; otherwise stable indeterminate feedback without fake precision |
+| input acknowledgment | immediate; roughly 50–120ms; never delayed behind a scene animation |
+| local state change | roughly 100–250ms; NN/g places most animation in a 100–500ms envelope `[S110]` |
+| sheet/panel/route transition | roughly 200–400ms; shortest non-jarring duration |
+| scroll-linked progress | visually respond within one normal wheel/touch increment; never require pixel-perfect scrolling `[S109]` |
+| concurrent choreographed elements | normally 1 primary + at most 2 supporting motions; cascade only when order encodes meaning |
+| ambient/looping motion | default none in Operate/Read; if used, subtle, pausable, and outside the reading focus |
+| rendering | target compositor work; animate transform/opacity, avoid layout/paint-triggering properties and `transition: all` `[S118]` |
+| assets | motion cannot justify layout shift, delayed LCP media, blocked input, or main-thread long tasks `[S119]` |
 
-Use platform-native easing unless the direction defines a material behavior: snap/stepped for instruments, physics/spring for playful objects, smooth symmetric easing for neutral UI. Avoid `transition: all`; animate only intentional properties, preferably transform/opacity on compositing surfaces.
+Tokenize semantic durations/easings (`feedback.instant`, `state.standard`, `scene.enter`) rather than scattering raw milliseconds.
 
-## Rules
+## Technique library
 
-- Never block interaction during nonessential animation.
-- Do not animate layout properties that trigger expensive reflow when transform/opacity can communicate the same change.
-- Keep focus stable or move it deliberately; never leave focus in removed content.
-- Avoid flashing or rapid oscillation; respect photosensitivity constraints.
-- Pause or avoid background motion in dense operational screens.
-- Coordinate entrance motion in one direction and order. Do not make every card cascade independently.
+| Technique | Use when | Web implementation | Native/mobile equivalent | Reduced/fallback path | Cliché risk |
+|---|---|---|---|---|---|
+| scroll-driven reveal/progress | progress itself is spatial/temporal: drawing a route, filling a meter, comparing before/after | CSS scroll-driven animations or small observer-driven transform/opacity `[S115]`; no input hijacking | scroll-linked offset/phase in SwiftUI/Compose/Flutter | static final state or chapter thumbnails; progress readable without motion | every section fading/sliding upward becomes meaningless decoration |
+| pinned/sticky narrative | one artifact needs persistent context while chapters annotate it | sticky media pane + normal document flow; sparse keyed state changes | split pane or top preview + pageable chapters | linear static layout with all annotations visible | scrolljacked full-screen scenes that trap the user `[S109]` |
+| View Transitions/shared element | object identity continues across route/state | same-document `startViewTransition` or cross-document opt-in `[S116]`; name only meaningful shared elements | native shared-element/container transform transitions | instant navigation; preserve focus and announce route change | morphing everything because the API exists |
+| cursor/hover response | pointer precision adds inspection, magnetic affordance, or localized reveal | transform/opacity near cursor; keyboard focus receives equivalent state | touch/long-press/context menu or focus ring equivalents | static emphasis; no hover-only disclosure | custom cursor replacing the system cursor without value |
+| text reveal | short editorial headlines where sequencing creates voice | per-line or per-phrase mask/translate once; keep text selectable and semantically whole | attributed text/line-level fade or no-op | all words visible instantly | letter-by-letter spectacle on long/localized copy |
+| page transition | spatial continuity or scene change is real | View Transition or brief opacity/transform; keep browser navigation expectations | platform navigation transition/spring | instant transition | ceremonial transitions that delay every task |
+| micro-interaction | state needs confirmation or physical cause | pressed scale/color/token state within 100ms; no layout shift | haptics/platform touch feedback plus visual state | static state/icon/color change | bouncy jelly controls on serious operations |
+| WebGL/shader accent | material/light/data inherently spatial or generative | one bounded canvas/scene; pause offscreen; static poster; GPU/memory budget | Metal/Vulkan/OpenGL/native scene only at signature surface | high-quality static image/canvas fallback | default orb/fluid/aurora background |
+| kinetic type/marquee | ticker/log/scoreboard semantics or deliberate print/poster voice | transform-only loop, pause on hover/focus, duplicate content accessibly | ticker view with reduced speed/control | static wrapped text | meaningless infinite marquee as faux award-site signal |
 
-## Reduced-motion path
+## Scrolljacking boundary
 
-Provide a real alternative when users request reduced motion:
+Default answer: **do not scrolljack**. NN/g found disorientation across participants; when stakeholders insist, use it only for functional value, keep required scroll input small, make change visible quickly, preserve normal scrollbar/progress, provide direct section links, avoid precision-dependent reveals, and user-test the rate `[S109]`. Never hijack input, invert direction, suppress keyboard/scrollbar behavior, or make content vanish on a slight overscroll.
 
-1. instant state change;
-2. opacity-only fade where safe;
-3. static intermediate/endpoint representation;
-4. text or icon state equivalent.
+## Reduced-motion matrix
 
-Reduced motion must preserve information and causality. Simply deleting feedback is not sufficient.
+1. preserve causality with an instant state change;
+2. replace spatial movement with opacity/fade or static crossfade;
+3. show a static intermediate/endpoint sequence;
+4. provide text/icon/haptic/audio equivalent where appropriate;
+5. respect `prefers-reduced-motion` on web `[S117]` and platform Reduce Motion settings natively; Apple specifically calls out limiting automatic/repetitive zoom, scale, peripheral motion, z-depth, and blur transitions `[S112]`.
 
-## Platform transfer
+Deleting feedback is not a reduced-motion path. Motion-triggering vestibular risk includes large-scale panning/zooming, spinning, parallax, autoforwarding carousels, and scrolljacking `[S110]` `[S111]`.
 
-- Web: honor `prefers-reduced-motion`; avoid scroll-jacking.
-- iOS/Android: use native spring/transition idioms and interruptibility.
-- Flutter/RN/Compose/SwiftUI: tokenize duration/easing semantically rather than hard-coding per component.
-- Desktop: respect instant window manipulation and reduced animation settings.
-- TUI: use sparse cursor/progress/state changes; do not assume high frame rate.
-- Email: assume animation support is absent or inconsistent; never make meaning depend on it.
-- Game UI: distinguish gameplay-critical timing, HUD feedback, cinematic decoration, and photosensitivity risk.
+## Implementation checklist
+
+- input stays interactive during nonessential animation;
+- focus never remains inside removed content;
+- no flashing/rapid oscillation or photosensitive pattern;
+- animations pause offscreen/backgrounded and do not run in dense operational screens;
+- DOM/visual order remain coherent for keyboard, controller, and assistive tech;
+- frame budget verified on a mid-tier device, not only a developer workstation;
+- reduced-motion, forced-colors, high-contrast, RTL, 200% text, and narrow viewport paths inspected;
+- one sentence recorded for why each signature motion exists and what replaces it when motion is unavailable.

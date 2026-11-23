@@ -1,48 +1,58 @@
-# Typography
+# Typography, pairing, and expressive type
 
-Evidence base: practical type guidance synthesized in `[S67]` `[S68]`; localization requirements `[S81]` `[S82]`; platform scaling expectations `[S62]` `[S63]`.
+Evidence base: Google Fonts type guidance `[S68–S70]`, NN/g pairing `[S71]`, Typewolf pairing/lookbook practice `[S102]`, Fonts In Use as a specimen corpus `[S103]`, Bringhurst/Müller-Brockmann typographic tradition `[S113]` `[S114]`, localization requirements `[S81]` `[S82]`.
 
 ## Voice before font
 
-Choose a typographic voice from the direction: editorial, instrumental, humanist, technical, archival, playful, ceremonial, or native/platform. “Clean” is not a voice.
+Choose a typographic voice from the direction: editorial, instrumental, humanist, technical, archival, playful, ceremonial, native/platform. “Clean” is not a voice. Do not default to Inter/Geist-like neutrality unless density, platform fit, script coverage, or existing brand continuity justify it.
 
-| Voice | Pairing behavior | Use carefully for |
+| Voice | Pairing behavior | Best fit |
 |---|---|---|
-| editorial | high-contrast serif display + quiet serif/sans text + small metadata sans | publishing, culture, luxury |
-| instrumental | legible grotesque + tabular monospace/data figures | dashboards, measurement, operations |
-| humanist | warm sans/serif with open apertures | health, education, consumer trust |
-| technical | monospace or engineered sans + precise numerals | developer, scientific, industrial |
-| archival | text serif + caption/index system | history, museums, documents |
-| playful | rounded/display face tightly constrained to headings | games, children, casual commerce |
-| native | system type stack and platform scale | high-frequency app UI where platform fit matters most |
+| editorial | high-contrast or text serif display + quiet body face + small metadata sans | publishing, culture, luxury, analysis |
+| instrumental | legible grotesque + tabular monospace/data numerals | operations, measurement, finance, monitoring |
+| humanist | open-aperture sans/serif, moderate contrast | health, education, trust-heavy consumer |
+| technical | engineered sans/mono, precise numerals, compact metadata | developer, scientific, industrial |
+| archival | durable text serif + caption/indexing system | museums, documents, history |
+| playful | expressive display constrained to headings + highly readable body | games, children, casual commerce |
+| native | system typeface/scale | high-frequency platform-conforming apps |
 
-Do not default to Inter/Geist-like neutrality everywhere. If a neutral sans is right, state the reason (platform norm, dense data, broad script coverage, brand continuity).
+## Pairing method
 
-## Scale and measure
+1. Choose the **anchor** first: usually the body/UI face because it carries most reading.
+2. Add contrast only where it has a job: display voice, data voice, metadata voice, or code/log voice.
+3. Balance contrast with compatibility: comparable x-height/proportions often sit together better; contrast should come from structure, not clashing details `[S68]` `[S71]`.
+4. Assign explicit roles before naming fonts: display/title/heading/body/body-small/caption/control/data/code.
+5. Prefer one family with optical sizes/width/weight axes when hierarchy is more important than personality; use superfamilies when serif/sans/mono coordination is built in `[S69]`.
+6. Consult real specimens (Fonts In Use/Typewolf) to understand scale/spacing/context, then design your own system; do not copy a pairing because it is fashionable `[S102]` `[S103]`.
+7. Limit active families/weights for performance and coherence. Two well-deployed faces beat five shallow ones.
 
-- Build a scale with a perceptible ratio: approximately 1.125–1.2 for dense UI, 1.25–1.4 for editorial/marketing. Do not create twelve indistinguishable steps.
-- Define roles: display, title, heading, body, body-small, caption, UI control, data/numeric, code/log.
-- For long-form Latin text target roughly 65–75 characters per line; shorten for captions/tables and adjust for CJK/Arabic/Indic shaping rather than copying the number blindly.
-- Keep paragraph line height approximately 1.45–1.65 for Latin body; tighten large display but avoid clipping ascenders/diacritics. Dense UI can use shorter line height only when measure and scanning remain clear.
-- Use tabular figures and consistent decimal alignment for changing numeric data; use proportional figures for prose unless tabular alignment matters.
-- Avoid tracking out lowercase body text. Use letterspacing cautiously for uppercase/labels and never as a substitute for hierarchy.
-- Limit display tracking compression; extreme negative tracking breaks scripts and platform rendering.
+## Expressive techniques
 
-## Fallbacks and international scripts
+| Technique | Use when | Rules | Caveat/slop risk |
+|---|---|---|---|
+| oversized display | short decisive copy can structure the page | set line breaks manually/responsively; reserve space; keep controls visibly subordinate | giant cropped word as generic award-site costume |
+| width/weight contrast | same family needs strong hierarchy without extra fonts | compare condensed black display to regular-width text; test rendering across platforms | variable-font axis animation becomes the point rather than the message |
+| serif display + sans interface | editorial authority plus operational clarity | display carries voice; UI controls stay boring/readable | cream/serif/orange neo-slop when detached from subject |
+| mono data voice | measurement, provenance, logs, indexing | use mono for aligned numeric/categorical evidence, not as decoration | fake terminal aesthetic with no data |
+| small-caps/metadata system | archival/editorial structure | use true small caps or carefully styled uppercase; consistent metadata grammar | meaningless uppercase eyebrow labels |
+| kinetic/revealed type | short campaign statements | line/phrase-level reveal, once, selectable text | letter-by-letter animation that harms localization and reading |
+| vertical/rotated type | culturally meaningful vertical writing or navigational furniture | vertical CJK requires real line-breaking/font review; Latin rotation only for labels/metadata | rotated text that becomes unreadable chrome |
+| expressive numerals | scoreboards, indexes, finance, measurement | choose lining/tabular behavior intentionally; align decimal/degree/unit | oversized numerals implying fake metrics |
 
-- Declare fallback behavior per script, not just `sans-serif`. Check Latin extended, Cyrillic, Greek, Arabic, Hebrew, Devanagari/Indic shaping, Thai/Lao/Khmer, CJK, Hangul, emoji, and numeric systems required by the audience.
-- Do not fake italics/bold where the font lacks them; use real faces or change emphasis strategy.
-- CJK: respect line breaking, punctuation compression, ruby/furigana where applicable, vertical writing only when deliberately supported, and font substitution differences across platforms.
-- Arabic/Hebrew: verify joining/shaping, diacritics, ligatures, numeral choice, bidi isolation, and truncation direction.
-- Indic/SE Asian scripts: verify conjuncts, vowel signs, line breaking, and adequate vertical metrics.
-- Never set translated copy in a Latin-only display face that silently falls back to an uncoordinated system font.
+## Scale, measure, and detail
+
+- Dense UI scale ratio roughly 1.125–1.2; editorial/persuasion roughly 1.25–1.4. Do not create twelve indistinguishable steps.
+- Long-form Latin target around 65–75 characters per line; adjust rather than copying blindly for CJK/Arabic/Indic and dense UI `[S70]`.
+- Latin body line-height roughly 1.45–1.65; tighten display while protecting ascenders/diacritics; dense UI may tighten only when scanlines remain clear.
+- Use optical size when available: display optical sizes tighter/sharper, text optical sizes sturdier.
+- Use tabular figures for changing/aligned data; proportional figures for prose unless alignment matters.
+- Avoid tracked-out lowercase; uppercase/labels can receive modest tracking. Extreme negative tracking breaks script rendering.
+- Preserve hanging punctuation, baseline rhythm, paragraph spacing, and orphan/widow behavior where platform allows `[S114]`.
+
+## International script floor
+
+Declare fallback behavior per script, not just `sans-serif`: Latin extended/combining marks, Cyrillic, Greek, Arabic, Hebrew, Indic shaping, Thai/Lao/Khmer line breaking, CJK/Hangul, emoji/ZWJ, and numeric systems required by the audience `[S81]` `[S82]`. Do not fake bold/italic, do not put translated copy in Latin-only display fonts that silently fall back, and do not let expressive crop/tracking/masking damage shaping.
 
 ## Platform transfer
 
-- Web: use optical sizing/variable axes only when they improve hierarchy or performance; preload critical fonts responsibly.
-- iOS: prefer Dynamic Type-compatible scaling; SF Pro/system defaults are valid when native clarity matters `[S62]`.
-- Android: respect sp scaling and Material type roles unless the project owns a deliberate custom system `[S63]`.
-- Flutter/RN/Compose/SwiftUI: map semantic roles once; do not hard-code pixel mental models from web CSS.
-- TUI: use weight/color/underline/inverse sparingly; no assumed ligatures or variable widths.
-- Email: assume limited font support; provide robust websafe fallback stacks and never make meaning dependent on custom fonts.
-- Game UI: test bitmap/SDF rendering, localization glyph atlases, memory cost, and controller-distance legibility.
+Web: preload only critical files, reserve metrics/space, use `font-display` intentionally. iOS/macOS: Dynamic Type-compatible scaling. Android: respect sp scaling/type roles. Flutter/RN/Compose/SwiftUI: map semantic roles once rather than copying CSS pixels. TUI: weight/color/underline/inverse only; no assumed ligatures. Email: robust fallback stacks; custom fonts cannot carry meaning. Game UI: validate SDF/bitmap atlases, memory, localization glyphs, and viewing distance.
