@@ -163,7 +163,12 @@ async function main() {
       for (const colorScheme of options.lightOnly ? ['light'] : ['light', 'dark']) {
         for (const reducedMotion of options.reducedMotion ? ['no-preference', 'reduce'] : ['no-preference']) {
           const page = await browser.newPage({ viewport, colorScheme, reducedMotion });
-          await page.goto(targetUrl(target), { waitUntil: 'networkidle', timeout: options.timeout });
+          await page.goto(targetUrl(target), { waitUntil: 'load', timeout: options.timeout });
+          await Promise.race([
+            page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve())).catch(() => {}),
+            new Promise((resolve) => setTimeout(resolve, 1000)),
+          ]);
+          await page.waitForTimeout(300);
           const name = `${viewport.width}x${viewport.height}-${colorScheme}-${reducedMotion === 'reduce' ? 'reduced-motion' : 'motion'}.png`;
           const file = path.join(out, name);
           await page.screenshot({ path: file, fullPage: true });
