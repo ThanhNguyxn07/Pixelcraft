@@ -18,6 +18,8 @@
     "skills/",
     "docs/",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "install.sh",
+    "install.ps1"
   ]
 }

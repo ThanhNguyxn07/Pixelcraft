@@ -96,83 +96,157 @@ The full architecture is documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTUR
 
 ## Install
 
-### Pixelcraft installer
+| Method | Command | Best for |
+|---|---|---|
+| Guided installer | `npx pixelcraft` | First-time setup; choose agents, skills, and scope interactively |
+| Direct CLI | `npx pixelcraft add all --agent claude` | Reproducible Node-based setup and automation |
+| Vercel `skills` CLI | `npx skills add ThanhNguyxn07/Pixelcraft` | The cross-agent skills ecosystem and agent auto-detection |
+| Claude Code plugin | `/plugin marketplace add ThanhNguyxn07/Pixelcraft` then `/plugin install pixelcraft@pixelcraft` | Claude Code users who want plugin-managed updates |
+| curl/bash installer | `curl -fsSL https://raw.githubusercontent.com/ThanhNguyxn07/Pixelcraft/main/install.sh \| bash -s -- --agent claude --skills all` | Linux/macOS without Node.js |
+| PowerShell installer | `irm https://raw.githubusercontent.com/ThanhNguyxn07/Pixelcraft/main/install.ps1 \| iex` | Windows without Node.js |
+| GitHub Release asset | Download `pixelcraft-skills.zip` or `pixelcraft-skills.tar.gz` from Releases | Controlled offline/manual distribution |
+| git clone/copy | `git clone --depth 1 https://github.com/ThanhNguyxn07/Pixelcraft.git` | Pinning, inspection, and manual per-agent copying |
 
-Install all skills into the current project for one host:
+Details and target-specific paths follow. Agent directories evolve quickly; the paths below reflect public documentation checked for this release, and compatibility locations are identified as such.
+
+### Guided and direct Pixelcraft installer
+
+Run with no arguments for the zero-dependency interactive wizard:
 
 ```bash
+npx pixelcraft
+```
+
+The wizard asks for one or more agents, all skills or a numbered subset, and project or user-level scope. It uses Node's `readline` only; there are no package dependencies. Non-interactive flags remain available for automation:
+
+```bash
+# Everything for one agent in the current project
 npx pixelcraft add all --agent claude
-```
 
-Install selected skills:
+# A subset for multiple agents; repeat --agent instead of using commas if preferred
+npx pixelcraft add pixelcraft-web pixelcraft-review --agent claude,cursor
 
-```bash
-npx pixelcraft add pixelcraft-web pixelcraft-review --agent codex
-```
-
-When a subset is requested, the installer automatically includes the required `pixelcraft` orchestrator and `pixelcraft-plan` step-zero skill and prints a note saying so.
-
-Install user-level/global skills:
-
-```bash
+# User-level installation
 npx pixelcraft add all --agent claude --global
-```
 
-Preview without writing files:
-
-```bash
+# Preview and controlled replacement
 npx pixelcraft add all --agent all --dry-run
-```
-
-Replace an explicitly requested installation with `--force` (auto-added core skills install only when missing; without `--force`, existing skill directories are skipped so local edits are not silently deleted):
-
-```bash
 npx pixelcraft add all --agent claude --force
 ```
 
-The installer refuses symlinked target skill directories rather than following them outside the project.
+When a subset is requested, the installer automatically includes the required `pixelcraft` orchestrator and `pixelcraft-plan` step-zero skill and prints a note. Auto-added core skills install only when missing; `--force` applies only to explicitly requested skills. Without `--force`, existing skill directories are skipped so local edits are not silently deleted. The installer refuses symlinked target skill directories rather than following them outside the project.
 
-List bundled skills:
+Installer agent names are `claude`, `codex`, `agents`, `devin`, `cursor`, `gemini`, `copilot`, `windsurf`, `opencode`, and `all`, with aliases `claude-code`, `gemini-cli`, `github-copilot`, and `open-code`.
 
-```bash
-npx pixelcraft list
-```
+| Agent | Project path used by installer | User-level path used by installer |
+|---|---|---|
+| Claude Code | `.claude/skills` | `~/.claude/skills` |
+| Codex, generic agents, Devin | `.agents/skills` | `~/.agents/skills` |
+| Cursor | `.agents/skills` (`.cursor/skills` is also read) | `~/.cursor/skills` |
+| Gemini CLI | `.agents/skills` (`.gemini/skills` is also read) | `~/.gemini/skills` |
+| GitHub Copilot | `.agents/skills` (`.github/skills` and `.claude/skills` are compatibility locations) | `~/.copilot/skills` |
+| Windsurf | `.windsurf/skills` | `~/.codeium/windsurf/skills` |
+| OpenCode | `.opencode/skills` | `~/.config/opencode/skills` |
 
-Supported installer targets and project paths:
+`--agent all` installs every target and deduplicates shared `.agents/skills` destinations.
 
-| `--agent` value | Project installation path |
-|---|---|
-| `claude` | `.claude/skills` |
-| `codex` | `.agents/skills` |
-| `agents` | `.agents/skills` |
-| `cursor` | `.cursor/skills` |
-| `gemini` | `.gemini/skills` |
-| `copilot` | `.github/skills` |
-| `all` | all of the above, with duplicate `.agents/skills` deduplicated |
+### Vercel `skills` CLI
 
-With `--global`, the installer uses `~/.claude/skills`, `~/.agents/skills`, `~/.cursor/skills`, `~/.gemini/skills`, or `~/.copilot/skills` as implemented in `bin/pixelcraft.mjs`. Host behavior changes quickly; verify current host documentation before automating around global paths.
-
-### Vercel skills CLI
+The external [`skills`](https://github.com/vercel-labs/skills) CLI supports GitHub shorthand discovery and interactive agent selection. It requires Node.js 22.20 or newer:
 
 ```bash
 npx skills add ThanhNguyxn07/Pixelcraft
 ```
 
-This uses the external `skills` CLI's repository discovery/install behavior.
+A non-interactive selection uses its documented flags, for example:
+
+```bash
+npx skills add ThanhNguyxn07/Pixelcraft --skill pixelcraft-web -a claude-code
+```
+
+Add `-g` for user-level installation. That CLI owns its own detection behavior and supports more agents than Pixelcraft's bundled installer.
 
 ### Claude Code plugin marketplace
 
-Inside Claude Code:
+Inside Claude Code, add the repository as a marketplace and install the plugin. Both the marketplace and plugin are named `pixelcraft` in `.claude-plugin/marketplace.json`:
 
 ```text
 /plugin marketplace add ThanhNguyxn07/Pixelcraft
+/plugin install pixelcraft@pixelcraft
 ```
 
-The repository includes `.claude-plugin/marketplace.json` with the `pixelcraft` plugin and all bundled skill paths.
+The equivalent shell commands are `claude plugin marketplace add ThanhNguyxn07/Pixelcraft` and `claude plugin install pixelcraft@pixelcraft`.
 
-### Manual copy
+### curl/bash installer without Node.js
 
-Copy any self-contained directory under `skills/` into the target host directory—for example, `skills/pixelcraft-web` into `.claude/skills/pixelcraft-web`, `.agents/skills/pixelcraft-web`, `.cursor/skills/pixelcraft-web`, `.gemini/skills/pixelcraft-web`, or `.github/skills/pixelcraft-web`. Do not construct cross-skill relative links after copying; each skill folder is self-contained.
+```bash
+curl -fsSL https://raw.githubusercontent.com/ThanhNguyxn07/Pixelcraft/main/install.sh | bash -s -- --agent claude --skills all
+```
+
+The script downloads the GitHub source tarball, extracts it temporarily, and copies self-contained skill folders. It supports:
+
+```text
+--agent claude,cursor   target agent(s); default agents
+--skills all            comma-separated skills or all; default all
+--global                user-level scope; project scope is the default
+--force                 replace explicitly requested existing skills
+--dry-run               print copies without writing files
+--ref v0.1.0            branch, tag, or commit archive; default main
+--archive path.tar.gz   use a local tarball instead of downloading
+```
+
+It never uses sudo, requires only curl or wget plus tar, refuses symlinked targets/skill folders, and skips existing folders unless `--force` is passed. Existing auto-added core skills are skipped whether `--force` is present or not.
+
+### PowerShell installer without Node.js
+
+Default installation into the universal project `.agents/skills` directory:
+
+```powershell
+irm https://raw.githubusercontent.com/ThanhNguyxn07/Pixelcraft/main/install.ps1 | iex
+```
+
+Pass parameters by invoking the downloaded script as a script block:
+
+```powershell
+iex "& { $(irm https://raw.githubusercontent.com/ThanhNguyxn07/Pixelcraft/main/install.ps1) } -Agent claude -Skill pixelcraft-web"
+```
+
+Parameters mirror the shell script: `-Agent`, `-Skill`, `-Global`, `-Force`, `-DryRun`, `-Ref`, `-Repo`, and `-Archive` (`-Archive` expects a local `.zip`; the shell script's `--archive` expects `.tar.gz`). The script downloads the repository zip with `Invoke-WebRequest`, expands it with `Expand-Archive`, never uses sudo/elevation, refuses reparse-point targets, and preserves existing folders unless `-Force` is passed for explicitly selected skills.
+
+### GitHub Release download
+
+The release workflow runs when a `v*` tag is pushed. It validates the skills, builds `pixelcraft-skills.zip` and `pixelcraft-skills.tar.gz`, creates the GitHub Release for that tag, and attaches both archives. After a tagged release exists, download it manually from the repository's Releases page, or with GitHub CLI:
+
+```bash
+gh release download <tag> --repo ThanhNguyxn07/Pixelcraft --pattern pixelcraft-skills.zip
+```
+
+Unpack the archive and copy the desired `skills/<name>` directory into any target listed below.
+
+### Manual git clone/copy
+
+Clone once, choose a target directory, and copy either all skills or selected self-contained folders:
+
+```bash
+git clone --depth 1 https://github.com/ThanhNguyxn07/Pixelcraft.git
+mkdir -p .agents/skills
+cp -R Pixelcraft/skills/pixelcraft-web .agents/skills/
+```
+
+Use the destination matching the agent:
+
+| Agent | Project destination | User-level destination |
+|---|---|---|
+| Claude Code | `.claude/skills/<skill>` | `~/.claude/skills/<skill>` |
+| Codex | `.agents/skills/<skill>` | `~/.agents/skills/<skill>` |
+| Cursor | `.agents/skills/<skill>` (canonical) or `.cursor/skills/<skill>` | `~/.cursor/skills/<skill>` or `~/.agents/skills/<skill>` |
+| Gemini CLI | `.agents/skills/<skill>` (canonical) or `.gemini/skills/<skill>` | `~/.gemini/skills/<skill>` or `~/.agents/skills/<skill>` |
+| GitHub Copilot | `.agents/skills/<skill>` (canonical); `.github/skills/<skill>` and `.claude/skills/<skill>` are also recognized in documented compatibility paths | `~/.copilot/skills/<skill>` or `~/.agents/skills/<skill>` |
+| Windsurf | `.windsurf/skills/<skill>`; `.agents/skills/<skill>` is a compatibility path | `~/.codeium/windsurf/skills/<skill>` or `~/.agents/skills/<skill>` |
+| OpenCode | `.opencode/skills/<skill>`; `.agents/skills/<skill>` and `.claude/skills/<skill>` are compatibility paths | `~/.config/opencode/skills/<skill>` |
+| Devin | `.agents/skills/<skill>` (recommended) | `~/.agents/skills/<skill>` or `~/.config/devin/skills/<skill>` where the Devin CLI is used |
+
+Do not construct cross-skill relative links after copying; each skill folder is self-contained.
 
 ## Example prompts
 
@@ -230,13 +304,15 @@ node bin/pixelcraft.mjs add all --agent all --dry-run
 ## Repository layout
 
 ```text
-bin/                         zero-dependency installer
+bin/                         zero-dependency Node installer and wizard
+install.sh                  curl/bash installer (no Node required)
+install.ps1                 PowerShell installer (no Node required)
 scripts/                     validation tooling
 skills/                      self-contained Agent Skills
 docs/ARCHITECTURE.md         system design and conventions
 docs/RESEARCH.md             cited evidence base
 .claude-plugin/              Claude marketplace metadata
-.github/workflows/           validation workflow
+.github/workflows/           validation and tag-release workflows
 ```
 
 ## Roadmap
