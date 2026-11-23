@@ -116,7 +116,7 @@ function Write-AdapterFile([string]$Path, [string[]]$Lines) {
 
 function Write-PixelcraftAdapter([string]$AgentName, [string]$SkillRoot) {
   $base = Split-Path -Parent $SkillRoot
-  if ($AgentName -in @('windsurf', 'kiro')) { $base = Split-Path -Parent $base }
+  if ($AgentName -eq 'kiro') { $base = Split-Path -Parent $base }
   $workflowActions = @(
     @{ Name = 'pixelcraft-plan'; Task = (Get-WorkflowTask 'pixelcraft-plan') },
     @{ Name = 'pixelcraft-review'; Task = (Get-WorkflowTask 'pixelcraft-review') },

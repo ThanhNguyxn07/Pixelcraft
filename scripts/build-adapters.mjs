@@ -180,7 +180,8 @@ function build() {
   const dist = path.resolve(root, options.out);
   const rootRelative = path.relative(dist, root);
   if (dist === root || (rootRelative && !rootRelative.startsWith('..') && !path.isAbsolute(rootRelative))) throw new Error(`refusing to remove repository root or ancestor: ${dist}`);
-  if (dist.split(path.sep).includes('skills')) throw new Error(`refusing output path containing a skills component: ${dist}`);
+  const skillsRelative = path.relative(skillsRoot, dist);
+  if (dist === skillsRoot || (skillsRelative && !skillsRelative.startsWith('..') && !path.isAbsolute(skillsRelative))) throw new Error(`refusing output inside canonical skills directory: ${dist}`);
   const defaultDist = path.join(root, 'dist');
   const insideDefault = !path.relative(defaultDist, dist).startsWith('..') && !path.isAbsolute(path.relative(defaultDist, dist));
   if (!insideDefault && !options.explicitOut) throw new Error(`refusing implicit output outside dist/: ${dist}`);

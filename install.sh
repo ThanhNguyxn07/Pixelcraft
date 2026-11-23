@@ -381,7 +381,11 @@ write_shell_adapters() {
       done
       ;;
     windsurf|kiro)
-      base="${root%/skills}"
+      if [[ "$agent" == "windsurf" ]]; then
+        base="${root%/skills}"
+      else
+        base="${root%/pixelcraft/skills}"
+      fi
       if [[ "$agent" == "windsurf" ]]; then
         write_adapter_file "$base/rules/pixelcraft.md" '# Pixelcraft router' '' "Use Pixelcraft for interface design, implementation, review, and visual QA. Start with pixelcraft-plan and read the matching self-contained skill under $root."
         for action in pixelcraft-plan pixelcraft-review pixelcraft-visual-qa pixelcraft-direction; do
