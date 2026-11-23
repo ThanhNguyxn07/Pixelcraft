@@ -60,7 +60,7 @@ try {
   const dashOutDir = run([fixture, '--format', 'css', '--mode', 'dark', '--out-dir', '-generated'], tmp);
   assert.equal(dashOutDir.status, 0, dashOutDir.stderr);
   assert.ok(fs.existsSync(path.join(tmp, '-generated', 'tokens.dark.css')), 'dash-prefixed output directory was not used');
-  assert.match(dashOutDir.stdout, /wrote -generated[\/]tokens\.dark\.css/);
+  assert.match(dashOutDir.stdout, /wrote -generated[\\/]tokens\.dark\.css/);
   console.log('ok 3 - dash-prefixed option values are accepted');
 
   console.log('token exporter tests passed');
