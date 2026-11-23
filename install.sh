@@ -245,6 +245,27 @@ target_for() {
   fi
 }
 
+assert_target_path_safe() {
+  local root="$1"
+  local base="$PWD"
+  if [[ "$scope" == "global" ]]; then
+    base="$HOME"
+  fi
+  local prefix="$base/"
+  [[ "$root" == "$prefix"* ]] || die "target skills directory is outside the expected scope: $root"
+  local base_len="${#prefix}"
+  local remainder="${root:$base_len}"
+  local current="$base"
+  local part
+  while [[ -n "$remainder" ]]; do
+    part="${remainder%%/*}"
+    current="$current/$part"
+    [[ ! -L "$current" ]] || die "target skills path component is a symlink: $current; refusing to install through it"
+    [[ "$remainder" == */* ]] || break
+    remainder="${remainder#*/}"
+  done
+}
+
 copy_skill() {
   local name="$1"
   local root="$2"
@@ -295,6 +316,7 @@ copy_skill() {
 targets=()
 for agent in "${agents[@]}"; do
   target="$(target_for "$agent")"
+  assert_target_path_safe "$target"
   contains "$target" "${targets[@]}" || targets+=("$target")
 done
 

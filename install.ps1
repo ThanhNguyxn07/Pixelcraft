@@ -37,6 +37,27 @@ function Test-ReparsePoint([string]$Path) {
   return ($null -ne $item -and [bool]($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint))
 }
 
+function Assert-TargetPathSafe([string]$DestinationRoot, [bool]$GlobalScope) {
+  $base = if ($GlobalScope) { [System.Environment]::GetFolderPath('UserProfile') } else { (Get-Location).Path }
+  $rootFull = [System.IO.Path]::GetFullPath($DestinationRoot)
+  $baseFull = [System.IO.Path]::GetFullPath($base)
+  $separator = [string][System.IO.Path]::DirectorySeparatorChar
+  $prefix = $baseFull
+  if (-not $prefix.EndsWith($separator)) { $prefix += $separator }
+  if (-not $rootFull.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "target skills directory is outside the expected scope: $DestinationRoot"
+  }
+  $relative = $rootFull.Substring($prefix.Length)
+  $current = $baseFull
+  foreach ($part in ($relative -split '[\\/]+')) {
+    if ([string]::IsNullOrWhiteSpace($part)) { continue }
+    $current = Join-Path $current $part
+    if (Test-ReparsePoint $current) {
+      throw "target skills path component is a symlink or reparse point: $current; refusing to install through it"
+    }
+  }
+}
+
 function Get-TargetRoot([string]$Name, [bool]$GlobalScope) {
   $homeDir = [System.Environment]::GetFolderPath('UserProfile')
   if ($GlobalScope) {
@@ -167,6 +188,7 @@ try {
   $targets = @()
   foreach ($name in $agents) {
     $target = Get-TargetRoot $name ([bool]$Global)
+    Assert-TargetPathSafe $target ([bool]$Global)
     if ($targets -notcontains $target) { $targets += $target }
   }
 
