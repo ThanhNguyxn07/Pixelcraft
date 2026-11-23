@@ -59,6 +59,7 @@ The full architecture is documented in [`docs/ARCHITECTURE.md`](docs/ARCHITECTUR
 | `pixelcraft-chat-ui` | Slack Block Kit, Discord components, Telegram/Mini Apps, Zalo, WhatsApp, Teams Adaptive Cards, conversation design |
 | `pixelcraft-constrained` | TV/10-foot, wearables, e-ink, kiosk, embedded/LVGL, automotive templates, voice UI |
 | `pixelcraft-handoff` | Figma MCP/Dev Mode, variables-to-DTCG mapping, Code Connect, component reuse and visual fidelity loops |
+| `pixelcraft-spatial` | visionOS, WebXR/Three.js/R3F/A-Frame, Quest Interaction SDK, Unity XRI, XR comfort/ergonomics/accessibility |
 | `pixelcraft-game-ui` | Unity UI Toolkit, Godot, Unreal UMG, LÖVE2D, Bevy, MonoGame, HUD principles |
 | `pixelcraft-brandkit` | Brand kits, identity boards, logo systems, moodboards, visual-world presentations, brand-specific prompting and QA |
 

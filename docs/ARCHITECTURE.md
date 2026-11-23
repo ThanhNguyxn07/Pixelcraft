@@ -52,6 +52,7 @@ The architecture has five layers: **Plan** (`pixelcraft-plan`), **Core** (orches
 | `pixelcraft-chat-ui` | Messaging/conversation surface: host-native cards, keyboards, modals, mini apps, payload limits, privacy, fallback and interaction lifecycle |
 | `pixelcraft-constrained` | Hardware/input-constrained surfaces: TV/wearables/e-ink/kiosk/embedded/automotive/voice, spatial focus, glanceability, physical safety and budgets |
 | `pixelcraft-handoff` | Design-to-code bridge: Figma MCP/Dev Mode evidence, variables/modes, Code Connect, existing-component reuse and measured fidelity |
+| `pixelcraft-spatial` | XR/spatial surface: visionOS/WebXR/Quest/Unity XRI, depth/ergonomics, locomotion comfort, spatial privacy, legibility and accessibility |
 | `pixelcraft-game-ui` | Unity UI Toolkit, Godot, Unreal UMG, LÖVE2D, Bevy, MonoGame: HUD legibility, controller nav, safe areas, localization |
 | `pixelcraft-brandkit` | Premium brand-kit / identity-board image generation (art direction for image models) |
 
