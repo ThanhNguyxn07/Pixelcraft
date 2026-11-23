@@ -24,6 +24,12 @@ function runValidator(frontmatter) {
   return spawnSync(process.execPath, [validator], { encoding: 'utf8' });
 }
 
+function expectFailure(frontmatter, pattern, label) {
+  const result = runValidator(frontmatter);
+  assert.notEqual(result.status, 0, `${label} unexpectedly passed`);
+  assert.match(result.stderr, pattern, `${label} failed with unexpected message: ${result.stderr}`);
+}
+
 try {
   for (const indicator of ['|', '|-', '|+', '>', '>-', '>+', '|2-']) {
     const result = runValidator(`name: case\ndescription: ${indicator}\n  Handles block: scalar content\n  across multiple lines.\nmetadata:\n  version: 0.1.0\nlicense: MIT`);
@@ -31,7 +37,7 @@ try {
   }
   console.log('ok 1 - literal and folded block scalars pass');
 
-  const flow = runValidator('name: case\ndescription: Handles inline flow metadata\nmetadata: {version: 0.1.0, owner: validator-test}\nlicense: MIT');
+  const flow = runValidator('name: case\ndescription: Handles inline flow metadata\nmetadata: {version: 0.1.0, owner: validator-test, note: "safe: colon, with comma", plain_note: don\'t}\nlicense: MIT');
   assert.equal(flow.status, 0, flow.stderr);
   console.log('ok 2 - inline flow mappings pass');
 
@@ -41,14 +47,32 @@ try {
   assert.equal(contraction.status, 0, contraction.stderr);
   console.log('ok 3 - colon text inside trailing comments is ignored');
 
-  const unsafeColon = runValidator('name: case\ndescription: Invalid: plain scalar\nlicense: MIT');
-  assert.notEqual(unsafeColon.status, 0, 'unsafe plain scalar unexpectedly passed');
-  assert.match(unsafeColon.stderr, /contains ': '/);
-
-  const unsafeStart = runValidator('name: case\ndescription: @invalid\nlicense: MIT');
-  assert.notEqual(unsafeStart.status, 0, 'reserved leading scalar unexpectedly passed');
-  assert.match(unsafeStart.stderr, /starts with YAML-special character/);
+  expectFailure('name: case\ndescription: Invalid: plain scalar\nlicense: MIT', /contains ': '/, 'unsafe plain scalar');
+  expectFailure('name: case\ndescription: @invalid\nlicense: MIT', /starts with YAML-special character/, 'reserved leading scalar');
   console.log('ok 4 - unsafe plain scalars still fail');
+
+  expectFailure('name: case\ndescription: Handles metadata\nmetadata: {owner: bad: value}\nlicense: MIT', /contains ': '/, 'unsafe scalar inside flow mapping');
+  console.log('ok 5 - unsafe plain scalars inside flow mappings fail');
+
+  expectFailure('name: case\ndescription: |\n  Handles correct indentation.\n orphaned continuation\nlicense: MIT', /no owning block or mapping/, 'under-indented block scalar leftover');
+  console.log('ok 6 - unconsumed indented frontmatter lines fail');
+
+  const scalarCases = [
+    ['name: [case]\ndescription: Handles YAML\nlicense: MIT', 'flow-sequence name'],
+    ['name: case\ndescription: [one, two]\nlicense: MIT', 'flow-sequence description'],
+    ['name: {value: case}\ndescription: Handles YAML\nlicense: MIT', 'flow-mapping name'],
+    ['name: case\ndescription: {topic: test}\nlicense: MIT', 'flow-mapping description'],
+    ['name:\n  - case\ndescription: Handles YAML\nlicense: MIT', 'block-sequence name'],
+    ['name: case\ndescription:\n  - one\n  - two\nlicense: MIT', 'block-sequence description'],
+    ['name:\n  value: case\ndescription: Handles YAML\nlicense: MIT', 'block-mapping name'],
+    ['name: case\ndescription:\n  topic: test\nlicense: MIT', 'block-mapping description'],
+    ['name:\ndescription: Handles YAML\nlicense: MIT', 'null name'],
+    ['name: case\ndescription:\nlicense: MIT', 'null description']
+  ];
+  for (const [frontmatter, label] of scalarCases) {
+    expectFailure(frontmatter, /must be a scalar string/, label);
+  }
+  console.log('ok 7 - name and description must be scalar strings');
 
   console.log('validator YAML tests passed');
 } finally {

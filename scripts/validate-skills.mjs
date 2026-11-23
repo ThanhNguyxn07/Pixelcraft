@@ -108,37 +108,157 @@ function readBlockScalar(lines, start, end, header) {
   return { value: applyChomp(body, content.length, header.chomp), nextIndex: index };
 }
 
-function isInlineFlow(value) {
-  if (!value.startsWith('{') && !value.startsWith('[')) return false;
-  const closers = { '{': '}', '[': ']' };
-  const stack = [];
+function validatePlainScalar(value, label) {
+  if (value.includes(': ')) return `unquoted scalar for ${label} contains ': '; quote it for strict YAML loaders`;
+  if (yamlPlainStartPattern.test(value)) return `unquoted scalar for ${label} starts with YAML-special character '${value[0]}'; quote it for strict YAML loaders`;
+  return null;
+}
+
+function findQuoteEnd(text, start, quote) {
+  for (let i = start + 1; i < text.length; i++) {
+    const char = text[i];
+    if (quote === '"' && char === '\\') {
+      i++;
+      continue;
+    }
+    if (quote === "'" && char === "'" && text[i + 1] === "'") {
+      i++;
+      continue;
+    }
+    if (char === quote) return i;
+  }
+  return -1;
+}
+
+function validateQuotedScalar(value, label) {
+  const end = findQuoteEnd(value, 0, value[0]);
+  if (end === -1) return { error: `unterminated quoted scalar for ${label}` };
+  if (value.slice(end + 1).trim()) return { error: `unexpected content after quoted scalar for ${label}` };
+  return { kind: 'scalar', value: value.slice(1, end) };
+}
+
+function splitFlowEntries(inner, label) {
+  const parts = [];
+  let start = 0;
   let quote = null;
-  for (let i = 0; i < value.length; i++) {
-    const char = value[i];
+  for (let i = 0; i < inner.length; i++) {
+    const char = inner[i];
     if (quote === '"') {
       if (char === '\\') i++;
       else if (char === '"') quote = null;
       continue;
     }
     if (quote === "'") {
-      if (char === "'" && value[i + 1] === "'") i++;
+      if (char === "'" && inner[i + 1] === "'") i++;
       else if (char === "'") quote = null;
       continue;
     }
-    if ((char === '"' || char === "'") && quoteCanOpen(value, i)) {
+    if ((char === '"' || char === "'") && quoteCanOpen(inner, i)) {
       quote = char;
       continue;
     }
-    if (closers[char]) {
-      stack.push(closers[char]);
-      continue;
-    }
-    if (char === '}' || char === ']') {
-      if (stack.pop() !== char) return false;
-      if (!stack.length && i !== value.length - 1) return false;
+    if ('{}[]'.includes(char)) return { error: `nested flow collections in ${label} are outside the supported frontmatter subset` };
+    if (char === ',') {
+      parts.push(inner.slice(start, i));
+      start = i + 1;
     }
   }
-  return !quote && stack.length === 0;
+  if (quote) return { error: `unterminated quoted scalar in flow mapping for ${label}` };
+  parts.push(inner.slice(start));
+  return { parts };
+}
+
+function splitFlowPair(part) {
+  const index = part.indexOf(':');
+  if (index === -1) return null;
+  return { keyText: part.slice(0, index), valueText: part.slice(index + 1) };
+}
+
+function parseFlowScalar(text, label) {
+  const trimmed = text.trim();
+  if (!trimmed) return { error: `missing scalar value in flow mapping for ${label}` };
+  if (trimmed.startsWith('"') || trimmed.startsWith("'")) return validateQuotedScalar(trimmed, label);
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) return { error: `nested flow collections in ${label} are outside the supported frontmatter subset` };
+  const problem = validatePlainScalar(trimmed, label);
+  if (problem) return { error: problem };
+  return { kind: 'scalar', value: trimmed };
+}
+
+function parseFlowMapping(value, key) {
+  if (!value.endsWith('}')) return { error: `unterminated inline flow mapping for ${key}` };
+  const inner = value.slice(1, -1);
+  if (!inner.trim()) return { kind: 'mapping', value };
+  const split = splitFlowEntries(inner, key);
+  if (split.error) return { error: split.error };
+  const keys = new Set();
+  for (const part of split.parts) {
+    if (!part.trim()) return { error: `empty entry in flow mapping for ${key}` };
+    const pair = splitFlowPair(part);
+    if (!pair || (pair.valueText && !/^[ \t]/.test(pair.valueText))) return { error: `flow mapping entry for ${key} is not a simple key: value pair` };
+    const entryKey = pair.keyText.trim();
+    if (!/^[A-Za-z0-9_-]+$/.test(entryKey)) return { error: `flow mapping key '${entryKey}' in ${key} is outside the supported frontmatter subset` };
+    if (keys.has(entryKey)) return { error: `duplicate key '${entryKey}' in flow mapping for ${key}` };
+    keys.add(entryKey);
+    const scalar = parseFlowScalar(pair.valueText, `${key}.${entryKey}`);
+    if (scalar.error) return { error: scalar.error };
+  }
+  return { kind: 'mapping', value };
+}
+
+function parseInlineValue(value, key) {
+  if (value.startsWith('"') || value.startsWith("'")) return validateQuotedScalar(value, key);
+  if (value.startsWith('{')) return parseFlowMapping(value, key);
+  if (value.startsWith('[')) return { kind: 'sequence', value };
+  const problem = validatePlainScalar(value, key);
+  if (problem) return { error: problem };
+  return { kind: 'scalar', value };
+}
+
+function parseNestedScalar(value, label) {
+  if (value.startsWith('{') || value.startsWith('[')) return { error: `collection value for ${label} is outside the supported frontmatter subset` };
+  if (value.startsWith('"') || value.startsWith("'")) return validateQuotedScalar(value, label);
+  const problem = validatePlainScalar(value, label);
+  if (problem) return { error: problem };
+  return { kind: 'scalar', value };
+}
+
+function readBlockMapping(lines, start, end, parentKey) {
+  let expectedIndent = 0;
+  let entries = 0;
+  const seen = new Set();
+  let index = start + 1;
+  for (; index < end; index++) {
+    const line = lines[index];
+    if (!line.trim() || line.trimStart().startsWith('#')) continue;
+    if (line.includes('\t')) return { error: 'frontmatter contains a tab character' };
+    const indent = indentationWidth(line);
+    if (indent === 0) break;
+    if (!expectedIndent) expectedIndent = indent;
+    if (indent !== expectedIndent) return { error: `content deeper than one level or inconsistently indented in block mapping for ${parentKey} is outside the supported frontmatter subset` };
+
+    const childLine = line.slice(indent);
+    if (/^-($|\s)/.test(childLine)) return { error: 'block sequences are outside the supported frontmatter subset' };
+    const match = /^([A-Za-z0-9_-]+):(?:[ \t]*(.*))?$/.exec(childLine);
+    if (!match) return { error: `unparseable nested mapping line: ${childLine}` };
+    const [, childKey, raw = ''] = match;
+    if (seen.has(childKey)) return { error: `duplicate nested key in block mapping for ${parentKey}: ${childKey}` };
+    seen.add(childKey);
+    const value = stripYamlComment(raw).trim();
+    if (!value) return { error: `nested value for ${parentKey}.${childKey} must be a single-line scalar` };
+    const parsed = parseNestedScalar(value, `${parentKey}.${childKey}`);
+    if (parsed.error) return { error: parsed.error };
+    entries++;
+  }
+  if (!entries) return { error: `block mapping for ${parentKey} has no entries` };
+  return { nextIndex: index };
+}
+
+function scalarKindError(key) {
+  return `${key} must be a scalar string (plain, quoted, or block scalar)`;
+}
+
+function isBlankOrComment(line) {
+  return !line.trim() || line.trimStart().startsWith('#');
 }
 
 function parseFrontmatter(file, text) {
@@ -153,13 +273,14 @@ function parseFrontmatter(file, text) {
     const line = lines[index];
     if (!line.trim() || line.trimStart().startsWith('#')) continue;
     if (line.includes('\t')) return { error: 'frontmatter contains a tab character' };
-    if (/^\s/.test(line)) continue; // nested metadata/list content; not needed for linted scalar fields
+    if (indentationWidth(line) > 0) return { error: `indented frontmatter line has no owning block or mapping: ${line.trim()}` };
     const match = /^([A-Za-z0-9_-]+):(?:[ \t]*(.*))?$/.exec(line);
     if (!match) return { error: `unparseable frontmatter line: ${line}` };
     const [, key, raw = ''] = match;
     if (seen.has(key)) return { error: `duplicate frontmatter key: ${key}` };
     seen.add(key);
-    let value = stripYamlComment(raw).trim();
+    const requiresScalar = key === 'name' || key === 'description';
+    const value = stripYamlComment(raw).trim();
     const block = parseBlockHeader(value);
     if (block?.invalid) return { error: `invalid block scalar header for ${key}` };
     if (block) {
@@ -168,19 +289,34 @@ function parseFrontmatter(file, text) {
       index = scalar.nextIndex - 1;
       continue;
     }
-    const startsQuoted = value.startsWith('"') || value.startsWith("'");
-    const flow = isInlineFlow(value);
-    if (value && !startsQuoted && !flow) {
-      if (value.includes(': ')) return { error: `unquoted scalar for ${key} contains ': '; quote it for strict YAML loaders` };
-      if (yamlPlainStartPattern.test(value)) return { error: `unquoted scalar for ${key} starts with YAML-special character '${value[0]}'; quote it for strict YAML loaders` };
+
+    if (!value) {
+      let probe = index + 1;
+      while (probe < end && isBlankOrComment(lines[probe])) probe++;
+      if (probe < end && indentationWidth(lines[probe]) > 0) {
+        if (/^-($|\s)/.test(lines[probe].trimStart())) {
+          if (requiresScalar) return { error: scalarKindError(key) };
+          return { error: 'block sequences are outside the supported frontmatter subset' };
+        }
+        if (requiresScalar) return { error: scalarKindError(key) };
+        if (key !== 'metadata') return { error: `block mappings are only supported for metadata; ${key} must use a scalar value` };
+        const mapping = readBlockMapping(lines, index, end, key);
+        if (mapping.error) return { error: mapping.error };
+        data[key] = '';
+        index = mapping.nextIndex - 1;
+      } else {
+        if (requiresScalar) return { error: scalarKindError(key) };
+        data[key] = '';
+      }
+      continue;
     }
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-      if (value.length < 2) return { error: `unterminated quoted scalar for ${key}` };
-      value = value.slice(1, -1);
-    } else if (value.startsWith('"') || value.startsWith("'")) {
-      return { error: `unterminated quoted scalar for ${key}` };
-    }
-    data[key] = value;
+
+    const parsed = parseInlineValue(value, key);
+    if (parsed.error) return { error: parsed.error };
+    if (requiresScalar && parsed.kind !== 'scalar') return { error: scalarKindError(key) };
+    if (parsed.kind === 'sequence') return { error: 'flow sequences are outside the supported frontmatter subset' };
+    if (parsed.kind === 'mapping' && key !== 'metadata') return { error: `flow mappings are only supported for metadata; ${key} must use a scalar value` };
+    data[key] = parsed.value;
   }
   return { data, bodyLines: lines.slice(end + 1) };
 }
