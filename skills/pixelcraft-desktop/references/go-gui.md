@@ -44,11 +44,11 @@ CGO/platform packaging, webview runtime differences, accessibility immaturity, g
 ## Verification commands
 
 ```sh
-go test ./...
-go vet ./...
+go test./...
+go vet./...
 fyne package 2>/dev/null || true
 wails build 2>/dev/null || true
-go run .
+go run.
 ```
 
 Run actual desktop OS builds; inspect resize/DPI/window/menu integration, keyboard/focus/screen reader where applicable, crash/dirty close, offline/background cancellation, packaging/signing.

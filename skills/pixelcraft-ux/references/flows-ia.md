@@ -1,6 +1,6 @@
 # Flows, JTBD, and information architecture
 
-Evidence: Jakob/recognition/cognitive-load principles `[S49]` `[S50]`; platform conventions `[S62]` `[S63]`.
+Evidence: recognition-over-recall and cognitive-load principles plus platform conventions.
 
 ## JTBD frame
 

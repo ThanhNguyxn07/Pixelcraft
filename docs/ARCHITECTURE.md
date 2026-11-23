@@ -1,13 +1,13 @@
 # Pixelcraft architecture
 
 Pixelcraft is a pack of portable Agent Skills (`skills/<name>/SKILL.md`) that makes coding agents
-produce distinctive UI and rigorous UX on **any** frontend stack. Evidence base: `docs/RESEARCH.md`
-(cite as `[Sxx]`).
+produce distinctive UI and rigorous UX on **any** frontend stack. Read `docs/DESIGN-RATIONALE.md`
+before changing the reasoning behind major rules.
 
 ## Product thesis
 
 1. **Divergence before commitment** — LLM UIs converge because single-shot "best design" prompting
-   collapses to the mode `[S26–S30]`. Pixelcraft forces a distribution of 3–5 far-apart directions,
+   collapses to the mode. Pixelcraft forces a distribution of 3–5 far-apart directions,
    scores them against the brief, commits to one, and records history so the next build differs.
 2. **A hard floor that never dictates appearance** — truthfulness, accessibility, state coverage,
    localization, responsiveness, performance and verifiability are mandatory; heroes, cards,
@@ -93,6 +93,6 @@ skills/<skill>/SKILL.md, references/, scripts/, assets/
 bin/pixelcraft.mjs          # installer CLI: npx pixelcraft add [skills…] --agent <host>
 scripts/validate-skills.mjs # CI lint for skills
 .claude-plugin/marketplace.json
-docs/ARCHITECTURE.md, docs/RESEARCH.md
+docs/ARCHITECTURE.md, docs/DESIGN-RATIONALE.md
 examples/                   # golden fixtures (later)
 ```

@@ -56,7 +56,7 @@ Backend roundtrip latency, state serialization limits, accidental shared mutable
 reflex run
 reflex export 2>/dev/null || true
 python -m pytest
-python -m compileall .
+python -m compileall.
 ```
 
 Inspect actual browser rendering/network behavior for visual/interaction evidence; Python compile success proves almost nothing about UX.

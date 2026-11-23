@@ -56,6 +56,6 @@ Rendered verification is possible only through simulator/emulator/device tooling
 - Read [references/react-native-expo.md](references/react-native-expo.md) for React Native/Expo.
 - Read [references/kotlin-multiplatform.md](references/kotlin-multiplatform.md) for Compose Multiplatform/KMP shared UI.
 - Read [references/ionic-capacitor.md](references/ionic-capacitor.md) for Ionic/Capacitor hybrid apps.
-- Read [references/dotnet-maui.md](references/dotnet-maui.md) for .NET MAUI.
+- Read [references/dotnet-maui.md](references/dotnet-maui.md) for.NET MAUI.
 - Read [references/flet.md](references/flet.md) for Flet cross-platform app surfaces.
 - Read [references/kivy.md](references/kivy.md) for Kivy cross-platform app surfaces.

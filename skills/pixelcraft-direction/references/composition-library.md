@@ -1,12 +1,12 @@
 # Layout composition library
 
-Use this library when choosing the structural idea for a direction. It distills recurring techniques visible across award juries and curated galleries without copying any winning site. Evidence frame: Awwwards weights Design 40%, Usability 30%, Creativity 20%, Content 10% `[S91]`; CSSDA separately scores UI, UX, and Innovation `[S93]`; FWA explicitly rewards boundary-pushing creativity and technology `[S94]` `[S95]`. Recent showcase/corpus scans recur around expressive typography, experimental navigation, narrative scroll, WebGL or shader accents, strong brand consistency, asymmetric editorial structure, and content-led restraint `[S92]` `[S96–S104]`. Treat `[S104]` as secondary survey evidence, not a canonical census.
+Use this library when choosing the structural idea for a direction. It distills recurring techniques visible across award juries and curated galleries without copying any winning site. Evidence frame: Awwwards weights Design 40%, Usability 30%, Creativity 20%, Content 10%; CSSDA separately scores UI, UX, and Innovation; FWA explicitly rewards boundary-pushing creativity and technology. Recent showcase/corpus scans recur around expressive typography, experimental navigation, narrative scroll, WebGL or shader accents, strong brand consistency, asymmetric editorial structure, and content-led restraint. Treat as secondary survey evidence, not a canonical census.
 
 ## Selection contract
 
 1. Choose composition from the user's decision and material inventory, not because a shape is fashionable.
 2. Spend novelty in one structural move; keep navigation, controls, text measure, and state behavior legible.
-3. Preserve a grid even when breaking it: shared edges, repeatable spacing, and intentional overlap are what separate tension from mess `[S113]`.
+3. Preserve a grid even when breaking it: shared edges, repeatable spacing, and intentional overlap are what separate tension from mess.
 4. Prototype in low fidelity with real copy/data/images before adding type scale, color, or motion.
 5. For Operate surfaces, prefer familiar structure with one precise deviation. For Persuade/Experience, composition may carry more authorship if usability remains visible.
 6. Never clone a specific site's arrangement, artwork, copy cadence, or interaction sequence. Extract the transferable mechanism only.
@@ -30,12 +30,12 @@ Use this library when choosing the structural idea for a direction. It distills 
 
 ## Award-level translation rules
 
-- **Brand/system consistency beats isolated spectacle.** Winners usually carry one coherent visual argument through navigation, transitions, imagery, copy, and footer—not unrelated effects per section `[S91]` `[S104]`.
-- **Innovation is structural or behavioral before it is graphical.** Experimental navigation, scroll choreography, WebGL, and shader details recur in showcase work, but juries still score usability/function explicitly `[S92]` `[S93]`.
-- **Typography often carries identity before imagery.** Use scale, measure, spacing, casing, numerals, and editorial sequencing; do not merely purchase an unusual font `[S93]` `[S100]` `[S102]`.
-- **Content quality is part of the score.** Missing proof, thin copy, stock imagery, and hallucinated case studies cannot be hidden by composition `[S91]`.
-- **Gallery minimalism is not absence of design.** SiteInspire/Minimal Gallery/Httpster-style restraint depends on exact spacing, alignment, type detail, and image curation `[S96]` `[S99]` `[S100]`.
-- **One-page clarity is a decision structure, not a long landing template.** One Page Love's premise is directness: remove navigational debt and order the decision `[S101]`.
+- **Brand/system consistency beats isolated spectacle.** Winners usually carry one coherent visual argument through navigation, transitions, imagery, copy, and footer—not unrelated effects per section.
+- **Innovation is structural or behavioral before it is graphical.** Experimental navigation, scroll choreography, WebGL, and shader details recur in showcase work, but juries still score usability/function explicitly.
+- **Typography often carries identity before imagery.** Use scale, measure, spacing, casing, numerals, and editorial sequencing; do not merely purchase an unusual font.
+- **Content quality is part of the score.** Missing proof, thin copy, stock imagery, and hallucinated case studies cannot be hidden by composition.
+- **Gallery minimalism is not absence of design.** SiteInspire/Minimal Gallery/Httpster-style restraint depends on exact spacing, alignment, type detail, and image curation.
+- **One-page clarity is a decision structure, not a long landing template.** One Page Love's premise is directness: remove navigational debt and order the decision.
 
 ## Floor checklist
 

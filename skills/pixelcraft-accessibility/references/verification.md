@@ -1,6 +1,6 @@
 # Accessibility verification split
 
-Evidence: WCAG `[S57]`, axe-core `[S88]`, generated-code accessibility repair research `[S45]` `[S46]`.
+Evidence: WCAG, axe-core, generated-code accessibility repair research.
 
 ## Automated evidence (`static` or tool-generated `rendered` when run in renderer)
 

@@ -48,4 +48,4 @@ Before implementation or export:
 - localization expansion and directionality do not depend on fixed widths;
 - every generated platform artifact is treated as output, not edited by hand.
 
-The bundled exporter is intentionally small and zero-dependency. It validates the subset it emits; use a dedicated DTCG compiler for advanced spec features or production edge cases `[S72]` `[S75]`.
+The bundled exporter is intentionally small and zero-dependency. It validates the subset it emits; use a dedicated DTCG compiler for advanced spec features or production edge cases.

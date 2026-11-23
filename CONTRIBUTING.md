@@ -31,7 +31,7 @@ Do not add YAML features here unless the Agent Skills spec requires them; quote 
 
 1. Keep frontmatter valid and descriptions within the Agent Skills limits.
 2. Link every reference from `SKILL.md` with a one-line “read when” trigger.
-3. Keep citations sparse and use `[Sxx]` IDs from `docs/RESEARCH.md`.
+3. Before changing a rule, read [`docs/DESIGN-RATIONALE.md`](docs/DESIGN-RATIONALE.md) and update the rationale when the trade-off changes.
 4. Add or update fixtures/examples when behavior changes.
 5. Run:
    ```sh

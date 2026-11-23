@@ -47,7 +47,7 @@ Outlook Word renderer, Gmail clipping/style stripping, image blocking, dark-mode
 ```sh
 # depends on pipeline
 npm run build 2>/dev/null || true
-python -m compileall . 2>/dev/null || true
+python -m compileall. 2>/dev/null || true
 ```
 
 Use actual client previews/screenshots or a testing service; inspect source size/clipping, plaintext MIME, image-off rendering, dark mode, narrow/wide layouts, high contrast, links, spam/deliverability checks where available.

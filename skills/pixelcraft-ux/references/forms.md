@@ -1,6 +1,6 @@
 # Forms
 
-Evidence: Baymard validation/inline/checkout research `[S53]` `[S54]` `[S55]`; WCAG redundant entry and accessible authentication `[S57]` `[S86]`; NN/g input guidance `[S84]` `[S85]`.
+Evidence: validation and checkout research, WCAG redundant-entry/accessible-authentication requirements, and input usability guidance.
 
 ## Structure
 
@@ -14,8 +14,8 @@ Evidence: Baymard validation/inline/checkout research `[S53]` `[S54]` `[S55]`; W
 ## Input semantics and mobile adaptation
 
 - Use correct autocomplete/input purpose tokens (`name`, `email`, `tel`, `url`, `postal-code`, payment fields), input types/modes, virtual keyboard layout, capitalization/autocorrect settings, and paste behavior.
-- Never block paste in email/password/verification/payment fields. Do not require retyping email or other redundant entry unless a security/legal reason exists `[S57]`.
-- Accessible authentication: no cognitive memory test, puzzle, or transcription-only flow; support password managers, paste, passkeys/biometrics/magic links where appropriate `[S57]`.
+- Never block paste in email/password/verification/payment fields. Do not require retyping email or other redundant entry unless a security/legal reason exists.
+- Accessible authentication: no cognitive memory test, puzzle, or transcription-only flow; support password managers, paste, passkeys/biometrics/magic links where appropriate.
 - Use input masking only when it visibly reduces uncertainty without trapping IMEs/paste/screen readers.
 - Verification codes: allow paste/autofill, do not split focus unpredictably, announce errors accessibly, and preserve countdown/resend state.
 

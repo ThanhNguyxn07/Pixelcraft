@@ -58,7 +58,7 @@ Import generated CSS variables in the base layout/asset pipeline. Do not duplica
 - Motion/a11y: any htmx/Alpine enhancement follows the hypermedia rules; server response status/fragment design owns state truth.
 - Do: return a field-error partial containing the preserved value and recovery text.
 - Don't: print raw validation structs as user copy or drop POST input on failure.
-- Verify: `go test ./...`, `go vet ./...`, browser tests where configured.
+- Verify: `go test./...`, `go vet./...`, browser tests where configured.
 
 ## Cross-stack traps
 

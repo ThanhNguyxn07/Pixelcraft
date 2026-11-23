@@ -47,7 +47,7 @@ Version API churn, update batching/lifecycle confusion, control duplication, unc
 ```sh
 flet run app.py 2>/dev/null || python app.py
 python -m pytest
-python -m compileall .
+python -m compileall.
 ```
 
 Inspect the actual target surface (browser/desktop/device). Python tests are state evidence only unless they drive the rendered target.

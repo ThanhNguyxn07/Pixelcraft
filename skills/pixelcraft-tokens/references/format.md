@@ -1,6 +1,6 @@
 # DTCG 2025.10 token format
 
-Evidence base: DTCG format/color specifications `[S72]` `[S73]`; stable Community Group status caveat `[S74]`; exporter ecosystem caveats `[S75]`.
+Evidence base: DTCG format/color specifications; stable Community Group status caveat; exporter ecosystem caveats.
 
 DTCG 2025.10 is a stable Final Community Group Report, not a W3C Standard. Treat it as a versioned interchange format and validate implementation support before relying on advanced behavior.
 
@@ -24,7 +24,7 @@ Common types include `color`, `dimension`, `fontFamily`, `fontWeight`, `duration
 
 ## References
 
-Use curly references such as `{color.brand}` to preserve relationships. Pixelcraft's bundled exporter resolves this common form. Some secondary guides describe additional reference syntax in 2025.10; verify the primary specification before implementing advanced `$ref`/JSON Pointer behavior `[S72]`.
+Use curly references such as `{color.brand}` to preserve relationships. Pixelcraft's bundled exporter resolves this common form. Some secondary guides describe additional reference syntax in 2025.10; verify the primary specification before implementing advanced `$ref`/JSON Pointer behavior.
 
 ## Modes and themes
 

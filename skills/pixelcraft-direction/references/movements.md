@@ -1,6 +1,6 @@
 # Design movements as operational rules
 
-Use movements as materials, not costumes. Translate their structural logic into the target platform; do not paste historical surface decoration onto every brief. Sources: design-history overviews `[S79]` `[S80]`; anti-monoculture caveat `[S20]`.
+Use movements as materials, not costumes. Translate their structural logic into the target platform; do not paste historical surface decoration onto every brief. Treat design history as material vocabulary while guarding against a new monoculture.
 
 | Movement/aesthetic | Grid + composition | Type + color | Material, motion, imagery | Taboos | Best fit / transferability |
 |---|---|---|---|---|---|
@@ -22,11 +22,11 @@ Use movements as materials, not costumes. Translate their structural logic into 
 | Cyberpunk | dense urban layering, HUD overlays, vertical signage contrast | mono/condensed sans; black + cyan/magenta/amber phosphor | neon/rain/glass, scan/glitch motion, dense signage | unreadable glow everywhere | games/security fiction; strong HUD but strict legibility floor |
 | Y2K chrome | liquid metal blobs, bubble forms, iridescent shine | rounded techno fonts; silver/ice blue/lime/pink | chrome/plastic, elastic motion, lens flare | clutter and inaccessible low contrast | music/fashion/Play; use as accents not body surfaces |
 | Flat design | simple geometry, edge alignment, little depth | clear sans; bright constrained palette | minimal motion, icon clarity | childish generic illustration | broad Operate; highly transferable |
-| Material Design 3-inspired | adaptive layout, clear elevation/state layers | platform type scale; dynamic tonal color | physics-like easing, stateful surfaces | copying Android chrome onto every platform `[S63]` | Operate/mobile; transfer principles not visuals |
-| Neumorphism | soft extruded monochrome forms | low-contrast monochrome | dual shadows, minimal motion | contrast failure; use as default style `[S57]` | rare decorative use; poor accessibility/transfer |
+| Material Design 3-inspired | adaptive layout, clear elevation/state layers | platform type scale; dynamic tonal color | physics-like easing, stateful surfaces | copying Android chrome onto every platform | Operate/mobile; transfer principles not visuals |
+| Neumorphism | soft extruded monochrome forms | low-contrast monochrome | dual shadows, minimal motion | contrast failure; use as default style | rare decorative use; poor accessibility/transfer |
 | Glassmorphism | layered translucent panels over meaningful context | crisp type over controlled background | blur/specular edge, depth motion | default glass cards; contrast/perf cost | spatial/media overlays; platform-dependent |
 | Claymorphism | chunky soft forms, inflated geometry | rounded friendly type; pastel matte color | clay-like inner/outer shadows, squash motion | infantilizing serious domains | children/play/casual; moderate transfer |
-| Editorial broadsheet | narrow columns, hairlines, dense indexing | serif display/text + small caps/meta sans; ink/paper palette | still print-like transitions, documentary imagery | decorative fake numbering `[S15]` | Read/news/analysis; excellent text-heavy transfer |
+| Editorial broadsheet | narrow columns, hairlines, dense indexing | serif display/text + small caps/meta sans; ink/paper palette | still print-like transitions, documentary imagery | decorative fake numbering | Read/news/analysis; excellent text-heavy transfer |
 | Magazine maximalism | overlapping editorial blocks, varied pacing, strong image crops | multiple coordinated display/text families; assertive color stories | art-directed photography, expressive but sequenced motion | every page competing equally | Persuade/Read; web/editorial strong, simplify native controls |
 | Corporate Memphis | flat oversized limbs, generic diversity scenes | neutral sans; bright primary palette | vector blob people | homogeneous tech triviality; often a slop signal | avoid unless existing brand requires |
 | Neo-brutalist web | hard borders, visible blocks, offset shadows | bold sans/mono; saturated flat color on white | abrupt hover translation, sticker-like imagery | random harshness that hurts scanning | indie/dev tools; easy web/TUI, harder native |
@@ -52,16 +52,16 @@ Use movements as materials, not costumes. Translate their structural logic into 
 
 ## Award-level technique references
 
-Use these as constraints that raise execution quality; they are not styles to copy. Awwwards weights usability almost as heavily as visual design `[S91]`, CSSDA separates UI aesthetics from UX functionality and innovation `[S93]`, and FWA jurors repeatedly emphasize uniqueness, interactivity, and smart use of available technology `[S94]` `[S95]`.
+Use these as constraints that raise execution quality; they are not styles to copy. Awwwards weights usability almost as heavily as visual design, CSSDA separates UI aesthetics from UX functionality and innovation, and FWA jurors repeatedly emphasize uniqueness, interactivity, and smart use of available technology.
 
 | Technique reference | Compatible catalog families | Execution constraint | Slop risk |
 |---|---|---|---|
 | typographic structure carrying the page | Swiss, editorial broadsheet, neo-brutalist web, retro terminal | build the grid/measure/casing system before selecting display lettering | giant cropped word as generic hero decoration |
-| narrative scroll with persistent artifact | botanical plate, blueprint/technical drawing, mid-century, object-led wildcard | sticky media changes state in response to chapter content; static reading order remains complete | scrolljacking or forcing a cinematic sequence unrelated to decisions `[S109]` |
+| narrative scroll with persistent artifact | botanical plate, blueprint/technical drawing, mid-century, object-led wildcard | sticky media changes state in response to chapter content; static reading order remains complete | scrolljacking or forcing a cinematic sequence unrelated to decisions |
 | experimental navigation | punk zine, Postmodern/New Wave, cyberpunk, archive wildcard | unusual navigation must expose orientation, escape, keyboard/controller access, and direct deep links | mystery-meat navigation that tests patience rather than boundaries |
 | WebGL/shader accent | cyberpunk, vaporwave, isometric, spatial wildcard | reserve GPU cost for the signature scene; static image/fallback preserves content | orb/blob/shader background with no subject relation |
 | controlled overlap/collage | Constructivism, punk zine, Dada/collage, magazine maximalism | one intentional collision per scene; DOM order remains logical | overlapping clutter mistaken for avant-garde design |
-| restrained curated minimalism | Scandinavian, Mingei/wabi-sabi, flat design | spacing, alignment, image crop, and typographic detail carry the identity | blank white page confused with taste `[S96]` `[S99]` `[S100]` |
+| restrained curated minimalism | Scandinavian, Mingei/wabi-sabi, flat design | spacing, alignment, image crop, and typographic detail carry the identity | blank white page confused with taste |
 | index/archive as interface | botanical plate, editorial broadsheet, blueprint, alpine wayfinding | row anatomy, metadata alignment, sorting/filtering, and empty states receive craft | pseudo-editorial numbers/rules with no indexing behavior |
 | material/texture system | risograph, grunge, botanical, mid-century | texture has physical cause and a strict opacity/contrast budget | noise overlay sprinkled over a conventional layout |
 

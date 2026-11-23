@@ -6,7 +6,7 @@ Pixelcraft is an open-source skill pack for coding agents. It helps agents move 
 
 ## Why Pixelcraft exists
 
-LLM-generated interfaces often converge on the same visual and interaction patterns: centered heroes, generic gradients, default fonts, decorative cards, template copy, shallow states, and web-centric assumptions. The evidence base in [`docs/RESEARCH.md`](docs/RESEARCH.md) connects this to output homogenization and mode collapse, while also documenting gaps in current skill ecosystems: heavy TypeScript/web bias, weak UX state coverage, inconsistent accessibility handling, and overconfident verification claims.
+LLM-generated interfaces often converge on the same visual and interaction patterns: centered heroes, generic gradients, default fonts, decorative cards, template copy, shallow states, and web-centric assumptions. Pixelcraft counters that convergence with explicit planning, authority ordering, divergence only where direction is undecided, complete UX states, accessibility and localization floors, platform-specific translation, and evidence-labeled verification.
 
 Pixelcraft treats this as a process problem rather than a prompt slogan. It does not merely say “make it beautiful”; it changes how the agent frames, diverges, specifies, builds, verifies, and reports UI work.
 
@@ -240,8 +240,8 @@ Clone once, choose a target directory, and copy either all skills or selected se
 
 ```bash
 git clone --depth 1 https://github.com/ThanhNguyxn07/Pixelcraft.git
-mkdir -p .agents/skills
-cp -R Pixelcraft/skills/pixelcraft-web .agents/skills/
+mkdir -p.agents/skills
+cp -R Pixelcraft/skills/pixelcraft-web.agents/skills/
 ```
 
 Use the destination matching the agent:
@@ -330,7 +330,7 @@ install.ps1                 PowerShell installer (no Node required)
 scripts/                     validation tooling
 skills/                      self-contained Agent Skills
 docs/ARCHITECTURE.md         system design and conventions
-docs/RESEARCH.md             cited evidence base
+docs/DESIGN-RATIONALE.md      contributor rationale for major rules
 .claude-plugin/              Claude marketplace metadata
 .github/workflows/           validation and tag-release workflows
 ```
@@ -346,7 +346,7 @@ docs/RESEARCH.md             cited evidence base
 
 ## Contributing
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`AGENTS.md`](AGENTS.md). Contributions must preserve the Agent Skills format, zero-dependency tooling, self-contained skill folders, evidence-label discipline, and the distinction between verified facts and model judgment.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`AGENTS.md`](AGENTS.md). Before changing a rule, read the rationale in [`docs/DESIGN-RATIONALE.md`](docs/DESIGN-RATIONALE.md). Contributions must preserve the Agent Skills format, zero-dependency tooling, self-contained skill folders, evidence-label discipline, and the distinction between verified facts and model judgment.
 
 ## License
 

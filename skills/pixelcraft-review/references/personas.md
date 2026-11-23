@@ -1,6 +1,6 @@
 # Persona walkthrough protocol
 
-Personas are hypothesis generators, not simulated users and not evidence of actual human behavior `[S42]` `[S43]`.
+Personas are hypothesis generators, not simulated users and not evidence of actual human behavior.
 
 ## Walkthrough cast
 

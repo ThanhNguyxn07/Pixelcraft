@@ -1,6 +1,6 @@
 # UX writing
 
-Evidence: NN/g empty-state/form guidance `[S51]` `[S85]`; Anthropic copy guidance `[S15]`; mode model `[S16]`.
+Evidence: empty-state/form guidance, concise copy practice, and mode-specific expression budgets.
 
 ## Rules
 

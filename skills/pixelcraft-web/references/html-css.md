@@ -1,6 +1,6 @@
 # HTML + CSS
 
-Evidence: WCAG 2.2 `[S57]`, logical properties `[S83]`.
+Evidence: WCAG 2.2, logical properties.
 
 ## Token mapping
 
@@ -28,7 +28,7 @@ Use CSS transitions/animations only for purposeful transform/opacity/state chang
 
 ```css
 @media (prefers-reduced-motion: no-preference) {
-  .panel { transition: opacity 160ms ease-out, translate 160ms ease-out; }
+.panel { transition: opacity 160ms ease-out, translate 160ms ease-out; }
 }
 ```
 

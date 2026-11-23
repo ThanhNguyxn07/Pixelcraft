@@ -54,7 +54,7 @@ Markup escaping user content, width/Unicode mismatch, piped ANSI output, logs po
 
 ```sh
 python -m pytest
-python -m compileall .
+python -m compileall.
 python cli.py --help
 NO_COLOR=1 python cli.py 2>/dev/null || true
 ```

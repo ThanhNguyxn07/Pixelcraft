@@ -1,6 +1,6 @@
 # WCAG 2.2 AA operational checks
 
-Primary source `[S57]`; new-criteria overview `[S86]`. This is a practical floor, not legal certification.
+Primary source; new-criteria overview. This is a practical floor, not legal certification.
 
 ## Perceivable
 

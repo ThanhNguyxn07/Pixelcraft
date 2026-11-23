@@ -47,7 +47,7 @@ Reactive graph over-invalidation, stale session state, hidden server errors, ver
 ```sh
 shiny run app.py
 python -m pytest
-python -m compileall .
+python -m compileall.
 ```
 
 Use browser inspection across widths/input sequences and inspect reactive errors/logs; compile success is not UI evidence.

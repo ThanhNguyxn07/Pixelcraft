@@ -1,4 +1,4 @@
-# .NET MAUI
+#.NET MAUI
 
 ## Token mapping
 
@@ -19,7 +19,7 @@ Use MAUI layouts (`Grid`, `VerticalStackLayout`, `CollectionView`, shells/flyout
 
 ## Typography/custom fonts
 
-Register fonts in MauiProgram/resources and map semantic font styles. Support platform font scaling where expected. Avoid fixed-height labels that clip localized/expanded text; measure actual device scaling.
+Register fonts during app startup/resource setup and map semantic font styles. Support platform font scaling where expected. Avoid fixed-height labels that clip localized/expanded text; measure actual device scaling.
 
 ## Motion/reduced motion
 

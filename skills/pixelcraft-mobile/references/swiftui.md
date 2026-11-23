@@ -1,6 +1,6 @@
 # SwiftUI
 
-Evidence: Apple environment keys verified in current docs: `@Environment(\.accessibilityReduceMotion)` and `@Environment(\.dynamicTypeSize)` `[S62]`.
+Evidence: Apple environment keys verified in current docs: `@Environment(\.accessibilityReduceMotion)` and `@Environment(\.dynamicTypeSize)`.
 
 ## Token mapping
 
@@ -53,7 +53,7 @@ Use `Form`, `LabeledContent`, keyboard type/text content type/submit labels/auto
 | `@Environment(\.dynamicTypeSize) private var typeSize` and adaptive layout | fixed-height row clipping accessibility text sizes |
 | `if reduceMotion { instantUpdate() } else { withAnimation(...) }` | large animated movement regardless of Reduce Motion |
 | `.accessibilityLabel("Delete \(invoice.name)")` | relying on a trash-can glyph as the only meaning |
-| `.safeAreaInset(edge: .bottom)` for persistent action | placing CTA underneath home indicator/keyboard |
+| `.safeAreaInset(edge:.bottom)` for persistent action | placing CTA underneath home indicator/keyboard |
 
 ## Known traps
 

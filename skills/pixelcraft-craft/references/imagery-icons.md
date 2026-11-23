@@ -9,7 +9,7 @@
 - Diagrams and data visuals must use real data/labels or visibly marked placeholders approved by the brief.
 - Provide meaningful alternative text or mark imagery decorative according to platform practice.
 - Optimize dimensions/format/loading priority; reserve space to prevent layout shift.
-- Account for localization and cultural context: gestures, clothing, symbols, maps, flags, food, skin representation, religious material, and color meaning are not neutral `[S82]`.
+- Account for localization and cultural context: gestures, clothing, symbols, maps, flags, food, skin representation, religious material, and color meaning are not neutral.
 
 ## Iconography
 

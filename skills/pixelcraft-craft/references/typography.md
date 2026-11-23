@@ -1,6 +1,6 @@
 # Typography, pairing, and expressive type
 
-Evidence base: Google Fonts type guidance `[S68–S70]`, NN/g pairing `[S71]`, Typewolf pairing/lookbook practice `[S102]`, Fonts In Use as a specimen corpus `[S103]`, Bringhurst/Müller-Brockmann typographic tradition `[S113]` `[S114]`, localization requirements `[S81]` `[S82]`.
+Evidence base: typographic craft traditions, platform font behavior, pairing practice, readability constraints, and localization requirements.
 
 ## Voice before font
 
@@ -20,10 +20,10 @@ Choose a typographic voice from the direction: editorial, instrumental, humanist
 
 1. Choose the **anchor** first: usually the body/UI face because it carries most reading.
 2. Add contrast only where it has a job: display voice, data voice, metadata voice, or code/log voice.
-3. Balance contrast with compatibility: comparable x-height/proportions often sit together better; contrast should come from structure, not clashing details `[S68]` `[S71]`.
+3. Balance contrast with compatibility: comparable x-height/proportions often sit together better; contrast should come from structure, not clashing details.
 4. Assign explicit roles before naming fonts: display/title/heading/body/body-small/caption/control/data/code.
-5. Prefer one family with optical sizes/width/weight axes when hierarchy is more important than personality; use superfamilies when serif/sans/mono coordination is built in `[S69]`.
-6. Consult real specimens (Fonts In Use/Typewolf) to understand scale/spacing/context, then design your own system; do not copy a pairing because it is fashionable `[S102]` `[S103]`.
+5. Prefer one family with optical sizes/width/weight axes when hierarchy is more important than personality; use superfamilies when serif/sans/mono coordination is built in.
+6. Consult real specimens to understand scale/spacing/context, then design your own system; do not copy a pairing because it is fashionable.
 7. Limit active families/weights for performance and coherence. Two well-deployed faces beat five shallow ones.
 
 ## Expressive techniques
@@ -42,16 +42,16 @@ Choose a typographic voice from the direction: editorial, instrumental, humanist
 ## Scale, measure, and detail
 
 - Dense UI scale ratio roughly 1.125–1.2; editorial/persuasion roughly 1.25–1.4. Do not create twelve indistinguishable steps.
-- Long-form Latin target around 65–75 characters per line; adjust rather than copying blindly for CJK/Arabic/Indic and dense UI `[S70]`.
+- Long-form Latin target around 65–75 characters per line; adjust rather than copying blindly for CJK/Arabic/Indic and dense UI.
 - Latin body line-height roughly 1.45–1.65; tighten display while protecting ascenders/diacritics; dense UI may tighten only when scanlines remain clear.
 - Use optical size when available: display optical sizes tighter/sharper, text optical sizes sturdier.
 - Use tabular figures for changing/aligned data; proportional figures for prose unless alignment matters.
 - Avoid tracked-out lowercase; uppercase/labels can receive modest tracking. Extreme negative tracking breaks script rendering.
-- Preserve hanging punctuation, baseline rhythm, paragraph spacing, and orphan/widow behavior where platform allows `[S114]`.
+- Preserve hanging punctuation, baseline rhythm, paragraph spacing, and orphan/widow behavior where platform allows.
 
 ## International script floor
 
-Declare fallback behavior per script, not just `sans-serif`: Latin extended/combining marks, Cyrillic, Greek, Arabic, Hebrew, Indic shaping, Thai/Lao/Khmer line breaking, CJK/Hangul, emoji/ZWJ, and numeric systems required by the audience `[S81]` `[S82]`. Do not fake bold/italic, do not put translated copy in Latin-only display fonts that silently fall back, and do not let expressive crop/tracking/masking damage shaping.
+Declare fallback behavior per script, not just `sans-serif`: Latin extended/combining marks, Cyrillic, Greek, Arabic, Hebrew, Indic shaping, Thai/Lao/Khmer line breaking, CJK/Hangul, emoji/ZWJ, and numeric systems required by the audience. Do not fake bold/italic, do not put translated copy in Latin-only display fonts that silently fall back, and do not let expressive crop/tracking/masking damage shaping.
 
 ## Platform transfer
 

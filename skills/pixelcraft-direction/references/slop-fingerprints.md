@@ -1,12 +1,12 @@
 # Slop fingerprints
 
-Evidence base: Anthropic frontend-design `[S15]`, Hallmark/sloplint measurements `[S20]` `[S21]`, and homogenization research `[S26–S30]`. These are recurrence signals, not universal moral bans. The response is redesign or explicit justification—not shame.
+Evidence base: recurring generated-UI patterns and output-homogenization evidence. These are recurrence signals, not universal moral bans. The response is redesign or explicit justification—not shame.
 
 ## High-confidence visual fingerprints
 
 | Fingerprint | Why it converges | Redesign move |
 |---|---|---|
-| cream paper + high-contrast serif + orange/terracotta accent | current “crafted AI” neo-slop cluster `[S15]` | derive palette/material from subject; use accent as a semantic system rather than one fashionable color |
+| cream paper + high-contrast serif + orange/terracotta accent | current “crafted AI” neo-slop cluster | derive palette/material from subject; use accent as a semantic system rather than one fashionable color |
 | near-black page + single acid green/purple accent | generic futurism | define lighting/material logic and more than one semantic state color |
 | Inter/Geist/Helvetica-like sans for every role | model default typography | choose voice by subject; use optical sizes, serif/mono/serifless contrast, native platform defaults when appropriate |
 | purple-to-blue gradient | model/default AI branding | use color posture with physical or symbolic basis; gradients only when they encode light/material/data |
@@ -15,7 +15,7 @@ Evidence base: Anthropic frontend-design `[S15]`, Hallmark/sloplint measurements
 | emoji as structural icons | cheap visual noise | use a coherent icon system or text; emoji only when culturally/semantically appropriate and never as sole critical meaning |
 | `rounded-2xl` + large soft shadow everywhere | depth without material logic | choose radius/elevation from component semantics and material; flat can be intentional |
 | default glassmorphism panels | decorative translucency | use translucency only where layered context/background matters; test contrast and performance |
-| one italic/accented word inside roman heading | model typography tic `[S15]` | create hierarchy through size/weight/measure/language instead |
+| one italic/accented word inside roman heading | model typography tic | create hierarchy through size/weight/measure/language instead |
 | unnecessary uppercase eyebrow labels | false sophistication | remove or replace with meaningful metadata/navigation |
 | decorative section numbers with no sequence semantics | pseudo-editorial signaling | use actual indexing or remove |
 | generic aurora/blob/grid background | meaningless generated atmosphere | derive visual field from content or omit background effect |
@@ -43,4 +43,4 @@ Evidence base: Anthropic frontend-design `[S15]`, Hallmark/sloplint measurements
 
 ## Evaluation rule
 
-A page can have zero fingerprints and still be bad; absence of slop is not presence of design `[S21]`. Judge subject fit, hierarchy, craft, usability, and evidence separately.
+A page can have zero fingerprints and still be bad; absence of slop is not presence of design. Judge subject fit, hierarchy, craft, usability, and evidence separately.

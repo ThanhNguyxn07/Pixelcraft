@@ -1,17 +1,17 @@
 # Color and palette building
 
-Evidence base: first-impression research `[S105]`, visual complexity/colorfulness models `[S106]` `[S107]`, aesthetic-usability halo `[S108]`, OKLab/OKLCH `[S78]`, APCA caveats `[S76]` `[S77]`, WCAG 2.2 `[S57]`, Material color `[S65]`.
+Evidence base: perception research, color appearance models, contrast requirements, platform color systems, and mode testing.
 
 ## Evidence constraints
 
-Users form aesthetic judgments extremely quickly—Lindgaard et al. found visual appeal judgments within about 50ms—so the first visible field must be intentional before users read details `[S105]`. Reinecke/Gajos show colorfulness and perceived visual complexity predict appeal, but peak preferences vary by demographic/culture; there is no universal “premium palette” `[S106]` `[S107]`. Tractinsky's aesthetic-usability effect means polished visuals can increase perceived usability, but it does not fix actual usability and must never be used as camouflage `[S108]`.
+Users form aesthetic judgments extremely quickly, so the first visible field must be intentional before users read details. Colorfulness and perceived visual complexity affect appeal, but peak preferences vary by demographic and culture; there is no universal “premium palette”. Polished visuals can increase perceived usability, but they do not fix actual usability and must never be used as camouflage.
 
 ## Build process
 
 1. Define semantic roles before picking colors: background/surface/raised/sunken/ink/muted/link/focus/accent/on-accent/border/scrim/selection/success/warning/danger/info/data.
 2. Extract color evidence from real content/material: object pigment, light environment, substrate, domain signal, existing brand, cultural context. Do not invent meaning from a trend.
 3. Choose palette posture: restrained, tonal, chromatic, dark atmospheric, print/spot-color, signal/instrument, or dynamic-from-content.
-4. Build perceptual ramps in OKLCH/OKLab, then verify in the output gamut and actual product surfaces `[S78]`.
+4. Build perceptual ramps in OKLCH/OKLab, then verify in the output gamut and actual product surfaces.
 5. Validate every state pair and mode; actual contrast is a property of foreground+background+size+weight+state, not a swatch.
 
 ## Non-default accent strategies
@@ -32,16 +32,16 @@ Users form aesthetic judgments extremely quickly—Lindgaard et al. found visual
 - Pick the hue(s) from evidence; do not spin the hue wheel randomly.
 - Choose chroma where the hue is strongest, then lower chroma toward very light/dark endpoints to reduce gamut clipping and harshness.
 - Keep semantic positions stable: `accent-500` means the same relative emphasis across themes even if values differ.
-- Check actual sRGB/P3 output; out-of-gamut colors must be intentionally mapped/clamped `[S78]`.
+- Check actual sRGB/P3 output; out-of-gamut colors must be intentionally mapped/clamped.
 - Use hue rotation across ramps only when it encodes material behavior (heat, depth, light); otherwise coherence matters more.
-- Do not assume equal OKLCH lightness means equal contrast. Measure actual pairs; use APCA as supplemental perceptual guidance while conforming to WCAG 2.2 requirements `[S60]` `[S76]` `[S77]`.
+- Do not assume equal OKLCH lightness means equal contrast. Measure actual pairs; use APCA as supplemental perceptual guidance while conforming to WCAG 2.2 requirements.
 
 Illustrative shape only—not a reusable palette:
 
 ```text
-surface-0 L .98 C .01 / surface-1 L .94 C .02 / ink L .24 C .03
-accent core L .58 C .16 / hover L .52 C .17 / soft-fill L .91 C .05
-dark surface L .20 C .02 / dark raised L .26 C .025 / dark accent L .72 C .11
+surface-0 L.98 C.01 / surface-1 L.94 C.02 / ink L.24 C.03
+accent core L.58 C.16 / hover L.52 C.17 / soft-fill L.91 C.05
+dark surface L.20 C.02 / dark raised L.26 C.025 / dark accent L.72 C.11
 ```
 
 ## Dark and high-contrast behavior
@@ -50,11 +50,11 @@ dark surface L .20 C .02 / dark raised L .26 C .025 / dark accent L .72 C .11
 - Reduce large-area saturation in dark mode; use lighter foreground accents.
 - Use luminance layering/borders/scrims for elevation because shadows weaken on dark surfaces.
 - Test focus, selection, caret, placeholder, disabled, pressed, visited, chart grid, and error text independently in each mode.
-- Honor `prefers-contrast`, forced-colors, and platform high-contrast modes; do not remove system-controlled boundaries `[S57]`.
+- Honor `prefers-contrast`, forced-colors, and platform high-contrast modes; do not remove system-controlled boundaries.
 
 ## Cultural and content checks
 
-Color meanings are locale/domain dependent. Validate finance gain/loss, mourning/celebration, politics/religion, safety, and brand-category conventions for target markets `[S31]` `[S82]`. Never encode meaning by hue alone; pair color with icon/text/pattern/position. For data: categorical palettes need direct labels and limited categories, sequential scales need monotonic lightness, and diverging scales need a meaningful neutral midpoint.
+Color meanings are locale/domain dependent. Validate finance gain/loss, mourning/celebration, politics/religion, safety, and brand-category conventions for target markets. Never encode meaning by hue alone; pair color with icon/text/pattern/position. For data: categorical palettes need direct labels and limited categories, sequential scales need monotonic lightness, and diverging scales need a meaningful neutral midpoint.
 
 ## Palette rejection test
 

@@ -6,7 +6,7 @@
 4. Descriptions must be third person, state what the skill does and when to use it, include concrete trigger words, and stay under 1024 characters.
 5. Keep `SKILL.md` bodies at or below 300 lines where possible and never above 500. Put depth in `references/*.md`, one level deep, linked with a one-line “read when” trigger.
 6. Write imperative, concrete, checkable guidance. Delete generic advice that competent models already know. Prefer tables, checklists, do/don't pairs, and target-idiom examples.
-7. Use citations sparingly: cite `docs/RESEARCH.md` IDs such as `[S57]` in references where evidence matters; do not clutter every line of `SKILL.md`.
+7. Before changing a rule, read `docs/DESIGN-RATIONALE.md`; keep guidance original, concrete, and free of citation-registry bookkeeping.
 8. Scripts must be Node.js >= 18, zero-dependency `.mjs` files and must support `node <script> --help`.
 9. Never dictate appearance through the floor. Truthfulness, accessibility, localization, state coverage, responsiveness, performance, coherence, distinctiveness, and verifiability are mandatory; heroes, cards, colors, fonts, and layout shapes are not.
 10. Every compliance or verification claim must carry an evidence label: `rendered`, `static`, `model-judgment`, `not-checked`, or `waived`.

@@ -1,6 +1,6 @@
 ---
 name: pixelcraft-direction
-description: Generates distinctive visual direction without template collapse. Use when starting a new UI, redesigning a surface, choosing an aesthetic direction, fighting generic AI-looking design, creating a design concept, or checking repetition against prior builds. Extracts the brief and real material, samples several far-apart directions, scores and commits to one, defines a signature element, maintains .pixelcraft/history.json, and scans for slop fingerprints.
+description: Generates distinctive visual direction without template collapse. Use when starting a new UI, redesigning a surface, choosing an aesthetic direction, fighting generic AI-looking design, creating a design concept, or checking repetition against prior builds. Extracts the brief and real material, samples several far-apart directions, scores and commits to one, defines a signature element, maintains.pixelcraft/history.json, and scans for slop fingerprints.
 license: MIT
 metadata:
   version: 0.1.0

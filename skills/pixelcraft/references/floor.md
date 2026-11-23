@@ -1,6 +1,6 @@
 # Mandatory cross-platform floor
 
-Evidence base: `docs/RESEARCH.md` section 6.3 and WCAG 2.2 `[S57]`; platform target-size baselines `[S59]` `[S62]` `[S63]`; response-time limits `[S48]`; state and hardening patterns `[S16]` `[S18]`.
+Evidence base: WCAG 2.2, platform target-size guidance, response-time principles, and cross-platform hardening practice.
 
 The floor is non-negotiable unless the user explicitly waives a scoped item. It constrains quality, not appearance.
 
@@ -16,16 +16,16 @@ The floor is non-negotiable unless the user explicitly waives a scoped item. It 
 - Use real interactive semantics before adding roles or keyboard handlers.
 - Every control needs an accessible name; every input needs a persistent visible label or platform-equivalent labeling behavior.
 - Keyboard/touch/controller/remote paths must complete the primary task. Focus is visible, logical, and never obscured by sticky UI.
-- Meet the applicable contrast floor. For WCAG 2.2 AA web work: normal text 4.5:1, large text 3:1, non-text UI 3:1 unless exempt `[S57]`.
+- Meet the applicable contrast floor. For WCAG 2.2 AA web work: normal text 4.5:1, large text 3:1, non-text UI 3:1 unless exempt.
 - Respect reduced-motion settings and provide a non-motion way to perceive state changes.
 - Text scaling must not clip, overlap, or truncate essential content. Test dynamic type/sp scaling or platform equivalent where available.
 - Do not encode meaning by color alone; pair color with text, shape, icon, position, or pattern.
-- Dragging requires a single-pointer alternative. Authentication must not require a cognitive memory test or block paste/password managers `[S57]`.
+- Dragging requires a single-pointer alternative. Authentication must not require a cognitive memory test or block paste/password managers.
 
 ## 3. Interaction
 
-- Acknowledge input quickly: target approximately 0.1s for direct manipulation feedback, 1s for uninterrupted flow, and explicit progress or interruption options beyond that `[S48]`.
-- Targets obey platform units: web floor 24×24 CSS px for WCAG 2.2 AA unless an exception applies; iOS baseline 44×44 pt; Android/Material baseline 48×48 dp `[S59]` `[S62]` `[S63]`.
+- Acknowledge input quickly: target approximately 0.1s for direct manipulation feedback, 1s for uninterrupted flow, and explicit progress or interruption options beyond that.
+- Targets obey platform units: web floor 24×24 CSS px for WCAG 2.2 AA unless an exception applies; iOS baseline 44×44 pt; Android/Material baseline 48×48 dp.
 - Every asynchronous action exposes loading, success, failure, cancellation/retry, and duplicate-submission behavior.
 - destructive actions use confirmation or undo proportionate to consequence.
 - Escape/cancel/back behavior is consistent with the platform and never traps the user.
@@ -40,11 +40,11 @@ The floor is non-negotiable unless the user explicitly waives a scoped item. It 
 
 ## 5. Localization and internationalization
 
-- Budget approximately 30–40% expansion for translated strings in dense UI; test contraction for CJK and expansion for German/Finnish-like cases where feasible `[S16]`.
+- Budget approximately 30–40% expansion for translated strings in dense UI; test contraction for CJK and expansion for German/Finnish-like cases where feasible.
 - Use logical direction (`inline-start`, trailing/leading) rather than physical left/right assumptions in directional layout.
 - Support RTL mirroring where directionality is semantic; do not mirror numerals, clocks, playback direction, or culturally asymmetric symbols blindly.
 - Use locale-aware plural, gender/case, date, time, number, currency, calendar, sorting, input method, and name formatting. Do not concatenate translated fragments.
-- Choose fonts/fallbacks for script coverage and test shaping, line breaking, hyphenation, emphasis, numerals, and input composition `[S81]` `[S82]`.
+- Choose fonts/fallbacks for script coverage and test shaping, line breaking, hyphenation, emphasis, numerals, and input composition.
 - Treat color symbolism, gestures, imagery, formality, humor, reading order, and trust cues as localizable design decisions, not translation afterthoughts.
 
 ## 6. Performance and resilience

@@ -1,6 +1,6 @@
 # State matrix template
 
-Evidence: hardening/state coverage patterns `[S16]` `[S18]`; response and robustness floor `[S47]` `[S48]`.
+Evidence: hardening/state coverage practice, usability heuristics, and response/robustness requirements.
 
 Create this matrix for every meaningful view/component. Delete only rows proven irrelevant, and record why.
 

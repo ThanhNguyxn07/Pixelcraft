@@ -1,6 +1,6 @@
 ---
 name: pixelcraft-plan
-description: Runs before other Pixelcraft skills to map brownfield repositories or plan greenfield products. Use when starting UI work, choosing a frontend stack, inventorying an existing codebase, identifying framework/design-system constraints, selecting among languages or platforms, creating implementation strategy, or producing the .pixelcraft/plan.md consumed by later Pixelcraft skills.
+description: Runs before other Pixelcraft skills to map brownfield repositories or plan greenfield products. Use when starting UI work, choosing a frontend stack, inventorying an existing codebase, identifying framework/design-system constraints, selecting among languages or platforms, creating implementation strategy, or producing the.pixelcraft/plan.md consumed by later Pixelcraft skills.
 license: MIT
 metadata:
   version: 0.1.0

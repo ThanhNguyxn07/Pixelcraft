@@ -44,8 +44,8 @@ No built-in accessibility/UI semantics, glyph atlas gaps, coordinate scaling mis
 ## Verification commands
 
 ```sh
-luacheck . 2>/dev/null || true
-love .
+luacheck. 2>/dev/null || true
+love.
 ```
 
 Run resolution/aspect/input matrix, controller-only flow, resize/window mode, localization glyph checks, pause/interruption/resume, reduced motion/flash settings, screenshots on target devices.

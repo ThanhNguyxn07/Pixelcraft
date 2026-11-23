@@ -1,10 +1,10 @@
 # Pixel-art logo craft
 
-Use this reference when the identity intentionally uses pixel art, bitmap type, sprite logic, game/retro-computing material, or agent imagery built from visible pixels. Evidence base: small-grid practice `[S129]`, pixel-logo workflow/dithering guidance `[S132]`, palette-craft resources `[S131]`, and platform icon constraints `[S127]` `[S128]`.
+Use this reference when the identity intentionally uses pixel art, bitmap type, sprite logic, game/retro-computing material, or agent imagery built from visible pixels. Evidence base: small-grid practice, pixel-logo workflow/dithering guidance, palette-craft resources, and platform icon constraints.
 
 ## Grid discipline
 
-- Choose the art grid before drawing: commonly 16×16/24×24 for icons, 32×32 for compact characters, 48×48 or larger only when detail is semantically necessary `[S129]`.
+- Choose the art grid before drawing: commonly 16×16/24×24 for icons, 32×32 for compact characters, 48×48 or larger only when detail is semantically necessary.
 - Every visible color cell must align to the same integer grid. No accidental half-pixels, blurred edges, rotated rectangles, fractional strokes, or raster-filter residue.
 - Build the vector output as aligned rectangles or merged grid-aligned paths. `shape-rendering="crispEdges"` may help but is not a substitute for integer geometry.
 - Keep one logical pixel size across the composition. Deliberate hierarchical scaling (for example, wordmark pixels twice icon pixels) must be documented, not accidental.
@@ -16,19 +16,19 @@ Use this reference when the identity intentionally uses pixel art, bitmap type, 
 1. Block the silhouette in one dark color.
 2. Test it filled solid at actual target sizes.
 3. Add only the minimum identifying features: visor, eye, antenna, gear tooth, prop, limb, asymmetry, or signature pixel scatter.
-4. Clean at 1:1 zoom; remove any cell that does not improve readability or meaning `[S129]`.
+4. Clean at 1:1 zoom; remove any cell that does not improve readability or meaning.
 5. Keep negative space readable. A one-cell gap can be the difference between a visor and a blob.
 
 If the silhouette fails, change the silhouette—not the shading.
 
 ## Palette discipline
 
-- Use a small curated palette: outline/ink, main color family, secondary family, highlight, background/transparent negative space. Tiny-grid work often needs only 2–3 colors `[S129]`; mascot/logo systems may use more only when each color family has a stable semantic role.
+- Use a small curated palette: outline/ink, main color family, secondary family, highlight, background/transparent negative space. Tiny-grid work often needs only 2–3 colors; mascot/logo systems may use more only when each color family has a stable semantic role.
 - Treat gradients as stepped ramps, not smooth AI noise. Assign each ramp step intentionally (shadow/base/light/spark).
 - Do not antialias edges into hundreds of accidental colors. Pixel-art smoothness comes from stair-step placement, selective edge pixels, or deliberate dither—not blur.
 - Keep outline hue consistent. Dark navy/plum/brown outlines usually integrate better than pure black; document whether outline is external, internal, or selective.
 - Preserve enough contrast for both light/dark contexts or provide explicit variants. Do not rely on a white matte hidden in the artwork.
-- If using a licensed/community palette or palette inspiration such as Lospec `[S131]`, cite source and adapt it to the brand rather than treating a trend palette as identity.
+- If using a licensed or community palette, respect its license and adapt it to the brand rather than treating a trend palette as identity.
 
 ## Dithering and texture
 
@@ -66,7 +66,7 @@ Produce actual renders at 16, 32, and 64 px using nearest-neighbor scaling. Insp
 | 16 px | silhouette + main color split recognizable; no attempt to preserve tiny symbols/text |
 | 32 px | focal metaphor reads (robot/visor/gear or equivalent); outline does not fill in |
 | 64 px | secondary details begin resolving; no stair-step mistakes or stray cells |
-| favicon/avatar context | recognizable beside ordinary browser/app icons `[S127]` `[S128]` |
+| favicon/avatar context | recognizable beside ordinary browser/app icons |
 | monochrome | silhouette still identifies when hue is removed |
 
 Create sanctioned small-size variants rather than expecting the master artwork to survive unchanged. Document exactly which details are removed at each size.
@@ -79,4 +79,4 @@ Create sanctioned small-size variants rather than expecting the master artwork t
 - Palette count reported; accidental near-duplicate colors merged.
 - Artwork inspected at 100%/200% and at 16/32/64 px rendered size.
 - Light/dark/reverse/mono variants documented.
-- App/favicon versions follow platform guidance: simple central concept, no nonessential text, no decorative clutter `[S127]` `[S128]`.
+- App/favicon versions follow platform guidance: simple central concept, no nonessential text, no decorative clutter.

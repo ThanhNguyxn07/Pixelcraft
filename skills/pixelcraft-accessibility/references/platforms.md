@@ -1,26 +1,26 @@
 # Platform accessibility translations
 
-Evidence: Apple HIG `[S62]`, Material `[S63]`, WCAG `[S57]`, generated-code accessibility research `[S45]` `[S46]`.
+Evidence: Apple HIG, Material, WCAG, generated-code accessibility research.
 
 ## Web/HTML
 
 - Use button/input/select/a/label/dialog/table/list/heading semantics before div/ARIA. First rule of ARIA: don't use it when native HTML exists.
 - Labels are programmatically associated; errors use accessible description/live status where appropriate.
-- Dialogs: initial focus inside, logical containment/inert background, Escape close where safe, restore focus to invoker. Follow APG only as pattern guidance `[S87]`.
+- Dialogs: initial focus inside, logical containment/inert background, Escape close where safe, restore focus to invoker. Follow APG only as pattern guidance.
 - Never remove outline without visible replacement. Manage focus on route/content deletion; preserve scroll restoration separately.
 - Do not use positive tabindex. Use DOM order and roving tabindex only for composite widgets that need it.
 
 ## iOS / macOS
 
 - VoiceOver: accessibility label, traits, value, hint only when useful; correct ordering/grouping; custom actions/rotor where relevant.
-- Dynamic Type: scale text without clipping essential content; use system text styles where appropriate. Touch baseline 44×44 pt `[S62]`.
+- Dynamic Type: scale text without clipping essential content; use system text styles where appropriate. Touch baseline 44×44 pt.
 - Honor Reduce Motion, Increase Contrast, Differentiate Without Color, Bold Text, Reduce Transparency, Voice Control, Switch Control, Full Keyboard Access.
 - Respect safe areas/focus engine on tvOS and keyboard shortcuts/modified-state semantics on macOS.
 
 ## Android
 
 - TalkBack: contentDescription only where needed, correct traversal order, state descriptions, live regions/assertive politeness sparingly.
-- Use sp for text and dp for layout; preserve scaling. Touch baseline 48×48 dp `[S63]`.
+- Use sp for text and dp for layout; preserve scaling. Touch baseline 48×48 dp.
 - Support keyboard/d-pad/controller focus, predictive back, color contrast, reduced animation, magnification, switch access, and autofill.
 
 ## Flutter / React Native

@@ -55,7 +55,7 @@ Mouse filter blocking input unintentionally, focus loss after node removal, them
 ```sh
 godot --headless --check-only 2>/dev/null || true
 godot --headless --run-tests 2>/dev/null || true
-godot --path . 2>/dev/null || true
+godot --path. 2>/dev/null || true
 ```
 
 Use runtime screenshots/device tests, controller-only navigation, resize/aspect/safe-area matrix, localization pseudo-text/glyph checks, accessibility option tests, pause/interruption/reconnect flows, and platform export validation where applicable.

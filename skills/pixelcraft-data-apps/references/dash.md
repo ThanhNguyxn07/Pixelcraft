@@ -47,7 +47,7 @@ Duplicate callback outputs, hidden chaining, stale cache/session leakage, large 
 ```sh
 python app.py
 python -m pytest
-python -m compileall .
+python -m compileall.
 ```
 
 Use browser inspection and callback/network tracing for interaction evidence. Plotly export/static screenshots are not full UI verification.

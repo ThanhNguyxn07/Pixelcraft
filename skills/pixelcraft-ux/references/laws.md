@@ -1,6 +1,6 @@
 # UX laws as operational checks
 
-Evidence: Laws of UX `[S49]`; Nielsen heuristics `[S47]`; response limits `[S48]`.
+Evidence: established UX laws, usability heuristics, and response-time limits.
 
 | Principle | Operational check | Misuse to avoid |
 |---|---|---|

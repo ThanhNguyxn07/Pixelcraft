@@ -1,6 +1,6 @@
 # Subject-derived wildcard generators
 
-Use these generators when the movement catalog itself starts becoming a monoculture `[S28]` `[S20]`. A wildcard must still satisfy mode, floor, and platform constraints.
+Use these generators when the movement catalog itself starts becoming a monoculture. A wildcard must still satisfy mode, floor, and platform constraints.
 
 ## Constraint dice
 

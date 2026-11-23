@@ -1,6 +1,6 @@
 # Nielsen heuristics as concrete checks
 
-Source `[S47]`. Use 0–4 severity/confidence-aware scoring only as a communication aid; do not average away a P0.
+Use 0–4 severity/confidence-aware scoring only as a communication aid; do not average away a P0.
 
 | Heuristic | Concrete checks |
 |---|---|

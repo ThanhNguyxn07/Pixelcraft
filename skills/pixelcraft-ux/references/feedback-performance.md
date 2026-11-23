@@ -1,6 +1,6 @@
 # Feedback, response time, and perceived performance
 
-Evidence: Nielsen response-time limits `[S48]`; Doherty threshold/laws `[S49]`; state hardening `[S16]`.
+Evidence: response-time limits, feedback principles, and state-hardening practice.
 
 ## Time budget
 
