@@ -16,7 +16,7 @@ Automated zero means “no detected violations in scanned scope,” never “acc
 
 ## Manual protocol
 
-1. Keyboard/controller only: complete primary task, reverse direction, close/escape, recover after error.
+1. Keyboard/controller only: complete primary task (stopping before final payment or other irreversible commit unless running in an explicitly isolated sandbox, mock, or test mode), reverse direction, close/escape, recover after error.
 2. Screen reader: inspect name/role/value/order/status/error/form behavior. Use the platform pairing realistically (NVDA/JAWS+Chrome/Edge, VoiceOver+Safari/iOS, TalkBack+Android/Chrome, orca+Linux).
 3. Zoom/reflow/text scaling: 200% or platform largest text where practical; verify clipping/overlap/truncation.
 4. Visual modes: dark/light/high contrast/increased contrast/forced colors; inspect state boundaries and focus.
@@ -27,7 +27,7 @@ Automated zero means “no detected violations in scanned scope,” never “acc
 
 ## Reporting language
 
-Use: “axe-core scan of `<scope>` reported zero violations `static`; keyboard checkout flow completed through payment step `rendered`; VoiceOver not tested `not-checked`.”
+Use: “axe-core scan of `<scope>` reported zero violations `static`; keyboard checkout flow verified up to final payment confirmation `rendered`; live payment submission `not run` (no isolated sandbox/test mode); VoiceOver not tested `not-checked`.”
 
 Never use: “WCAG compliant” unless the full scoped conformance process actually happened and legal/conformance language is intended.
 

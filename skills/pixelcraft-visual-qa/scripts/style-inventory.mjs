@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import http from 'node:http';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import { pathToFileURL } from 'node:url';
 
 function help() {
   return `Usage: node style-inventory.mjs <url-or-html-file> [options]
@@ -15,6 +15,7 @@ Options:
   --out FILE             Write JSON report to FILE instead of stdout
   --breakpoints LIST     Width x height list (default: 390x900,1440x900)
   --project DIR          Dependency resolution root (default: current directory)
+  --root DIR             Static server root for local targets (default: target directory)
   --executable-path FILE Use a specific Chromium/Chrome executable
   --timeout MS           Navigation timeout in milliseconds (default: 30000)
   --wait-for SELECTOR    Wait for a selector after page load
@@ -40,7 +41,7 @@ function optionValue(args, index, name) {
 }
 
 function parse(args) {
-  const options = { out: null, breakpoints: '390x900,1440x900', project: process.cwd(), timeout: 30000, waitFor: null, waitMs: 2000, compact: false, executablePath: null, help: false };
+  const options = { out: null, breakpoints: '390x900,1440x900', project: process.cwd(), root: null, timeout: 30000, waitFor: null, waitMs: 2000, compact: false, executablePath: null, help: false };
   const positional = [];
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
@@ -58,6 +59,10 @@ function parse(args) {
       options.project = optionValue(args, index, '--project');
       index += 1;
     } else if (arg.startsWith('--project=')) options.project = arg.slice(10);
+    else if (arg === '--root') {
+      options.root = optionValue(args, index, '--root');
+      index += 1;
+    } else if (arg.startsWith('--root=')) options.root = arg.slice(7);
     else if (arg === '--executable-path') {
       options.executablePath = optionValue(args, index, '--executable-path');
       index += 1;
@@ -103,20 +108,106 @@ async function loadChromium(project) {
   }
 }
 
-function resolveTarget(input) {
-  if (/^https?:\/\//i.test(input)) return input;
-  let resolved = path.resolve(input);
+const mimeTypes = new Map(Object.entries({
+  '.html': 'text/html; charset=utf-8',
+  '.htm': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.avif': 'image/avif',
+  '.ico': 'image/x-icon',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.txt': 'text/plain; charset=utf-8',
+  '.wasm': 'application/wasm',
+}));
+
+async function createStaticTarget(input, options) {
+  if (/^https?:\/\//i.test(input)) return { url: input, local: false, async close() {} };
+  const resolved = path.resolve(input);
   if (!fs.existsSync(resolved)) throw new Error(`target is neither an http(s) URL nor an existing HTML file: ${input}`);
-  if (fs.statSync(resolved).isDirectory()) resolved = path.join(resolved, 'index.html');
-  if (!fs.existsSync(resolved) || !fs.statSync(resolved).isFile()) throw new Error(`target is not a readable HTML file: ${input}`);
-  return pathToFileURL(resolved).href;
+  const stat = fs.statSync(resolved);
+  const targetFile = stat.isDirectory() ? path.join(resolved, 'index.html') : resolved;
+  if (!fs.existsSync(targetFile) || !fs.statSync(targetFile).isFile()) throw new Error(`target is not a readable HTML file: ${input}`);
+  const fallbackRoot = stat.isDirectory() ? resolved : path.dirname(resolved);
+  const configuredRoot = path.resolve(options.root || fallbackRoot);
+  if (!fs.existsSync(configuredRoot) || !fs.statSync(configuredRoot).isDirectory()) throw new Error(`static server root is not a directory: ${configuredRoot}`);
+  const lexicalRoot = configuredRoot;
+  const root = fs.realpathSync(configuredRoot);
+  const rootPrefix = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
+  const lexicalTarget = path.relative(lexicalRoot, resolved);
+  if (lexicalTarget.startsWith('..') || path.isAbsolute(lexicalTarget)) throw new Error(`local target is outside the static server root: target=${resolved}; root=${lexicalRoot}`);
+  const realTarget = fs.realpathSync(targetFile);
+  const realRelativeTarget = path.relative(root, realTarget);
+  if (realRelativeTarget.startsWith('..') || path.isAbsolute(realRelativeTarget)) throw new Error(`local target resolves outside the static server root: target=${realTarget}; root=${root}`);
+  const encodedTarget = lexicalTarget.split(path.sep).filter(Boolean).map(encodeURIComponent).join('/');
+  let initialPath = encodedTarget ? `/${encodedTarget}` : '/';
+  if (stat.isDirectory() && !initialPath.endsWith('/')) initialPath += '/';
+  const server = http.createServer((request, response) => {
+    let pathname;
+    try {
+      pathname = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname);
+    } catch {
+      response.writeHead(400).end('bad request');
+      return;
+    }
+    if (pathname.endsWith('/')) pathname += 'index.html';
+    if (pathname.split('/').some((part) => part.startsWith('.'))) {
+      response.writeHead(404).end('not found');
+      return;
+    }
+    const file = path.resolve(root, `.${pathname}`);
+    if (file !== root && !file.startsWith(rootPrefix)) {
+      response.writeHead(403).end('forbidden');
+      return;
+    }
+    let fileStat;
+    let realFile;
+    try {
+      realFile = fs.realpathSync(file);
+      fileStat = fs.statSync(realFile);
+    } catch {
+      response.writeHead(404).end('not found');
+      return;
+    }
+    if (realFile !== root && !realFile.startsWith(rootPrefix)) {
+      response.writeHead(403).end('forbidden');
+      return;
+    }
+    if (!fileStat.isFile()) {
+      response.writeHead(404).end('not found');
+      return;
+    }
+    response.writeHead(200, {
+      'content-type': mimeTypes.get(path.extname(file).toLowerCase()) || 'application/octet-stream',
+      'cache-control': 'no-store',
+    });
+    fs.createReadStream(realFile).pipe(response);
+  });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  const { port } = server.address();
+  return {
+    url: `http://127.0.0.1:${port}${initialPath}`,
+    local: true,
+    close: () => new Promise((resolve) => server.close(resolve)),
+  };
 }
 
 function emptyNetworkPhase() {
   return { requests: 0, transferBytes: 0, jsBytes: 0 };
 }
 
-function observeNetwork(session) {
+function observeNetwork(session, mainFrameId = null) {
   let loadEventSeen = false;
   const active = new Map();
   const network = {
@@ -155,17 +246,24 @@ function observeNetwork(session) {
   });
   session.on('Network.requestWillBeSent', (event) => {
     const existing = active.get(event.requestId);
+    const redirectBytes = event.redirectResponse ? (event.redirectResponse.encodedDataLength || 0) : 0;
     if (event.redirectResponse) network.redirects += 1;
-    if (existing) return;
+    if (existing) {
+      if (redirectBytes) addBytes(existing.type, existing.phase, redirectBytes);
+      return;
+    }
     const type = event.type || 'Other';
     const phase = loadEventSeen ? 'deferred' : 'initial';
     active.set(event.requestId, { type, phase });
     network.requests += 1;
     network[phase].requests += 1;
     resourceBucket(type).requests += 1;
+    if (redirectBytes) addBytes(type, phase, redirectBytes);
   });
   session.on('Network.responseReceived', (event) => {
-    if (event.type === 'Document') network.status = event.response.status;
+    if (event.type === 'Document' && (!mainFrameId || event.frameId === mainFrameId)) {
+      network.status = event.response.status;
+    }
   });
   session.on('Network.loadingFinished', (event) => {
     const record = active.get(event.requestId);
@@ -314,11 +412,71 @@ const extract = String.raw`(() => {
     map.set(key, (map.get(key) || 0) + area);
   }
 
-  function clippedRect(rect) {
-    const left = Math.max(0, rect.left);
-    const top = Math.max(0, rect.top);
-    const right = Math.min(viewportWidth, rect.right);
-    const bottom = Math.min(viewportHeight, rect.bottom);
+  function isZeroClip(style) {
+    return /^rect\(\s*0(?:px)?\s*,\s*0(?:px)?\s*,\s*0(?:px)?\s*,\s*0(?:px)?\s*\)$/i.test(style.clip || '')
+      || /^inset\(\s*(?:50%|100%)\s*\)$/i.test((style.clipPath || '').trim());
+  }
+
+  function establishesFixedContainingBlock(style) {
+    return (style.transform && style.transform !== 'none')
+      || (style.filter && style.filter !== 'none')
+      || (style.perspective && style.perspective !== 'none')
+      || /paint|layout|strict|content/.test(style.contain || '')
+      || /transform|filter|perspective/.test(style.willChange || '');
+  }
+
+  function clippedRect(element) {
+    const rect = element.getBoundingClientRect();
+    let left = Math.max(0, rect.left);
+    let top = Math.max(0, rect.top);
+    let right = Math.min(viewportWidth, rect.right);
+    let bottom = Math.min(viewportHeight, rect.bottom);
+    const ownStyle = styleOf(element);
+    if (isZeroClip(ownStyle)) {
+      return { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0, elementWidth: rect.width, elementHeight: rect.height, area: 0 };
+    }
+    let positioned = ownStyle.position;
+    let node = element.parentElement;
+    while (node && node.nodeType === 1 && node !== document.documentElement && right > left && bottom > top) {
+      const ancStyle = styleOf(node);
+      const fixedCB = establishesFixedContainingBlock(ancStyle);
+      if (positioned === 'fixed') {
+        if (!fixedCB) {
+          node = node.parentElement;
+          continue;
+        }
+        positioned = ancStyle.position;
+      } else if (positioned === 'absolute') {
+        if (ancStyle.position === 'static' && !fixedCB) {
+          node = node.parentElement;
+          continue;
+        }
+        positioned = ancStyle.position;
+      } else {
+        positioned = ancStyle.position;
+      }
+      if (isZeroClip(ancStyle)) {
+        left = 0;
+        top = 0;
+        right = 0;
+        bottom = 0;
+        break;
+      }
+      const clipsX = /^(hidden|clip|scroll|auto)$/.test(ancStyle.overflowX);
+      const clipsY = /^(hidden|clip|scroll|auto)$/.test(ancStyle.overflowY);
+      if (clipsX || clipsY) {
+        const ancRect = node.getBoundingClientRect();
+        if (clipsX) {
+          left = Math.max(left, ancRect.left);
+          right = Math.min(right, ancRect.right);
+        }
+        if (clipsY) {
+          top = Math.max(top, ancRect.top);
+          bottom = Math.min(bottom, ancRect.bottom);
+        }
+      }
+      node = node.parentElement;
+    }
     const width = Math.max(0, right - left);
     const height = Math.max(0, bottom - top);
     return { left, top, right, bottom, width, height, elementWidth: rect.width, elementHeight: rect.height, area: width * height };
@@ -481,7 +639,7 @@ const extract = String.raw`(() => {
 
   for (const element of roots.slice(0, scanLimit)) {
     const style = styleOf(element);
-    const rect = clippedRect(element.getBoundingClientRect());
+    const rect = clippedRect(element);
     if (rect.area <= 0.5) continue;
     if (style.visibility === 'hidden' || style.visibility === 'collapse') continue;
     if (hasTransparentAncestor(element)) continue;
@@ -576,7 +734,12 @@ const extract = String.raw`(() => {
   const distinctColors = new Set([...backgroundColors.keys(), ...inkColors.keys()]);
   const dominantKey = backgroundEntries[0]?.[0] || '255,255,255';
   const dominantParts = dominantKey.split(',').map(Number);
-  const dominantColor = { r: dominantParts[0] || 255, g: dominantParts[1] || 255, b: dominantParts[2] || 255, a: 1 };
+  const dominantColor = {
+    r: Number.isFinite(dominantParts[0]) ? dominantParts[0] : 255,
+    g: Number.isFinite(dominantParts[1]) ? dominantParts[1] : 255,
+    b: Number.isFinite(dominantParts[2]) ? dominantParts[2] : 255,
+    a: 1,
+  };
 
   const geometryLeaf = leaf.slice(0, 1000);
   const occupiedArea = unionArea(geometryLeaf.map((item) => item.rect));
@@ -658,20 +821,30 @@ const extract = String.raw`(() => {
   const cursorList = [...cursorValues].filter(Boolean).slice(0, 20);
   const customImageCursors = cursorList.filter((value) => value.includes('url('));
 
-  function effectiveBackground(element) {
-    const layers = [];
+  function effectiveContrastColors(element, foregroundColor) {
+    const chain = [];
     let node = element;
     while (node && node.nodeType === 1) {
-      const color = parseColor(styleOf(node).backgroundColor);
-      if (color && color.a > 0) {
-        layers.push(color);
-        if (color.a >= 0.999) break;
-      }
+      chain.push(node);
       node = node.parentElement;
     }
-    let composite = { r: 255, g: 255, b: 255, a: 1 };
-    for (let index = layers.length - 1; index >= 0; index -= 1) composite = alphaBlend(layers[index], composite);
-    return composite;
+    let bg = { r: 0, g: 0, b: 0, a: 0 };
+    let fg = foregroundColor;
+    for (const current of chain) {
+      const style = styleOf(current);
+      const layerBg = parseColor(style.backgroundColor) || { r: 0, g: 0, b: 0, a: 0 };
+      const parsedOpacity = Number.parseFloat(style.opacity);
+      const opacity = Number.isFinite(parsedOpacity) ? clamp(parsedOpacity, 0, 1) : 1;
+      const innerBg = layerBg.a > 0 ? alphaBlend(bg, layerBg) : bg;
+      const innerFg = layerBg.a > 0 ? alphaBlend(fg, layerBg) : fg;
+      bg = opacity < 1 ? { ...innerBg, a: innerBg.a * opacity } : innerBg;
+      fg = opacity < 1 ? { ...innerFg, a: innerFg.a * opacity } : innerFg;
+    }
+    const canvas = { r: 255, g: 255, b: 255, a: 1 };
+    return {
+      background: alphaBlend(bg, canvas),
+      foreground: alphaBlend(fg, canvas),
+    };
   }
 
   let contrastChecked = 0;
@@ -684,8 +857,7 @@ const extract = String.raw`(() => {
       contrastUnparsed += 1;
       continue;
     }
-    const background = effectiveBackground(item.element);
-    const foreground = foregroundColor.a < 1 ? alphaBlend(foregroundColor, background) : foregroundColor;
+    const { background, foreground } = effectiveContrastColors(item.element, foregroundColor);
     const ratio = contrastRatio(foreground, background);
     if (!Number.isFinite(ratio)) continue;
     contrastChecked += 1;
@@ -697,11 +869,39 @@ const extract = String.raw`(() => {
     if (ratio + 0.05 < required) contrastFailures += 1;
   }
 
+  function isAccessibilityExposed(element) {
+    let node = element;
+    while (node && node.nodeType === 1) {
+      if (node.hasAttribute('hidden') || node.getAttribute('aria-hidden') === 'true' || node.hasAttribute('inert')) return false;
+      const st = styleOf(node);
+      if (st.display === 'none') return false;
+      node = node.parentElement;
+    }
+    const ownStyle = styleOf(element);
+    if (ownStyle.visibility === 'hidden' || ownStyle.visibility === 'collapse') return false;
+    return true;
+  }
+
   const landmarkRoles = { MAIN: 'main', NAV: 'navigation', HEADER: 'banner', FOOTER: 'contentinfo', ASIDE: 'complementary' };
+  const validLandmarkRoles = new Set(['main', 'navigation', 'banner', 'contentinfo', 'complementary']);
+  const sectioningSelector = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
   const landmarks = {};
-  for (const element of document.querySelectorAll('main,nav,header,footer,aside,[role=main],[role=navigation],[role=banner],[role=contentinfo],[role=complementary]')) {
-    const role = (element.getAttribute('role') || landmarkRoles[element.tagName] || element.tagName).toLowerCase();
-    landmarks[role] = (landmarks[role] || 0) + 1;
+  for (const element of document.querySelectorAll('main,nav,header,footer,aside,[role]')) {
+    if (!isAccessibilityExposed(element)) continue;
+    const roleAttr = (element.getAttribute('role') || '').trim().toLowerCase();
+    let role = null;
+    if (roleAttr) {
+      const firstToken = roleAttr.split(/\s+/)[0];
+      if (validLandmarkRoles.has(firstToken)) role = firstToken;
+    } else {
+      const implicit = landmarkRoles[element.tagName] || null;
+      if (implicit === 'banner' || implicit === 'contentinfo') {
+        if (!element.parentElement?.closest(sectioningSelector)) role = implicit;
+      } else {
+        role = implicit;
+      }
+    }
+    if (role) landmarks[role] = (landmarks[role] || 0) + 1;
   }
 
   const headings = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].filter((element) => {
@@ -819,13 +1019,45 @@ const extract = String.raw`(() => {
   };
 })()`;
 
+const initObserver = String.raw`(() => {
+  const state = { lcp: null, cls: 0 };
+  let hasSession = false;
+  let sessionValue = 0;
+  let sessionFirst = 0;
+  let sessionLast = 0;
+  window.__pixelcraftInventory = state;
+  try {
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) state.lcp = entry.startTime;
+    }).observe({ type: 'largest-contentful-paint', buffered: true });
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.hadRecentInput) continue;
+        const start = entry.startTime;
+        if (hasSession && start - sessionLast < 1000 && start - sessionFirst < 5000) {
+          sessionValue += entry.value;
+          sessionLast = start;
+        } else {
+          hasSession = true;
+          sessionValue = entry.value;
+          sessionFirst = start;
+          sessionLast = start;
+        }
+        if (sessionValue > state.cls) state.cls = sessionValue;
+      }
+    }).observe({ type: 'layout-shift', buffered: true });
+  } catch {}
+})();`;
+
 async function measurePage(page, target, viewport, options) {
   await page.setViewportSize(viewport);
-  await page.addInitScript(`window.__pixelcraftInventory={lcp:null,cls:0};try{new PerformanceObserver((list)=>{for(const entry of list.getEntries())window.__pixelcraftInventory.lcp=entry.startTime}).observe({type:'largest-contentful-paint',buffered:true});new PerformanceObserver((list)=>{for(const entry of list.getEntries())if(!entry.hadRecentInput)window.__pixelcraftInventory.cls+=entry.value}).observe({type:'layout-shift',buffered:true})}catch(error){}`);
+  await page.addInitScript(initObserver);
   const session = await page.context().newCDPSession(page);
-  const tracker = observeNetwork(session);
   await session.send('Page.enable');
   await session.send('Network.enable');
+  const { frameTree } = await session.send('Page.getFrameTree');
+  const mainFrameId = frameTree?.frame?.id || null;
+  const tracker = observeNetwork(session, mainFrameId);
   const response = await page.goto(target, { waitUntil: 'load', timeout: options.timeout });
   if (options.waitFor) await page.waitForSelector(options.waitFor, { timeout: options.timeout });
   if (options.waitMs > 0) await page.waitForTimeout(options.waitMs);
@@ -857,8 +1089,8 @@ async function main() {
     process.exitCode = 2;
     return;
   }
-  const target = resolveTarget(input);
-  const browser = await chromium.launch({ headless: true, ...(options.executablePath ? { executablePath: options.executablePath } : {}) });
+  const target = await createStaticTarget(input, options);
+  let browser;
   const report = {
     schemaVersion: 1,
     target: input,
@@ -886,16 +1118,18 @@ async function main() {
     viewports: [],
   };
   try {
+    browser = await chromium.launch({ headless: true, ...(options.executablePath ? { executablePath: options.executablePath } : {}) });
     for (const viewport of breakpoints) {
       const page = await browser.newPage({ viewport });
       try {
-        report.viewports.push(await measurePage(page, target, viewport, options));
+        report.viewports.push(await measurePage(page, target.url, viewport, options));
       } finally {
         await page.close();
       }
     }
   } finally {
-    await browser.close();
+    if (browser) await browser.close();
+    await target.close();
   }
   const json = options.compact ? JSON.stringify(report) : JSON.stringify(report, null, 2);
   if (options.out) {
