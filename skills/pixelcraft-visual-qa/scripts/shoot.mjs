@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import http from 'node:http';
 import { createRequire } from 'node:module';
 
 function help() {
@@ -60,11 +60,54 @@ function parseBreakpoints(value) {
   });
 }
 
-function targetUrl(target) {
-  if (/^https?:\/\//i.test(target)) return target;
-  const file = path.resolve(target);
-  if (!fs.existsSync(file)) throw new Error(`target is neither an http(s) URL nor an existing file: ${target}`);
-  return pathToFileURL(file).href;
+const mimeTypes = new Map(Object.entries({
+  '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.avif': 'image/avif', '.ico': 'image/x-icon', '.woff': 'font/woff', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.wasm': 'application/wasm',
+}));
+
+async function createStaticTarget(target) {
+  if (/^https?:\/\//i.test(target)) return { url: target, async close() {} };
+  const resolved = path.resolve(target);
+  if (!fs.existsSync(resolved)) throw new Error(`target is neither an http(s) URL nor an existing file/directory: ${target}`);
+  const stat = fs.statSync(resolved);
+  const root = stat.isDirectory() ? resolved : path.dirname(resolved);
+  const initialPath = stat.isDirectory() ? '/' : `/${encodeURIComponent(path.basename(resolved))}`;
+  const server = http.createServer((request, response) => {
+    let pathname;
+    try {
+      pathname = decodeURIComponent(new URL(request.url, 'http://127.0.0.1').pathname);
+    } catch {
+      response.writeHead(400).end('bad request');
+      return;
+    }
+    if (pathname.endsWith('/')) pathname += 'index.html';
+    const file = path.resolve(root, `.${pathname}`);
+    if (file !== root && !file.startsWith(`${root}${path.sep}`)) {
+      response.writeHead(403).end('forbidden');
+      return;
+    }
+    let fileStat;
+    try {
+      fileStat = fs.statSync(file);
+    } catch {
+      response.writeHead(404).end('not found');
+      return;
+    }
+    if (!fileStat.isFile()) {
+      response.writeHead(404).end('not found');
+      return;
+    }
+    response.writeHead(200, { 'content-type': mimeTypes.get(path.extname(file).toLowerCase()) || 'application/octet-stream', 'cache-control': 'no-store' });
+    fs.createReadStream(file).pipe(response);
+  });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
+  const { port } = server.address();
+  return {
+    url: `http://127.0.0.1:${port}${initialPath}`,
+    close: () => new Promise((resolve) => server.close(resolve)),
+  };
 }
 
 const auditSource = `() => {
@@ -157,13 +200,14 @@ async function main() {
   const out = path.resolve(options.out);
   fs.mkdirSync(out, { recursive: true });
   const browser = await chromium.launch({ headless: true });
+  const staticTarget = await createStaticTarget(target);
   const report = { target, generatedAt: new Date().toISOString(), captures: [], heuristic: true };
   try {
     for (const viewport of breakpoints) {
       for (const colorScheme of options.lightOnly ? ['light'] : ['light', 'dark']) {
         for (const reducedMotion of options.reducedMotion ? ['no-preference', 'reduce'] : ['no-preference']) {
           const page = await browser.newPage({ viewport, colorScheme, reducedMotion });
-          await page.goto(targetUrl(target), { waitUntil: 'load', timeout: options.timeout });
+          await page.goto(staticTarget.url, { waitUntil: 'load', timeout: options.timeout });
           await Promise.race([
             page.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve())).catch(() => {}),
             new Promise((resolve) => setTimeout(resolve, 1000)),
@@ -181,6 +225,7 @@ async function main() {
     }
   } finally {
     await browser.close();
+    await staticTarget.close();
   }
   fs.writeFileSync(path.join(out, 'report.json'), `${JSON.stringify(report, null, 2)}\n`);
   console.log(`report: ${path.join(out, 'report.json')}`);
