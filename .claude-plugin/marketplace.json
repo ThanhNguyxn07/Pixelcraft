@@ -21,7 +21,14 @@
         "./skills/pixelcraft-tokens",
         "./skills/pixelcraft-ux",
         "./skills/pixelcraft-accessibility",
-        "./skills/pixelcraft-review"
+        "./skills/pixelcraft-review",
+        "./skills/pixelcraft-web",
+        "./skills/pixelcraft-mobile",
+        "./skills/pixelcraft-python-ui",
+        "./skills/pixelcraft-desktop",
+        "./skills/pixelcraft-tui",
+        "./skills/pixelcraft-email",
+        "./skills/pixelcraft-game-ui"
       ]
     }
   ]

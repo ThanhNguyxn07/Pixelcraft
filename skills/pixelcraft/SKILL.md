@@ -54,6 +54,22 @@ Hybrid surfaces pick one primary mode per screen or region. Do not let a persuas
 
 Do not loop forever. One repair round is normal for clear deterministic failures; report remaining uncertainty rather than claiming completion.
 
+## Platform routing
+
+After detecting the stack, use the matching platform skill by name and read only the relevant framework reference inside it:
+
+| Platform skill | Framework references |
+|---|---|
+| `pixelcraft-web` | `html-css`, `react-next`, `vue-nuxt`, `svelte`, `solid`, `angular`, `astro`, `qwik`, `htmx-alpine`, `lit-web-components`, `tailwind`, `server-rendered` |
+| `pixelcraft-mobile` | `swiftui`, `uikit`, `jetpack-compose`, `flutter`, `react-native-expo`, `kotlin-multiplatform`, `ionic-capacitor`, `dotnet-maui` |
+| `pixelcraft-python-ui` | `streamlit`, `gradio`, `reflex`, `nicegui`, `dash`, `panel`, `shiny`, `flet`, `kivy`, `jupyter-widgets` |
+| `pixelcraft-desktop` | `tauri`, `electron`, `qt-pyside-qml`, `winui-wpf`, `appkit`, `gtk`, `avalonia`, `rust-gui` |
+| `pixelcraft-tui` | `textual`, `rich`, `ink`, `bubbletea-lipgloss`, `ratatui` |
+| `pixelcraft-email` | `html-tables`, `mjml`, `react-email`, `client-quirks` |
+| `pixelcraft-game-ui` | `unity-ui-toolkit`, `godot`, `unreal-umg`, `hud-principles` |
+
+References are named here for routing only. Do not construct relative paths across skill folders; read the file inside the installed platform skill.
+
 ## Mandatory floor summary
 
 The full floor is normative. At minimum:

@@ -1,48 +1,102 @@
 # Stack and surface detection
 
-Detect from concrete files; do not infer from repository age, buzzwords, or a single import. Multiple matches mean multiple surfaces. Prefer the file nearest the UI being changed.
+Detect from concrete files; do not infer from repository age, buzzwords, or one copied import. Multiple matches mean multiple surfaces. Prefer the file nearest the UI being changed. The reference names below live inside the named platform skill; never construct cross-skill relative paths.
 
-| Signal | Likely platform/surface | Route by skill name |
-|---|---|---|
-| `package.json` dependencies: `react`, `next`, `@vitejs/plugin-react` | React/Next web | `pixelcraft-web` |
-| `package.json`: `vue`, `nuxt` | Vue/Nuxt | `pixelcraft-web` |
-| `package.json`: `svelte`, `@sveltejs/kit` | Svelte/SvelteKit | `pixelcraft-web` |
-| `package.json`: `@angular/core` | Angular | `pixelcraft-web` |
-| `package.json`: `astro`, `qwik`, `solid-js`, `lit`, `htmx.org`, `alpinejs` | respective web stack | `pixelcraft-web` |
-| `Gemfile` + Rails views, `composer.json` + Blade/Twig, Django templates, Phoenix `.heex`, `.razor`, templ files | server-rendered web | `pixelcraft-web` |
-| `pubspec.yaml` | Flutter/Dart | `pixelcraft-mobile` unless desktop target dominates |
-| `Package.swift`, `*.xcodeproj`, `*.xcworkspace`, SwiftUI imports | iOS/macOS SwiftUI/UIKit/AppKit | `pixelcraft-mobile` or `pixelcraft-desktop` by target |
-| `build.gradle`, `build.gradle.kts` with Compose dependencies | Android/Jetpack Compose | `pixelcraft-mobile` |
-| `android/` + `ios/` + React Native config or `app.json` Expo | React Native/Expo | `pixelcraft-mobile` |
-| `.csproj` with MAUI/WinUI/WPF/Avalonia references | .NET UI | `pixelcraft-mobile` or `pixelcraft-desktop` |
-| `requirements.txt`/`pyproject.toml`: `streamlit` | Streamlit | `pixelcraft-python-ui` |
-| same with `gradio` | Gradio | `pixelcraft-python-ui` |
-| same with `reflex`, `nicegui`, `dash`, `panel`, `shiny`, `flet`, `kivy` | matching Python UI | `pixelcraft-python-ui` |
-| `Cargo.toml`: `ratatui`, `crossterm` | Rust TUI | `pixelcraft-tui` |
-| `Cargo.toml`: `egui`, `slint`, `dioxus` | Rust GUI/desktop | `pixelcraft-desktop` |
-| `Cargo.toml` + `tauri` or `src-tauri/tauri.conf.json` | Tauri desktop | `pixelcraft-desktop` |
-| `go.mod`: `bubbletea`, `lipgloss`, `tcell`, `tview` | Go TUI | `pixelcraft-tui` |
-| Python `textual`/`rich` dependencies | Python TUI | `pixelcraft-tui` |
-| Node `ink` dependency | terminal React/Ink | `pixelcraft-tui` |
-| `.mjml`, `mjml` dependency, React Email package, table-heavy email templates | email | `pixelcraft-email` |
-| `ProjectSettings/`, `*.unity`, Unity UI Toolkit/USS/UXML | Unity UI | `pixelcraft-game-ui` |
-| `project.godot`, `.tscn`, `.gd` | Godot UI | `pixelcraft-game-ui` |
-| `.uproject`, Unreal UMG assets | Unreal UI | `pixelcraft-game-ui` |
-| Qt `.pro`, `CMakeLists.txt` Qt modules, PySide/PyQt imports, `.qml` | Qt/QML desktop | `pixelcraft-desktop` |
-| Electron main/preload config | Electron desktop | `pixelcraft-desktop` |
+## Web signals
+
+| Signal | Platform skill → framework reference |
+|---|---|
+| plain `.html`/`.css` or no framework dependency | `pixelcraft-web` → `html-css` |
+| `react`, `next`, `@vitejs/plugin-react` | `pixelcraft-web` → `react-next` |
+| `vue`, `nuxt`, `vite.config` Vue plugin | `pixelcraft-web` → `vue-nuxt` |
+| `svelte`, `@sveltejs/kit`, `.svelte` | `pixelcraft-web` → `svelte` |
+| `solid-js`, SolidStart config | `pixelcraft-web` → `solid` |
+| `@angular/core`, `angular.json` | `pixelcraft-web` → `angular` |
+| `astro`, `.astro` | `pixelcraft-web` → `astro` |
+| `@builder.io/qwik`, Qwik City config | `pixelcraft-web` → `qwik` |
+| `htmx.org`, `alpinejs`, `hx-*` fragments/`x-data` | `pixelcraft-web` → `htmx-alpine` |
+| `lit`, custom elements/`.ce`/`shadowRoot` UI | `pixelcraft-web` → `lit-web-components` |
+| `tailwindcss`, `@import "tailwindcss"`, Tailwind classes/config | `pixelcraft-web` → `tailwind` |
+| Rails views/Hotwire (`Gemfile`, Turbo/Stimulus) | `pixelcraft-web` → `server-rendered` |
+| Laravel Blade/Livewire (`composer.json`, `.blade.php`) | `pixelcraft-web` → `server-rendered` |
+| Django/Jinja/templates (`manage.py`, template dirs) | `pixelcraft-web` → `server-rendered` |
+| Phoenix/LiveView (`mix.exs`, `.heex`) | `pixelcraft-web` → `server-rendered` |
+| Blazor (`.razor`, `.csproj`) | `pixelcraft-web` → `server-rendered` |
+| Go templ/html template (`.templ`, `.tmpl`, handler templates) | `pixelcraft-web` → `server-rendered` |
+
+## Mobile signals
+
+| Signal | Platform skill → framework reference |
+|---|---|
+| SwiftUI imports/types, `Package.swift`, Xcode project | `pixelcraft-mobile` → `swiftui` |
+| UIKit imports/view controllers/storyboards | `pixelcraft-mobile` → `uikit` |
+| `build.gradle(.kts)` Compose dependencies, `@Composable` | `pixelcraft-mobile` → `jetpack-compose` |
+| `pubspec.yaml`, Flutter imports | `pixelcraft-mobile` → `flutter` |
+| React Native/Expo config, `app.json`, RN dependencies | `pixelcraft-mobile` → `react-native-expo` |
+| Kotlin Multiplatform/Compose Multiplatform source sets | `pixelcraft-mobile` → `kotlin-multiplatform` |
+| Ionic/Capacitor config/dependencies | `pixelcraft-mobile` → `ionic-capacitor` |
+| MAUI `.csproj`/XAML/AppShell references | `pixelcraft-mobile` → `dotnet-maui` |
+
+## Python UI signals
+
+| Signal | Platform skill → framework reference |
+|---|---|
+| `streamlit` import/dependency or `.streamlit/config.toml` | `pixelcraft-python-ui` → `streamlit` |
+| `gradio`/`gr.Blocks`/`gr.Interface` | `pixelcraft-python-ui` → `gradio` |
+| `reflex`/`rx.App` | `pixelcraft-python-ui` → `reflex` |
+| `nicegui`/`from nicegui import ui` | `pixelcraft-python-ui` → `nicegui` |
+| `dash`/Dash layout callbacks | `pixelcraft-python-ui` → `dash` |
+| `panel`/`import panel as pn` | `pixelcraft-python-ui` → `panel` |
+| Shiny for Python (`shiny` UI/server/reactive) | `pixelcraft-python-ui` → `shiny` |
+| `flet` controls/page | `pixelcraft-python-ui` → `flet` |
+| `kivy`/KV language/App classes | `pixelcraft-python-ui` → `kivy` |
+| `ipywidgets`/notebook widget traits | `pixelcraft-python-ui` → `jupyter-widgets` |
+
+## Desktop signals
+
+| Signal | Platform skill → framework reference |
+|---|---|
+| `src-tauri/tauri.conf.json` or Tauri dependency | `pixelcraft-desktop` → `tauri` |
+| Electron main/preload/package configuration | `pixelcraft-desktop` → `electron` |
+| Qt `.pro`/CMake Qt modules/PySide/PyQt/`.qml` | `pixelcraft-desktop` → `qt-pyside-qml` |
+| WinUI/WPF `.csproj`/XAML/WindowsAppSDK references | `pixelcraft-desktop` → `winui-wpf` |
+| AppKit/Cocoa imports/macOS target | `pixelcraft-desktop` → `appkit` |
+| GTK/libadwaita build definitions/imports/blueprints | `pixelcraft-desktop` → `gtk` |
+| Avalonia `.csproj`/XAML references | `pixelcraft-desktop` → `avalonia` |
+| `egui`, `slint`, `dioxus`, `iced` in Rust dependencies | `pixelcraft-desktop` → `rust-gui` |
+
+## TUI signals
+
+| Signal | Platform skill → framework reference |
+|---|---|
+| `textual` dependency/import | `pixelcraft-tui` → `textual` |
+| `rich` dependency/import without full Textual app | `pixelcraft-tui` → `rich` |
+| `ink` dependency/import | `pixelcraft-tui` → `ink` |
+| Go `bubbletea`/`lipgloss` imports | `pixelcraft-tui` → `bubbletea-lipgloss` |
+| Rust `ratatui`/`crossterm` dependencies | `pixelcraft-tui` → `ratatui` |
+
+## Email signals
+
+| Signal | Platform skill → framework reference |
+|---|---|
+| table-heavy HTML email/inline CSS templates | `pixelcraft-email` → `html-tables` |
+| `.mjml` files or `mjml` dependency | `pixelcraft-email` → `mjml` |
+| `@react-email`/`react-email` dependencies/templates | `pixelcraft-email` → `react-email` |
+| Outlook/Gmail/Apple Mail/client/dark/plaintext concerns | `pixelcraft-email` → `client-quirks` |
+
+## Game UI signals
+
+| Signal | Platform skill → framework reference |
+|---|---|
+| `ProjectSettings/`, `.unity`, UXML/USS/UI Builder assets | `pixelcraft-game-ui` → `unity-ui-toolkit` |
+| `project.godot`, `.tscn`, `.gd`, Control/Theme resources | `pixelcraft-game-ui` → `godot` |
+| `.uproject`, UMG/Slate/CommonUI assets or references | `pixelcraft-game-ui` → `unreal-umg` |
+| HUD/controller/safe-area/certification/accessibility question | `pixelcraft-game-ui` → `hud-principles` |
 
 ## Existing system inventory
 
-Before designing, inspect for:
-
-- design token files (`tokens.json`, `.tokens`, `theme.*`, Tailwind config/CSS variables, Swift assets, Compose theme, Flutter theme);
-- component libraries, lint rules, screenshots/stories, localization catalogs, accessibility tests;
-- brand assets and their license/provenance;
-- density and mode conventions already used by the product;
-- routing/navigation structure rather than only leaf components.
-
-Record whether the system is authoritative, partial, inconsistent, or absent. Existing tokens outrank Pixelcraft-generated taste.
+Before designing, inspect design token files (`tokens.json`, `.tokens`, theme objects, Tailwind CSS/theme, asset catalogs, resource dictionaries, Qt/QSS, Godot themes, UMG styles), component libraries, lint/test/screenshot fixtures, localization catalogs, brand assets/licenses, density conventions, and navigation structure. Record whether the system is authoritative, partial, inconsistent, or absent. Existing tokens outrank Pixelcraft-generated taste.
 
 ## Input/render surface
 
-Also classify input modality (touch, mouse/keyboard, controller, remote, terminal keyboard, screen reader, watch/voice), viewport/window constraints, network context, and rendering surface (DOM/canvas/native/skia/terminal cells/email client/game engine). These facts determine which floor checks and platform idioms apply.
+Classify input modality (touch, mouse/keyboard, controller, remote, terminal keyboard, screen reader, voice), viewport/window constraints, network context, platform/version, and rendering surface (DOM/canvas/native/skia/terminal cells/email client/game engine). These facts determine which floor checks and platform idioms apply.
