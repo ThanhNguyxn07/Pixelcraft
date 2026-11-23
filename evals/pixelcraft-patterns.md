@@ -10,6 +10,7 @@
 
 - Selects or applies `pixelcraft-patterns` behavior when the prompt matches its trigger.
 - selects named product pattern intentionally and completes state matrix.
+- records the workflow/navigation decision matrix evidence and rejected alternative rather than inheriting a template.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 
@@ -37,6 +38,7 @@
 
 - Selects or applies `pixelcraft-patterns` behavior when the prompt matches its trigger.
 - recognizes wizard/progressive disclosure/recovery patterns and their failure modes.
+- covers empty-result diagnosis beyond “no results” and dense-table selection persistence/virtualization semantics where relevant.
 - Documents platform constraints, missing states, and verification tradeoffs explicitly.
 - Preserves truthful content, necessary states, accessibility, security/privacy constraints, and honest evidence labels.
 

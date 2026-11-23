@@ -12,6 +12,7 @@ Patterns are starting hypotheses, not layouts to copy. Choose one from the user'
 
 ## References
 
+- Read [references/pattern-selection.md](references/pattern-selection.md) before choosing workflow, navigation, search/filter, dense-table, or hybrid pattern structure.
 - Read [references/dashboard-admin.md](references/dashboard-admin.md) for operational overview, monitoring, admin, metrics, and control surfaces.
 - Read [references/commerce.md](references/commerce.md) for PLP, PDP, cart, checkout, merchandising, payment, and post-purchase flows.
 - Read [references/creative-tools.md](references/creative-tools.md) for editors, canvas, inspector, timeline, tool switching, autosave, and creative work surfaces.
@@ -25,7 +26,7 @@ Patterns are starting hypotheses, not layouts to copy. Choose one from the user'
 ## Selection protocol
 
 1. Identify the user's primary job and frequency. High-frequency operation favors density, predictability, keyboard flow, and recovery; low-frequency persuasion favors narrative, orientation, and memory.
-2. Choose a primary pattern per screen. Hybrid screens need explicit regions, not blended metaphors.
+2. Choose a primary pattern per screen using the decision matrices in `references/pattern-selection.md`; record user/task evidence and the rejected alternative. Hybrid screens need explicit regions, not blended metaphors.
 3. Inventory real content/data states before layout: zero/one/many/long/error/offline/permission/slow/conflict.
 4. Map the pattern into platform idioms using the appropriate surface skill by name. Do not copy DOM assumptions into mobile, TUI, email, game, document, or spatial surfaces.
 5. Apply the direction card after the workflow is sound. Distinctiveness must not obscure the primary task.
