@@ -1,0 +1,25 @@
+{
+  "name": "pixelcraft",
+  "owner": {
+    "name": "Pixelcraft contributors"
+  },
+  "metadata": {
+    "description": "Portable Agent Skills for distinctive UI and rigorous UX across frontend stacks",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "pixelcraft",
+      "description": "Core Pixelcraft loop, visual direction, craft, and design-token skills",
+      "version": "0.1.0",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/pixelcraft",
+        "./skills/pixelcraft-direction",
+        "./skills/pixelcraft-craft",
+        "./skills/pixelcraft-tokens"
+      ]
+    }
+  ]
+}
