@@ -12,9 +12,22 @@ Choose tasks from the design brief/plan rather than generic inspection:
 | recovery | invalid input, offline retry, permission denied, conflict, cancellation | preserved input/context, truthful error, recovery path completion |
 | orientation | deep link, back/forward/escape, refresh/relaunch, interruption | understandable restored state |
 | adaptation | small viewport/window, text scaling, RTL/locale, input modality change | task remains possible and legible |
-| destructive/high-cost | delete, reset, payment, irreversible publish | consequence communication, confirmation/undo/cancel behavior |
+| destructive/high-cost | delete, reset, payment, irreversible publish, sending messages to real users | consequence communication, confirmation/undo/cancel behavior |
 
 Define the expected end state before execution. “No console errors” or “page loads” is not a task outcome.
+
+## Destructive/high-cost execution boundary
+
+Never execute destructive or high-cost tasks against live/production data, real customer accounts, real payment instruments, production publish targets, or real message recipients. These tasks may run only inside a sandbox, disposable fixture, mocked backend, local/test environment, or provider-approved test mode using test credentials.
+
+Before execution, verify and record which boundary applies. If no safe boundary exists:
+
+1. exercise the flow only up to the final confirmation/commit step;
+2. verify consequence copy, friction, focus/keyboard behavior, cancellation, input preservation, and recovery affordances that do not commit the action;
+3. mark the irreversible submission/payment/deletion/publish/send step `not run` in the execution record;
+4. ask the user for a sandbox/test fixture/mock/test-mode credential or explicit direction before attempting completion.
+
+A user interface being locally hosted does not make downstream effects safe: payment APIs, email delivery, production databases, publish endpoints, and shared remote state remain live side effects unless explicitly isolated.
 
 ## Execution record
 
