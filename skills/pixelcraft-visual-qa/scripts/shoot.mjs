@@ -345,7 +345,9 @@ async function main() {
         for (const reducedMotion of options.reducedMotion ? ['no-preference', 'reduce'] : ['no-preference']) {
           const page = await browser.newPage({ viewport, colorScheme, reducedMotion });
           const pendingRequests = trackDataRequests(page);
-          await page.goto(staticTarget.url, { waitUntil: 'load', timeout: options.timeout });
+          const response = await page.goto(staticTarget.url, { waitUntil: 'load', timeout: options.timeout });
+          if (!response && staticTarget.local) throw new Error(`local capture target produced no response: ${staticTarget.url}`);
+          if (response && response.status() >= 400) throw new Error(`capture target returned HTTP ${response.status()}: ${staticTarget.url}`);
           await settlePage(page, options, pendingRequests);
           const name = `${viewport.width}x${viewport.height}-${colorScheme}-${reducedMotion === 'reduce' ? 'reduced-motion' : 'motion'}.png`;
           const file = path.join(out, name);
