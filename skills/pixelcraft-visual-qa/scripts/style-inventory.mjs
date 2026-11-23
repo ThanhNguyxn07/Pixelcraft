@@ -869,11 +869,39 @@ const extract = String.raw`(() => {
     if (ratio + 0.05 < required) contrastFailures += 1;
   }
 
+  function isAccessibilityExposed(element) {
+    let node = element;
+    while (node && node.nodeType === 1) {
+      if (node.hasAttribute('hidden') || node.getAttribute('aria-hidden') === 'true' || node.hasAttribute('inert')) return false;
+      const st = styleOf(node);
+      if (st.display === 'none') return false;
+      node = node.parentElement;
+    }
+    const ownStyle = styleOf(element);
+    if (ownStyle.visibility === 'hidden' || ownStyle.visibility === 'collapse') return false;
+    return true;
+  }
+
   const landmarkRoles = { MAIN: 'main', NAV: 'navigation', HEADER: 'banner', FOOTER: 'contentinfo', ASIDE: 'complementary' };
+  const validLandmarkRoles = new Set(['main', 'navigation', 'banner', 'contentinfo', 'complementary']);
+  const sectioningSelector = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
   const landmarks = {};
-  for (const element of document.querySelectorAll('main,nav,header,footer,aside,[role=main],[role=navigation],[role=banner],[role=contentinfo],[role=complementary]')) {
-    const role = (element.getAttribute('role') || landmarkRoles[element.tagName] || element.tagName).toLowerCase();
-    landmarks[role] = (landmarks[role] || 0) + 1;
+  for (const element of document.querySelectorAll('main,nav,header,footer,aside,[role]')) {
+    if (!isAccessibilityExposed(element)) continue;
+    const roleAttr = (element.getAttribute('role') || '').trim().toLowerCase();
+    let role = null;
+    if (roleAttr) {
+      const firstToken = roleAttr.split(/\s+/)[0];
+      if (validLandmarkRoles.has(firstToken)) role = firstToken;
+    } else {
+      const implicit = landmarkRoles[element.tagName] || null;
+      if (implicit === 'banner' || implicit === 'contentinfo') {
+        if (!element.parentElement?.closest(sectioningSelector)) role = implicit;
+      } else {
+        role = implicit;
+      }
+    }
+    if (role) landmarks[role] = (landmarks[role] || 0) + 1;
   }
 
   const headings = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')].filter((element) => {

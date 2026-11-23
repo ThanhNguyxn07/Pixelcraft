@@ -100,7 +100,8 @@ try {
     assert.equal(edge.color.mode, 'dark');
     assert.equal(edge.accessibility.contrastChecked, 3, `expected 3 visible text leaves (clipped descendant excluded), got ${edge.accessibility.contrastChecked}`);
     assert.equal(edge.accessibility.contrastFailures, 1, `expected 1 opacity contrast failure, got ${edge.accessibility.contrastFailures}`);
-    console.log('ok 2 - zero-channel background, opacity contrast, and ancestor clipping work');
+    assert.deepEqual(edge.accessibility.landmarks, { main: 1, contentinfo: 1 }, `unexpected landmark exposure/scope: ${JSON.stringify(edge.accessibility.landmarks)}`);
+    console.log('ok 2 - zero-channel background, opacity contrast, ancestor clipping, and landmarks work');
 
     const clsFile = path.join(tmp, 'cls-windows.html');
     fs.writeFileSync(clsFile, `<!doctype html>
