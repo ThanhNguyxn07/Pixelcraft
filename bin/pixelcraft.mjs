@@ -114,7 +114,7 @@ alongside their skills. Universal .agents/skills remains available through the
 agents target and as a compatibility path in several hosts.
 Global locations: claude=~/.claude/skills; codex/agents/devin=~/.agents/skills;
 cursor=~/.cursor/skills; gemini=~/.gemini/skills; copilot=~/.copilot/skills;
-windsurf=~/.codeium/windsurf; opencode=~/.config/opencode/skills; kiro=~/.kiro.
+windsurf=~/.codeium/windsurf/skills plus memories/global_rules.md; opencode=~/.config/opencode/skills; kiro=~/.kiro.
 
 Host behavior and global paths follow current public documentation where available.
 They change quickly; verify current host documentation before depending on them in automation.`;
@@ -153,11 +153,26 @@ function assertNotSymlink(file, label) {
   if (lstatIfExists(file)?.isSymbolicLink()) throw new Error(`${label} is a symlink: ${file}; refusing to install through it`);
 }
 
-function copySkill(name, destinationRoot, dryRun, { force = false, auto = false } = {}) {
+function assertInstallPathSafe(target, boundary, label) {
+  const base = path.resolve(boundary);
+  const destination = path.resolve(target);
+  const relative = path.relative(base, destination);
+  if (relative.startsWith('..') || path.isAbsolute(relative)) throw new Error(`${label} is outside the install scope: ${target}`);
+  assertNotSymlink(base, label);
+  let current = base;
+  if (relative) {
+    for (const part of relative.split(path.sep).filter(Boolean)) {
+      current = path.join(current, part);
+      assertNotSymlink(current, label);
+    }
+  }
+}
+
+function copySkill(name, destinationRoot, dryRun, { force = false, auto = false, boundary = process.cwd() } = {}) {
   const source = path.join(skillsRoot, name);
   const destination = path.join(destinationRoot, name);
   assertNotSymlink(source, 'source skill directory');
-  assertNotSymlink(destinationRoot, 'target skills directory');
+  assertInstallPathSafe(destinationRoot, boundary, 'target skills path component');
   const destinationStat = lstatIfExists(destination);
   const exists = destinationStat !== null;
   if (auto && exists) {
@@ -172,7 +187,7 @@ function copySkill(name, destinationRoot, dryRun, { force = false, auto = false 
     return;
   }
   fs.mkdirSync(destinationRoot, { recursive: true });
-  assertNotSymlink(destinationRoot, 'target skills directory');
+  assertInstallPathSafe(destinationRoot, boundary, 'target skills path component');
   if (exists && !force) {
     console.log(`skipped existing: ${name} -> ${destination} (use --force to replace)`);
     return;
@@ -219,57 +234,62 @@ function workflowText(skill, task) {
   return `# ${task}\n\n1. Read the self-contained \`${skill}\` skill from the installed Pixelcraft distribution or source checkout.\n2. Follow its workflow, including referenced files when they match the task.\n3. Preserve user requirements, project conventions, accessibility, and evidence labels.\n4. Report rendered/static/not-checked/waived verification honestly.\n`;
 }
 
-function assertAdapterPathSafe(file) {
-  assertNotSymlink(file, 'adapter output');
-  let current = path.dirname(file);
-  while (true) {
-    assertNotSymlink(current, 'adapter path component');
-    const parent = path.dirname(current);
-    if (parent === current) break;
-    current = parent;
-  }
+const managedStart = '<!-- pixelcraft:start -->';
+const managedEnd = '<!-- pixelcraft:end -->';
+
+function managedUpsert(existing, content) {
+  const block = `${managedStart}\n${content.trimEnd()}\n${managedEnd}`;
+  const pattern = new RegExp(`${managedStart}[\\s\\S]*?${managedEnd}`);
+  if (pattern.test(existing)) return existing.replace(pattern, block);
+  return existing ? `${existing.trimEnd()}\n\n${block}\n` : `${block}\n`;
 }
 
-function writeAdapterFile(file, content, dryRun, force) {
-  assertAdapterPathSafe(file);
+function assertAdapterPathSafe(file, boundary) {
+  assertInstallPathSafe(file, boundary, 'adapter path component');
+}
+
+function writeAdapterFile(file, content, dryRun, force, boundary = process.cwd(), managed = false) {
+  assertAdapterPathSafe(file, boundary);
   const exists = lstatIfExists(file) !== null;
   if (dryRun) {
-    console.log(`dry-run: ${exists && !force ? 'skipped existing adapter' : 'adapter'} ${file}${exists && !force ? ' (use --force to replace)' : ''}`);
+    console.log(`dry-run: ${managed ? 'managed adapter' : exists && !force ? 'skipped existing adapter' : 'adapter'} ${file}${!managed && exists && !force ? ' (use --force to replace)' : ''}`);
     return;
   }
-  if (exists && !force) {
+  if (!managed && exists && !force) {
     console.log(`skipped existing adapter: ${file} (use --force to replace)`);
     return;
   }
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  assertAdapterPathSafe(file);
-  fs.writeFileSync(file, content);
+  assertAdapterPathSafe(file, boundary);
+  const output = managed ? managedUpsert(exists ? fs.readFileSync(file, 'utf8') : '', content) : content;
+  fs.writeFileSync(file, output);
   console.log(`installed adapter: ${file}`);
 }
 
 function writeAgentAdapters(target, dryRun, force, selected) {
   const base = target.type === 'skills' ? path.dirname(target.root) : target.root;
   const displayRoot = target.global ? target.root.replace(os.homedir(), '~') : path.relative(process.cwd(), target.root);
+  const boundary = target.global ? os.homedir() : process.cwd();
   const file = (relative) => path.join(base, ...relative.split('/'));
-  const write = (relative, content) => writeAdapterFile(file(relative), content, dryRun, force);
+  const write = (relative, content, managed = false) => writeAdapterFile(file(relative), content, dryRun, force, boundary, managed);
   if (target.agent === 'claude') {
     for (const [command, skill, task] of adapterActions.slice(0, 4)) write(`commands/${command}.md`, commandText(skill, task));
   } else if (target.agent === 'cursor') {
-    write('rules/pixelcraft.mdc', `---\ndescription: Route UI design and review through Pixelcraft\nalwaysApply: true\n---\n\n# Pixelcraft router\n\n${adapterIntro(displayRoot)}`);
+    write('rules/pixelcraft.mdc', `---\ndescription: Route UI design and review through Pixelcraft\nalwaysApply: true\n---\n\n# Pixelcraft router\n\n${adapterIntro(displayRoot)}`, true);
   } else if (target.agent === 'copilot') {
-    write('copilot-instructions.md', `# Pixelcraft router\n\n${adapterIntro(displayRoot)}`);
+    write('copilot-instructions.md', `# Pixelcraft router\n\n${adapterIntro(displayRoot)}`, true);
     write('instructions/pixelcraft.instructions.md', `---\napplyTo: "**/*.{html,css,scss,js,jsx,ts,tsx,vue,svelte,astro,py,rb,php,cs,java,kt,swift,dart,rs,go,lua,ex,exs,clj,cljs,elm,fs,scala}"\n---\n\nWhen editing interface or user-facing behavior, follow \`copilot-instructions.md\` and read the matching Pixelcraft skill before implementation or review.\n`);
     for (const [command, skill, task] of adapterActions.slice(1)) write(`prompts/${command}.prompt.md`, commandText(skill, task));
   } else if (target.type === 'windsurf' || target.type === 'kiro') {
-    const supportRoot = path.join(base, 'pixelcraft', 'skills');
-    assertAdapterPathSafe(path.join(supportRoot, 'probe'));
-    for (const entry of selected) copySkill(entry.name, supportRoot, dryRun, { force: force && !entry.auto, auto: entry.auto });
+    const supportRoot = target.type === 'windsurf' ? path.join(base, 'skills') : path.join(base, 'pixelcraft', 'skills');
+    assertAdapterPathSafe(path.join(supportRoot, 'probe'), boundary);
+    for (const entry of selected) copySkill(entry.name, supportRoot, dryRun, { force: force && !entry.auto, auto: entry.auto, boundary });
     const displaySupport = target.global ? supportRoot.replace(os.homedir(), '~') : path.relative(process.cwd(), supportRoot);
     if (target.type === 'windsurf') {
-      write('rules/pixelcraft.md', `# Pixelcraft router\n\n${adapterIntro(displaySupport)}`);
+      write(target.global ? 'memories/global_rules.md' : 'rules/pixelcraft.md', `# Pixelcraft router\n\n${adapterIntro(displaySupport)}`, true);
       for (const [command, skill, task] of adapterActions.slice(1)) write(`workflows/${command}.md`, workflowText(skill, task));
     } else {
-      write('steering/pixelcraft.md', `# Pixelcraft steering\n\n${adapterIntro(displaySupport)}`);
+      write('steering/pixelcraft.md', `# Pixelcraft steering\n\n${adapterIntro(displaySupport)}`, true);
     }
   }
 }
@@ -282,7 +302,7 @@ function runAdd({ positional, options }) {
   for (const target of targets) {
     if (target.type === 'skills') {
       for (const entry of selected) {
-        copySkill(entry.name, target.root, options.dryRun, { force: options.force && !entry.auto, auto: entry.auto });
+        copySkill(entry.name, target.root, options.dryRun, { force: options.force && !entry.auto, auto: entry.auto, boundary: target.global ? os.homedir() : process.cwd() });
       }
     }
     writeAgentAdapters(target, options.dryRun, options.force, selected);

@@ -67,7 +67,7 @@ function Get-TargetRoot([string]$Name, [bool]$GlobalScope) {
     if ($Name -eq 'cursor') { return (Join-Path $homeDir '.cursor/skills') }
     if ($Name -eq 'gemini') { return (Join-Path $homeDir '.gemini/skills') }
     if ($Name -eq 'copilot') { return (Join-Path $homeDir '.copilot/skills') }
-    if ($Name -eq 'windsurf') { return (Join-Path $homeDir '.codeium/windsurf/pixelcraft/skills') }
+    if ($Name -eq 'windsurf') { return (Join-Path $homeDir '.codeium/windsurf/skills') }
     if ($Name -eq 'opencode') { return (Join-Path $homeDir '.config/opencode/skills') }
     if ($Name -eq 'kiro') { return (Join-Path $homeDir '.kiro/pixelcraft/skills') }
   } else {
@@ -77,7 +77,7 @@ function Get-TargetRoot([string]$Name, [bool]$GlobalScope) {
     if ($Name -eq 'cursor') { return (Join-Path $base '.cursor/skills') }
     if ($Name -eq 'gemini') { return (Join-Path $base '.gemini/skills') }
     if ($Name -eq 'copilot') { return (Join-Path $base '.github/skills') }
-    if ($Name -eq 'windsurf') { return (Join-Path $base '.windsurf/pixelcraft/skills') }
+    if ($Name -eq 'windsurf') { return (Join-Path $base '.windsurf/skills') }
     if ($Name -eq 'opencode') { return (Join-Path $base '.opencode/skills') }
     if ($Name -eq 'kiro') { return (Join-Path $base '.kiro/pixelcraft/skills') }
   }

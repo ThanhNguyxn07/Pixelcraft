@@ -236,7 +236,7 @@ target_for() {
       cursor) printf '%s/.cursor/skills\n' "$PWD" ;;
       gemini) printf '%s/.gemini/skills\n' "$PWD" ;;
       copilot) printf '%s/.github/skills\n' "$PWD" ;;
-      windsurf) printf '%s/.windsurf/pixelcraft/skills\n' "$PWD" ;;
+      windsurf) printf '%s/.windsurf/skills\n' "$PWD" ;;
       kiro) printf '%s/.kiro/pixelcraft/skills\n' "$PWD" ;;
       opencode) printf '%s/.opencode/skills\n' "$PWD" ;;
     esac
@@ -247,7 +247,7 @@ target_for() {
       cursor) printf '%s/.cursor/skills\n' "$HOME" ;;
       gemini) printf '%s/.gemini/skills\n' "$HOME" ;;
       copilot) printf '%s/.copilot/skills\n' "$HOME" ;;
-      windsurf) printf '%s/.codeium/windsurf/pixelcraft/skills\n' "$HOME" ;;
+      windsurf) printf '%s/.codeium/windsurf/skills\n' "$HOME" ;;
       opencode) printf '%s/.config/opencode/skills\n' "$HOME" ;;
       kiro) printf '%s/.kiro/pixelcraft/skills\n' "$HOME" ;;
     esac
@@ -381,7 +381,7 @@ write_shell_adapters() {
       done
       ;;
     windsurf|kiro)
-      base="${root%/pixelcraft/skills}"
+      base="${root%/skills}"
       if [[ "$agent" == "windsurf" ]]; then
         write_adapter_file "$base/rules/pixelcraft.md" '# Pixelcraft router' '' "Use Pixelcraft for interface design, implementation, review, and visual QA. Start with pixelcraft-plan and read the matching self-contained skill under $root."
         for action in pixelcraft-plan pixelcraft-review pixelcraft-visual-qa pixelcraft-direction; do

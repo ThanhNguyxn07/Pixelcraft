@@ -148,7 +148,7 @@ Installer agent names are `claude`, `codex`, `agents`, `devin`, `cursor`, `gemin
 | Cursor | `.cursor/skills` plus `.cursor/rules/pixelcraft.mdc` | `~/.cursor/skills` |
 | Gemini CLI | `.gemini/skills` | `~/.gemini/skills` |
 | GitHub Copilot | `.github/skills` plus instructions/prompt adapters | `~/.copilot/skills` |
-| Windsurf | `.windsurf/pixelcraft/skills` plus `.windsurf/rules` and `.windsurf/workflows` adapters | `~/.codeium/windsurf/pixelcraft/skills` plus adapter files under `~/.codeium/windsurf` |
+| Windsurf | `.windsurf/skills` plus `.windsurf/rules` and `.windsurf/workflows` adapters | `~/.codeium/windsurf/skills` plus adapter files under `~/.codeium/windsurf` |
 | OpenCode | `.opencode/skills` | `~/.config/opencode/skills` |
 | Kiro | `.kiro/pixelcraft/skills` plus `.kiro/steering/pixelcraft.md` | `~/.kiro/pixelcraft/skills` plus steering under `~/.kiro` |
 
@@ -246,7 +246,7 @@ Use the destination matching the agent:
 | Cursor | `.cursor/skills/<skill>` plus `.cursor/rules/pixelcraft.mdc` | `~/.cursor/skills/<skill>` |
 | Gemini CLI | `.gemini/skills/<skill>` | `~/.gemini/skills/<skill>` |
 | GitHub Copilot | `.github/skills/<skill>` plus `.github/copilot-instructions.md`, `.github/instructions/pixelcraft.instructions.md`, and `.github/prompts/*.prompt.md` | `~/.copilot/skills/<skill>` |
-| Windsurf | `.windsurf/pixelcraft/skills/<skill>` plus `.windsurf/rules/pixelcraft.md` and `.windsurf/workflows/*.md` | `~/.codeium/windsurf/pixelcraft/skills/<skill>` plus the corresponding adapter files under `~/.codeium/windsurf` |
+| Windsurf | `.windsurf/skills/<skill>` plus `.windsurf/rules/pixelcraft.md` and `.windsurf/workflows/*.md` | `~/.codeium/windsurf/skills/<skill>` plus the corresponding adapter files under `~/.codeium/windsurf` |
 | OpenCode | `.opencode/skills/<skill>` | `~/.config/opencode/skills/<skill>` |
 | Devin | `.agents/skills/<skill>` (recommended) | `~/.agents/skills/<skill>` or `~/.config/devin/skills/<skill>` where the Devin CLI is used |
 | Kiro | `.kiro/pixelcraft/skills/<skill>` plus `.kiro/steering/pixelcraft.md` | `~/.kiro/pixelcraft/skills/<skill>` plus steering under `~/.kiro` |
