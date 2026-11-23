@@ -3,8 +3,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const exts = new Set(['.css','.scss','.html','.jsx','.tsx','.vue','.svelte','.dart','.swift','.kt','.py','.qss','.tcss','.js','.ts']);
+const cssExts = new Set(['.css','.scss','.qss','.tcss']);
+const markupExts = new Set(['.html','.vue','.svelte']);
 const skip = new Set(['node_modules','.git','dist','build','coverage']);
 const skillHosts = new Set(['.claude','.agents','.cursor','.gemini','.github','.copilot']);
+const disclaimer = 'A zero score means only that these known fingerprints were not detected; zero findings is not evidence of good design.';
+
+function help() {
+  return `Usage: node slop-scan.mjs <directory> [--json]\n\nScan source files for recurring AI-slop fingerprints. Output includes file:line,\nseverity, score contribution, and a suggested fix. ${disclaimer}`;
+}
 function partsOf(file) { return file.split(/[\\/]/); }
 function isInstalledPixelcraftSkill(file) {
   const parts = partsOf(file);
@@ -13,11 +20,6 @@ function isInstalledPixelcraftSkill(file) {
 function isInsidePixelcraftSkill(file) {
   const parts = partsOf(file);
   return parts.some((part, i) => part === 'skills' && parts[i + 1]?.startsWith('pixelcraft'));
-}
-const disclaimer = 'A zero score means only that these known fingerprints were not detected; zero findings is not evidence of good design.';
-
-function help() {
-  return `Usage: node slop-scan.mjs <directory> [--json]\n\nScan source files for recurring AI-slop fingerprints. Output includes file:line,\nseverity, score contribution, and a suggested fix. ${disclaimer}`;
 }
 function walk(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -32,45 +34,201 @@ function walk(dir, out = []) {
 }
 function lineOf(text, index) { return text.slice(0, index).split(/\r?\n/).length; }
 
+function skipComment(text, i) {
+  const end = text.indexOf('*/', i + 2);
+  return end < 0 ? text.length : end + 2;
+}
+
+function styleSegments(text) {
+  const lower = text.toLowerCase();
+  const out = [];
+  let pos = 0;
+  while (pos < text.length) {
+    const open = lower.indexOf('<style', pos);
+    if (open < 0) break;
+    const tagEnd = lower.indexOf('>', open);
+    if (tagEnd < 0) break;
+    const close = lower.indexOf('</style', tagEnd + 1);
+    if (close < 0) break;
+    out.push({ text: text.slice(tagEnd + 1, close), offset: tagEnd + 1 });
+    pos = close + 8;
+  }
+  return out;
+}
+
+function cssSegments(file, text) {
+  const ext = path.extname(file);
+  if (cssExts.has(ext)) return [{ text, offset: 0 }];
+  if (markupExts.has(ext)) return styleSegments(text);
+  return [];
+}
+
+function splitSelectorList(selector) {
+  const out = [];
+  let start = 0, depth = 0, quote = '';
+  for (let i = 0; i < selector.length; i += 1) {
+    const c = selector[i];
+    if (quote) {
+      if (c === '\\') i += 1;
+      else if (c === quote) quote = '';
+    } else if (c === '"' || c === "'") quote = c;
+    else if (c === '(' || c === '[') depth += 1;
+    else if (c === ')' || c === ']') depth = Math.max(0, depth - 1);
+    else if (c === ',' && depth === 0) {
+      out.push(selector.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  out.push(selector.slice(start).trim());
+  return out.filter(Boolean);
+}
+
+function stripNotContents(selector) {
+  let out = '';
+  for (let i = 0; i < selector.length; i += 1) {
+    if (selector.slice(i, i + 5).toLowerCase() === ':not(') {
+      let depth = 1, quote = '';
+      i += 5;
+      for (; i < selector.length && depth; i += 1) {
+        const c = selector[i];
+        if (quote) {
+          if (c === '\\') i += 1;
+          else if (c === quote) quote = '';
+        } else if (c === '"' || c === "'") quote = c;
+        else if (c === '(') depth += 1;
+        else if (c === ')') depth -= 1;
+      }
+      i -= 1;
+    } else out += selector[i];
+  }
+  return out;
+}
+
+function focusPseudo(selector) {
+  const stripped = stripNotContents(selector);
+  if (/:focus-visible\b/i.test(stripped)) return true;
+  if (/:focus\b/i.test(stripped)) {
+    // `:focus:not(:focus-visible)` intentionally suppresses the mouse-focus ring;
+    // keyboard visibility must be handled by a separate `:focus-visible` rule.
+    if (/:not\(\s*:focus-visible\s*\)/i.test(selector)) return false;
+    return true;
+  }
+  return false;
+}
+
+function declarations(body) {
+  const out = [];
+  let start = 0, depth = 0, quote = '';
+  for (let i = 0; i <= body.length; i += 1) {
+    const c = body[i] || ';';
+    if (c === '/' && body[i + 1] === '*') { i = skipComment(body, i) - 1; continue; }
+    if (quote) {
+      if (c === '\\') i += 1;
+      else if (c === quote) quote = '';
+    } else if (c === '"' || c === "'") quote = c;
+    else if (c === '(') depth += 1;
+    else if (c === ')') depth = Math.max(0, depth - 1);
+    else if (c === ';' && depth === 0) {
+      const raw = body.slice(start, i);
+      const colon = raw.indexOf(':');
+      if (colon > 0) out.push({ prop: raw.slice(0, colon).trim().toLowerCase(), value: raw.slice(colon + 1).trim().toLowerCase(), offset: start + colon + 1 });
+      start = i + 1;
+    }
+  }
+  return out;
+}
+
+function visibleReplacement(decls) {
+  return decls.some(({ prop, value }) => {
+    const clean = value.replace(/\s*!important\s*$/, '').trim();
+    if (prop === 'box-shadow') return clean !== 'none';
+    if (prop === 'outline') return !/^(none|0)\b/.test(clean);
+    if (prop === 'outline-style') return clean !== 'none' && clean !== 'hidden';
+    if (prop === 'outline-width') return !/^0(?:\.0+)?(?:px|em|rem)?\b/.test(clean);
+    if (prop === 'border' || prop === 'border-color' || prop === 'border-width' || prop === 'border-style') return clean !== 'none' && !/^0(?:\.0+)?(?:px)?\s*$/.test(clean);
+    if (/^border-(top|right|bottom|left|inline|block)(?:-(?:start|end))?(?:-color|-width|-style)?$/.test(prop)) return clean !== 'none' && !/^0(?:\.0+)?(?:px)?\s*$/.test(clean);
+    if (prop.startsWith('text-decoration')) return clean !== 'none';
+    return false;
+  });
+}
+
+function scanRules(segment, baseOffset, sourceText, visit) {
+  let i = 0;
+  const text = segment.text;
+  while (i < text.length) {
+    while (i < text.length && (/\s/.test(text[i]) || (text[i] === '/' && text[i + 1] === '*'))) {
+      i = text[i] === '/' ? skipComment(text, i) : i + 1;
+    }
+    if (i >= text.length) break;
+    const selectorStart = i;
+    let quote = '', depth = 0;
+    for (; i < text.length; i += 1) {
+      const c = text[i];
+      if (c === '/' && text[i + 1] === '*') { i = skipComment(text, i) - 1; continue; }
+      if (quote) {
+        if (c === '\\') i += 1;
+        else if (c === quote) quote = '';
+      } else if (c === '"' || c === "'") quote = c;
+      else if (c === '(' || c === '[') depth += 1;
+      else if (c === ')' || c === ']') depth = Math.max(0, depth - 1);
+      else if (c === '{' && depth === 0) break;
+    }
+    if (i >= text.length) break;
+    const selector = text.slice(selectorStart, i).trim();
+    const bodyStart = i + 1;
+    let braceDepth = 1;
+    quote = '';
+    for (i += 1; i < text.length; i += 1) {
+      const c = text[i];
+      if (c === '/' && text[i + 1] === '*') { i = skipComment(text, i) - 1; continue; }
+      if (quote) {
+        if (c === '\\') i += 1;
+        else if (c === quote) quote = '';
+      } else if (c === '"' || c === "'") quote = c;
+      else if (c === '{') braceDepth += 1;
+      else if (c === '}') {
+        braceDepth -= 1;
+        if (braceDepth === 0) break;
+      }
+    }
+    if (!selector || i >= text.length) break;
+    visit(selector, text.slice(bodyStart, i), {
+      selectorIndex: baseOffset + selectorStart,
+      bodyIndex: baseOffset + bodyStart,
+      sourceText
+    });
+    i += 1;
+  }
+}
+
 function scanFile(file, root) {
   const text = fs.readFileSync(file, 'utf8');
   const lines = text.split(/\r?\n/);
   const findings = [];
   const seenRules = new Set();
-  const focusVisibleLines = new Set();
-  const focusRulePattern = /([^{}]+)\{([^{}]*)\}/gs;
-  for (const match of text.matchAll(focusRulePattern)) {
-    const [whole, selector, body] = match;
-    if (!selector.includes(':focus-visible')) continue;
-    const start = lineOf(text, match.index);
-    const end = lineOf(text, match.index + whole.length);
-    for (let line = start; line <= end; line += 1) focusVisibleLines.add(line);
-    const outline = /outline\s*:\s*(none|0)\b/i.exec(body);
-    if (!outline) continue;
-    const shadow = /box-shadow\s*:\s*(?!none\b)[^;}]+/i.test(body);
-    const border = /border(?:-[\w-]+)?\s*:\s*(?!none\b|0\b)[^;}]+/i.test(body);
-    const visibleOutline = /outline-offset/i.test(body) && /outline(?:-style)?\s*:[^;}]*(?:solid|double|auto|thick|thin|medium)/i.test(body);
-    if (!shadow && !border && !visibleOutline) {
-      const bodyStart = match.index + whole.indexOf(body);
-      const line = lineOf(text, bodyStart + outline.index);
-      const key = `outline-removed:${line}`;
-      if (!seenRules.has(key)) {
-        seenRules.add(key);
-        findings.push({ rule: 'outline-removed', severity: 'P0', weight: 5, file: path.relative(root, file), line, match: outline[0], fix: 'Restore a visible keyboard focus indicator.' });
-      }
-    }
-  }
   const add = (rule, severity, weight, line, match, fix) => {
     const key = `${rule}:${line}`;
     if (seenRules.has(key)) return;
     seenRules.add(key);
     findings.push({ rule, severity, weight, file: path.relative(root, file), line, match: match.trim().slice(0, 160), fix });
   };
+
+  for (const segment of cssSegments(file, text)) {
+    scanRules(segment, segment.offset, text, (selectorText, body, location) => {
+      const decls = declarations(body);
+      const removal = decls.find((d) => d.prop === 'outline' && /^(none|0)(?:\s*!important)?$/.test(d.value));
+      if (!removal || visibleReplacement(decls)) return;
+      for (const selector of splitSelectorList(selectorText)) {
+        if (!focusPseudo(selector)) continue;
+        add('outline-removed','P0',5,lineOf(text,location.bodyIndex + removal.offset),body.slice(removal.offset).trim().split(';')[0] || 'outline: none','Restore a visible keyboard focus indicator.');
+      }
+    });
+  }
+
   lines.forEach((line, i) => {
     const n = i + 1;
     if (/font-family\s*:\s*['"]?(Inter|Roboto|Geist|Arial)['"]?\s*;?/i.test(line)) add('default-font-only','P2',2,n,line,'Choose type by voice/platform and provide deliberate fallbacks.');
     if (/transition\s*:\s*all\b/.test(line)) add('transition-all','P2',2,n,line,'Animate only intentional properties with semantic durations/easing.');
-    if (!focusVisibleLines.has(n) && /outline\s*:\s*(none|0)\b/.test(line) && !/box-shadow|outline-offset/i.test(line)) add('outline-removed','P0',5,n,line,'Restore a visible keyboard focus indicator.');
     if (/<(input|textarea)\b[^>]*placeholder=/i.test(line) && !/aria-label|aria-labelledby/i.test(line)) add('placeholder-as-label','P1',4,n,line,'Use a persistent programmatic label; placeholder is only a hint.');
     if (/(user-scalable\s*=\s*["']?no|maximum-scale\s*=\s*["']?1(?:\.0)?\b)/i.test(line)) add('zoom-disabled','P0',5,n,line,'Do not disable pinch zoom or text scaling.');
     if (/\p{Extended_Pictographic}/u.test(line) && /icon|button|nav|<span/i.test(line)) add('emoji-as-icon','P2',2,n,line,'Use a coherent icon system or text instead of structural emoji.');
