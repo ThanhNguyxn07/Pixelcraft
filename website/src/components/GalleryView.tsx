@@ -1,11 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { ArrowUpRight, Check, Copy, Sparkles, Terminal } from 'lucide-react';
 import { DEMOS } from '@/lib/demos';
+
+const REPO_URL = 'https://github.com/ThanhNguyxnOrg/Pixelcraft';
 
 export function GalleryView() {
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null);
+  const [expandedPrompt, setExpandedPrompt] = useState<string | null>(null);
+  const [selectedStack, setSelectedStack] = useState<string>('All');
+
+  const stackFilters = useMemo(() => {
+    const primaryStacks = DEMOS.map((d) => d.techStack[0]);
+    return ['All', ...Array.from(new Set(primaryStacks))];
+  }, []);
+
+  const visibleDemos = useMemo(() => {
+    if (selectedStack === 'All') return DEMOS;
+    return DEMOS.filter((d) => d.techStack[0] === selectedStack);
+  }, [selectedStack]);
 
   async function copyPrompt(slug: string, prompt: string) {
     try {
@@ -18,225 +33,296 @@ export function GalleryView() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] text-[#141311]">
-      {/* Masthead */}
-      <header className="sticky top-0 z-40 border-b border-[#d8d2c6] bg-[#f4f1ea]/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 max-w-[1380px] items-center justify-between px-4 sm:px-8">
+    <div className="min-h-screen bg-[#f7f5f0] text-[#0d0d0c]">
+      {/* Floating Atelier Navigation (unified with Home) */}
+      <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-[1320px] items-center justify-between rounded-full border border-[#ded9ce] bg-[#f7f5f0]/90 px-4 shadow-[0_8px_30px_rgba(13,13,12,0.06)] backdrop-blur-md sm:px-6">
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex items-center gap-2.5 font-display text-sm font-bold tracking-[0.14em] text-[#141311] uppercase"
+              className="flex items-center gap-2.5 font-display text-sm font-bold tracking-[0.14em] text-[#0d0d0c] uppercase"
             >
-              <span aria-hidden="true" className="inline-block h-2.5 w-2.5 bg-[#c23114]" />
+              <span
+                aria-hidden="true"
+                className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-[#0d0d0c]"
+              >
+                <span className="h-2 w-2 rounded-xs bg-[#ff6542]" />
+              </span>
               PIXELCRAFT
             </Link>
-            <span className="border-l border-[#d8d2c6] pl-3 font-mono text-[11px] uppercase tracking-[0.1em] text-[#b82d12]">
+            <span className="hidden rounded-full border border-[#ded9ce] bg-[#ffffff] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.08em] text-[#c83216] sm:inline-block">
               Gallery
             </span>
           </div>
 
-          <nav aria-label="Primary" className="flex items-center gap-5 sm:gap-7">
+          <nav aria-label="Primary" className="flex items-center gap-4 sm:gap-6">
             <Link
               href="/"
-              className="text-xs font-medium text-[#524e47] transition-colors hover:text-[#141311]"
+              className="text-xs font-medium text-[#4a4741] transition-colors hover:text-[#0d0d0c]"
             >
               Overview
             </Link>
             <Link
               href="/docs"
-              className="text-xs font-medium text-[#524e47] transition-colors hover:text-[#141311]"
+              className="text-xs font-medium text-[#4a4741] transition-colors hover:text-[#0d0d0c]"
             >
               Docs
             </Link>
             <a
-              href="https://github.com/ThanhNguyxnOrg/Pixelcraft"
+              href={REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full bg-[#0d0d0c] px-3.5 py-1.5 font-mono text-[11px] font-medium text-[#f6f4ef] transition-colors hover:bg-[#c83216]"
+              className="inline-flex items-center gap-1 rounded-full bg-[#0d0d0c] px-3.5 py-1.5 font-mono text-[11px] font-medium text-[#f6f4ef] transition-colors hover:bg-[#c83216]"
             >
-              GitHub ↗
+              GitHub
+              <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
             </a>
           </nav>
         </div>
       </header>
 
-      <main id="main-content" className="mx-auto max-w-[1380px] px-4 py-12 sm:px-8 lg:py-16">
-        {/* Header */}
-        <div className="border-b border-[#d8d2c6] pb-8">
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#b82d12]">
-            LIVE SPECIMEN ARCHIVE · ONE PIECE AT A TIME
-          </p>
-          <h1 className="mt-3 font-serif text-4xl font-medium leading-[1.02] text-[#141311] sm:text-5xl">
-            Verified interfaces, with the{' '}
-            <em className="italic text-[#b82d12]">exact prompt</em> behind each build.
-          </h1>
-          <p className="mt-4 max-w-[64ch] text-[15px] leading-[1.68] text-[#45413b]">
-            Every specimen below is built as a self-contained visual world with real media,
-            verified loaded fonts, and 3-viewport browser inspection. Copy the verbatim skill
-            prompt to reproduce or adapt the workflow in your own project.
-          </p>
-        </div>
+      <main id="main-content" className="atelier-grid-bg pb-24 pt-12 sm:pt-16">
+        <div className="mx-auto max-w-[1320px] px-4 sm:px-8">
+          {/* Editorial Header */}
+          <div className="flex flex-col justify-between gap-6 border-b border-[#ded9ce] pb-10 lg:flex-row lg:items-end">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#ded9ce] bg-[#ffffff] px-3.5 py-1 font-mono text-[11px] text-[#4a4741]">
+                <Sparkles className="h-3 w-3 text-[#c83216]" aria-hidden="true" />
+                <span>MULTI-STACK LIVE SPECIMENS · {DEMOS.length} VERIFIED BUILDS</span>
+              </div>
+              <h1 className="mt-4 font-serif text-4xl font-medium leading-[1.0] tracking-[-0.02em] text-[#0d0d0c] sm:text-6xl">
+                Built across stacks,{' '}
+                <em className="italic text-[#c83216]">verified in Chromium.</em>
+              </h1>
+              <p className="mt-4 max-w-[60ch] text-[15px] leading-[1.7] text-[#4a4741]">
+                Each gallery specimen runs in its real target stack—complete with the verbatim
+                Pixelcraft skill prompt, semantic palette, and 3-viewport finish-gate evidence.
+              </p>
+            </div>
 
-        {/* Specimens */}
-        <div className="mt-10 space-y-12">
-          {DEMOS.map((demo) => {
-            const isCopied = copiedSlug === demo.slug;
-            return (
-              <article
-                key={demo.slug}
-                className="border border-[#d8d2c6] bg-[#faf8f3]"
-              >
-                {/* Top Strip */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#d8d2c6] bg-[#eae5da]/60 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.08em] text-[#524e47]">
-                  <div className="flex items-center gap-3">
-                    <span className="font-semibold text-[#b82d12]">PIECE {demo.code}</span>
-                    <span>{demo.category}</span>
-                    <span className="hidden sm:inline">· {demo.mode}</span>
+            {/* Stack Filter Pills */}
+            <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Filter by tech stack">
+              {stackFilters.map((stack) => {
+                const active = stack === selectedStack;
+                return (
+                  <button
+                    key={stack}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setSelectedStack(stack)}
+                    className={`rounded-full px-4 py-2 font-mono text-xs font-medium transition-colors ${
+                      active
+                        ? 'bg-[#0d0d0c] text-[#f6f4ef]'
+                        : 'border border-[#ded9ce] bg-[#ffffff] text-[#4a4741] hover:border-[#0d0d0c] hover:text-[#0d0d0c]'
+                    }`}
+                  >
+                    {stack}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Specimen Cards — Generous Uncropped Browser Showcase */}
+          <div className="mt-12 space-y-14">
+            {visibleDemos.map((demo) => {
+              const isCopied = copiedSlug === demo.slug;
+              const isExpanded = expandedPrompt === demo.slug;
+              const launchUrl = demo.href ?? `/gallery/${demo.slug}`;
+              const isStandalone = Boolean(demo.href);
+
+              return (
+                <article
+                  key={demo.slug}
+                  className="overflow-hidden rounded-[28px] border border-[#ded9ce] bg-[#ffffff] shadow-[0_24px_70px_rgba(13,13,12,0.08)]"
+                >
+                  {/* Top Browser-Frame Exhibition Preview (Full Width, Zero Awkward Cropping) */}
+                  <div className="bg-[#0c0c0e] p-4 sm:p-6">
+                    {/* Browser Chrome Bar */}
+                    <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <span className="rounded-full bg-[#ff6542]/15 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-[#ff6542]">
+                          PIECE {demo.code}
+                        </span>
+                        <span className="font-mono text-xs text-[#f6f4ef]">
+                          {demo.techStack[0]}
+                        </span>
+                        <span className="hidden font-mono text-[11px] text-[#a7a49c] sm:inline">
+                          · {demo.category}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="hidden rounded-full border border-[#27272d] bg-[#151519] px-3 py-1 font-mono text-[10px] text-[#34d399] sm:inline-block">
+                          {demo.evidence.contrast} · {demo.evidence.responsive}
+                        </span>
+                        {isStandalone ? (
+                          <a
+                            href={launchUrl}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-[#f6f4ef] px-4 py-1.5 font-mono text-xs font-semibold text-[#0c0c0e] transition-colors hover:bg-[#ff6542] hover:text-[#f6f4ef]"
+                          >
+                            Open Live Demo
+                            <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                          </a>
+                        ) : (
+                          <Link
+                            href={launchUrl}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-[#f6f4ef] px-4 py-1.5 font-mono text-xs font-semibold text-[#0c0c0e] transition-colors hover:bg-[#ff6542] hover:text-[#f6f4ef]"
+                          >
+                            Open Live Demo
+                            <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Clean 16:9 Uncropped Visual Frame */}
+                    {isStandalone ? (
+                      <a
+                        href={launchUrl}
+                        className="group block overflow-hidden rounded-2xl border border-[#27272d] bg-[#151519]"
+                      >
+                        <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#16171a]">
+                          <img
+                            src={demo.coverImage}
+                            alt={demo.coverAlt}
+                            width={1360}
+                            height={765}
+                            className={`h-full w-full transition-transform duration-700 group-hover:scale-[1.02] ${
+                              demo.slug === 'kinetic-04' ? 'object-contain p-3 sm:p-5' : 'object-cover'
+                            }`}
+                          />
+                        </div>
+                      </a>
+                    ) : (
+                      <Link
+                        href={launchUrl}
+                        className="group block overflow-hidden rounded-2xl border border-[#27272d] bg-[#151519]"
+                      >
+                        <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#ded8cb]">
+                          <img
+                            src={demo.coverImage}
+                            alt={demo.coverAlt}
+                            width={1360}
+                            height={765}
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                          />
+                        </div>
+                      </Link>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[#1a6646]">CONTRAST: {demo.evidence.contrast}</span>
-                    <span>· {demo.evidence.responsive}</span>
-                  </div>
-                </div>
 
-                {/* Split Showcase */}
-                <div className="grid grid-cols-1 lg:grid-cols-12">
-                  {demo.href ? (
-                    <a
-                      href={demo.href}
-                      className="group relative block aspect-[16/10] overflow-hidden bg-[#ded8cb] lg:col-span-6 lg:aspect-auto lg:border-r lg:border-[#d8d2c6]"
-                    >
-                      <img
-                        src={demo.coverImage}
-                        alt={demo.coverAlt}
-                        width={1200}
-                        height={800}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                      />
-                    </a>
-                  ) : (
-                    <Link
-                      href={`/gallery/${demo.slug}`}
-                      className="group relative block aspect-[16/10] overflow-hidden bg-[#ded8cb] lg:col-span-6 lg:aspect-auto lg:border-r lg:border-[#d8d2c6]"
-                    >
-                      <img
-                        src={demo.coverImage}
-                        alt={demo.coverAlt}
-                        width={1200}
-                        height={800}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                      />
-                    </Link>
-                  )}
-
-                  <div className="flex flex-col justify-between p-6 sm:p-8 lg:col-span-6">
-                    <div>
-                      <h2 className="font-serif text-3xl font-medium text-[#141311]">
+                  {/* Bottom Details + Verbatim Prompt Strip */}
+                  <div className="grid grid-cols-1 gap-8 p-6 sm:p-8 lg:grid-cols-12">
+                    {/* Left 5 cols: Identity, Stack & Palette */}
+                    <div className="lg:col-span-5">
+                      <h2 className="font-serif text-3xl font-medium text-[#0d0d0c]">
                         {demo.title}
                       </h2>
-                      <p className="mt-3 text-sm leading-[1.7] text-[#45413b]">
+                      <p className="mt-2.5 text-sm leading-[1.7] text-[#4a4741]">
                         {demo.subtitle}
                       </p>
 
-                      {/* Tech Stack & Skills */}
-                      <div className="mt-5 grid grid-cols-1 gap-4 border-y border-[#d8d2c6] py-4 sm:grid-cols-2">
-                        <div>
-                          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#59554d]">
-                            Stack
-                          </p>
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {demo.techStack.map((item) => (
-                              <span
-                                key={item}
-                                className="border border-[#d8d2c6] bg-[#f4f1ea] px-2 py-0.5 font-mono text-[11px] text-[#141311]"
-                              >
-                                {item}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div>
-                          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#59554d]">
-                            Skills Applied
-                          </p>
-                          <div className="mt-2 flex flex-wrap gap-1.5">
-                            {demo.skillsUsed.map((skill) => (
-                              <Link
-                                key={skill}
-                                href={`/docs/${skill}`}
-                                className="border border-[#b8b0a1] bg-[#faf8f3] px-2 py-0.5 font-mono text-[11px] text-[#141311] hover:border-[#b82d12] hover:text-[#b82d12]"
-                              >
-                                {skill}
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
+                      {/* Stack Chips */}
+                      <div className="mt-5 flex flex-wrap gap-1.5">
+                        {demo.techStack.map((item) => (
+                          <span
+                            key={item}
+                            className="rounded-full border border-[#ded9ce] bg-[#f7f5f0] px-3 py-1 font-mono text-[11px] font-medium text-[#0d0d0c]"
+                          >
+                            {item}
+                          </span>
+                        ))}
                       </div>
 
-                      {/* Swatches */}
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      {/* Palette Dots */}
+                      <div className="mt-4 flex flex-wrap items-center gap-3">
                         {demo.swatches.map((sw) => (
-                          <div
-                            key={sw.hex}
-                            className="flex items-center gap-2 border border-[#d8d2c6] bg-[#f4f1ea] px-2.5 py-1"
-                          >
+                          <div key={sw.hex} className="flex items-center gap-1.5">
                             <span
                               aria-hidden="true"
-                              className="h-3.5 w-3.5 border border-[#141311]/20"
+                              className="h-4 w-4 rounded-full border border-[#0d0d0c]/20"
                               style={{ backgroundColor: sw.hex }}
                             />
-                            <span className="font-mono text-[11px] text-[#141311]">
-                              {sw.name} ({sw.hex})
-                            </span>
+                            <span className="font-mono text-[11px] text-[#4a4741]">{sw.hex}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    {/* Verbatim Prompt Box + Open Demo */}
-                    <div className="mt-6 border border-[#d8d2c6] bg-[#f4f1ea]">
-                      <div className="flex items-center justify-between border-b border-[#d8d2c6] px-4 py-2">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#59554d]">
-                          Verbatim Skill Prompt
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => copyPrompt(demo.slug, demo.prompt)}
-                          className="font-mono text-[11px] font-medium text-[#b82d12] hover:underline"
+                    {/* Right 7 cols: Verbatim Skill Prompt Console */}
+                    <div className="flex flex-col justify-between rounded-2xl border border-[#ded9ce] bg-[#f7f5f0] p-5 lg:col-span-7">
+                      <div>
+                        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#ded9ce] pb-3">
+                          <div className="flex items-center gap-2 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0d0d0c]">
+                            <Terminal className="h-3.5 w-3.5 text-[#c83216]" aria-hidden="true" />
+                            <span>Verbatim Skill Prompt</span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setExpandedPrompt(isExpanded ? null : demo.slug)}
+                              className="rounded-full border border-[#ded9ce] bg-[#ffffff] px-3 py-1 font-mono text-[11px] text-[#4a4741] hover:border-[#0d0d0c] hover:text-[#0d0d0c]"
+                            >
+                              {isExpanded ? 'Collapse' : 'Read Full'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => copyPrompt(demo.slug, demo.prompt)}
+                              className="inline-flex items-center gap-1.5 rounded-full bg-[#0d0d0c] px-3.5 py-1 font-mono text-[11px] font-medium text-[#f6f4ef] transition-colors hover:bg-[#c83216]"
+                            >
+                              {isCopied ? (
+                                <>
+                                  <Check className="h-3 w-3 text-[#34d399]" aria-hidden="true" />
+                                  Copied
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="h-3 w-3" aria-hidden="true" />
+                                  Copy Prompt
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        <p
+                          className={`mt-3.5 font-mono text-xs leading-[1.7] text-[#2b2925] ${
+                            isExpanded ? '' : 'line-clamp-4'
+                          }`}
                         >
-                          {isCopied ? 'Copied Prompt' : 'Copy Prompt'}
-                        </button>
+                          {demo.prompt}
+                        </p>
                       </div>
-                      <p className="p-4 font-mono text-xs leading-[1.65] text-[#2b2925]">
-                        {demo.prompt}
-                      </p>
-                      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d8d2c6] bg-[#faf8f3] px-4 py-3">
-                        <span className="font-mono text-[11px] text-[#59554d]">
-                          Verified states: {demo.evidence.states}
+
+                      {/* Applied Skills Footer */}
+                      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#ded9ce] pt-3.5">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="font-mono text-[10px] uppercase text-[#625e56]">
+                            Skills:
+                          </span>
+                          {demo.skillsUsed.map((skill) => (
+                            <Link
+                              key={skill}
+                              href={`/docs/${skill}`}
+                              className="rounded-full border border-[#ded9ce] bg-[#ffffff] px-2.5 py-0.5 font-mono text-[10px] text-[#0d0d0c] hover:border-[#c83216] hover:text-[#c83216]"
+                            >
+                              {skill}
+                            </Link>
+                          ))}
+                        </div>
+                        <span className="font-mono text-[11px] text-[#167a4d]">
+                          {demo.evidence.states}
                         </span>
-                        {demo.href ? (
-                          <a
-                            href={demo.href}
-                            className="inline-flex min-h-10 items-center gap-2 bg-[#141311] px-4 py-2 font-mono text-xs font-medium text-[#faf8f3] transition-colors hover:bg-[#b82d12]"
-                          >
-                            Open Live Demo ↗
-                          </a>
-                        ) : (
-                          <Link
-                            href={`/gallery/${demo.slug}`}
-                            className="inline-flex min-h-10 items-center gap-2 bg-[#141311] px-4 py-2 font-mono text-xs font-medium text-[#faf8f3] transition-colors hover:bg-[#b82d12]"
-                          >
-                            Open Live Demo ↗
-                          </Link>
-                        )}
                       </div>
                     </div>
                   </div>
-                </div>
-              </article>
-            );
-          })}
+                </article>
+              );
+            })}
+          </div>
         </div>
       </main>
     </div>
