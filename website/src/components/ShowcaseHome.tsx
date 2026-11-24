@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -46,7 +45,7 @@ const DEVICE_MODES = [
     label: '1440',
     title: 'Desktop 1440x900',
     icon: Monitor,
-    frameClass: 'w-full aspect-[16/10]',
+    frameClass: 'w-full',
     overflow: '0 px',
     contrast: 'AA Pass',
     cls: '0.002',
@@ -56,7 +55,7 @@ const DEVICE_MODES = [
     label: '768',
     title: 'Tablet 768x1024',
     icon: Tablet,
-    frameClass: 'w-[74%] aspect-[4/3]',
+    frameClass: 'w-[74%]',
     overflow: '0 px',
     contrast: 'AA Pass',
     cls: '0.004',
@@ -66,7 +65,7 @@ const DEVICE_MODES = [
     label: '390',
     title: 'Mobile 390x844',
     icon: Smartphone,
-    frameClass: 'w-[46%] aspect-[9/14]',
+    frameClass: 'w-[52%]',
     overflow: '0 px',
     contrast: 'AA Pass',
     cls: '0.001',
@@ -260,12 +259,7 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
         <section className="atelier-grid-bg relative overflow-hidden pb-16 pt-10 sm:pb-20 sm:pt-14">
           <div className="mx-auto grid max-w-[1320px] grid-cols-1 items-center gap-10 px-4 sm:px-8 lg:grid-cols-12 lg:gap-12">
             {/* Left 6 cols: Manifesto + Real Multi-Agent CLI Dock */}
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:col-span-6"
-            >
+            <div className="lg:col-span-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-[#ded9ce] bg-[#ffffff] px-3.5 py-1.5 font-mono text-[11px] text-[#4a4741] shadow-xs">
                 <span className="h-2 w-2 rounded-full bg-[#167a4d]" aria-hidden="true" />
                 <span>Portable Agent Skills · 43 Static Detectors · 10 Agent Hosts</span>
@@ -356,15 +350,10 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
                   </button>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Right 6 cols: Interactive 3-Viewport Live Device Stage */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:col-span-6"
-            >
+            <div className="lg:col-span-6">
               <div className="rounded-[26px] border border-[#27272d] bg-[#0c0c0e] p-4 text-[#f6f4ef] shadow-[0_32px_80px_rgba(13,13,12,0.22)] sm:p-5">
                 {/* Stage Header & Viewport Switcher */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#27272d] pb-3.5">
@@ -404,12 +393,10 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
                   </div>
                 </div>
 
-                {/* Morphing Live Preview Frame */}
-                <div className="mt-4 flex min-h-[300px] items-center justify-center rounded-2xl bg-[#151519] p-4 sm:min-h-[340px]">
-                  <motion.div
-                    layout
-                    transition={{ type: 'spring', stiffness: 280, damping: 28 }}
-                    className={`${activeDevice.frameClass} relative overflow-hidden rounded-xl border border-[#2c2c34] bg-[#f6f2ea] shadow-[0_18px_50px_rgba(0,0,0,0.45)]`}
+                {/* Morphing Live Preview Frame (fixed height: zero vertical jump) */}
+                <div className="mt-4 flex h-[320px] items-center justify-center rounded-2xl bg-[#151519] p-4 sm:h-[340px]">
+                  <div
+                    className={`${activeDevice.frameClass} relative h-full overflow-hidden rounded-xl border border-[#2c2c34] bg-[#f6f2ea] shadow-[0_18px_50px_rgba(0,0,0,0.45)] transition-[width] duration-300 ease-out`}
                   >
                     <img
                       src={featuredDemo.coverImage}
@@ -419,11 +406,11 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
                       className="h-full w-full object-cover"
                     />
                     <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-[#0c0c0e] px-4 py-3 text-[#f6f4ef]">
-                      <div>
-                        <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#e5e0d5]">
+                      <div className="min-w-0">
+                        <p className="truncate font-mono text-[10px] uppercase tracking-[0.12em] text-[#e5e0d5]">
                           Specimen 01 · Rendered
                         </p>
-                        <p className="font-serif text-xl font-medium leading-tight sm:text-2xl">
+                        <p className="truncate font-serif text-xl font-medium leading-tight sm:text-2xl">
                           Villa Solare
                         </p>
                       </div>
@@ -435,7 +422,7 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
                         <ArrowUpRight className="h-3 w-3" aria-hidden="true" />
                       </Link>
                     </div>
-                  </motion.div>
+                  </div>
                 </div>
 
                 {/* Live Telemetry Bar */}
@@ -460,7 +447,7 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
                   </div>
                 </dl>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
@@ -576,63 +563,54 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
                 })}
               </div>
 
-              {/* Right 7 cols: Animated Stage Detail Panel */}
+              {/* Right 7 cols: Instant Stage Detail Panel (zero unmount blink) */}
               <div className="lg:col-span-7">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeLoop.step}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.24 }}
-                    className="flex h-full flex-col justify-between rounded-[24px] border border-[#ded9ce] bg-[#ffffff] p-7 shadow-[0_18px_50px_rgba(13,13,12,0.06)] sm:p-9"
-                  >
-                    <div>
-                      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#eeebe3] pb-4">
-                        <span className="font-mono text-xs font-semibold text-[#c83216]">
-                          STAGE {activeLoop.step}
-                        </span>
-                        <code className="rounded-full border border-[#ded9ce] bg-[#f7f5f0] px-3 py-1 font-mono text-[11px] text-[#0d0d0c]">
-                          {activeLoop.artifact}
-                        </code>
-                      </div>
-
-                      <h3 className="mt-6 font-serif text-3xl font-medium text-[#0d0d0c] sm:text-4xl">
-                        {activeLoop.name}
-                      </h3>
-                      <p className="mt-4 text-[15px] leading-[1.75] text-[#4a4741]">
-                        {activeLoop.summary}
-                      </p>
-
-                      <ul className="mt-6 space-y-2.5">
-                        {activeLoop.checks.map((check) => (
-                          <li
-                            key={check}
-                            className="flex items-center gap-2.5 text-sm font-medium text-[#0d0d0c]"
-                          >
-                            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#167a4d]/12 text-[#167a4d]">
-                              <Check className="h-3 w-3" aria-hidden="true" />
-                            </span>
-                            {check}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="mt-8 flex items-center justify-between border-t border-[#eeebe3] pt-5">
-                      <span className="font-mono text-xs text-[#625e56]">
-                        Skill: {activeLoop.skill}
+                <div className="flex h-full min-h-[360px] flex-col justify-between rounded-[24px] border border-[#ded9ce] bg-[#ffffff] p-7 shadow-[0_18px_50px_rgba(13,13,12,0.06)] sm:p-9">
+                  <div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#eeebe3] pb-4">
+                      <span className="font-mono text-xs font-semibold text-[#c83216]">
+                        STAGE {activeLoop.step}
                       </span>
-                      <Link
-                        href={`/docs/${activeLoop.skill}`}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-[#0d0d0c] px-4 py-2 font-mono text-xs font-medium text-[#f6f4ef] transition-colors hover:bg-[#c83216]"
-                      >
-                        Open Skill Spec
-                        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-                      </Link>
+                      <code className="rounded-full border border-[#ded9ce] bg-[#f7f5f0] px-3 py-1 font-mono text-[11px] text-[#0d0d0c]">
+                        {activeLoop.artifact}
+                      </code>
                     </div>
-                  </motion.div>
-                </AnimatePresence>
+
+                    <h3 className="mt-6 font-serif text-3xl font-medium text-[#0d0d0c] sm:text-4xl">
+                      {activeLoop.name}
+                    </h3>
+                    <p className="mt-4 text-[15px] leading-[1.75] text-[#4a4741]">
+                      {activeLoop.summary}
+                    </p>
+
+                    <ul className="mt-6 space-y-2.5">
+                      {activeLoop.checks.map((check) => (
+                        <li
+                          key={check}
+                          className="flex items-center gap-2.5 text-sm font-medium text-[#0d0d0c]"
+                        >
+                          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#167a4d]/12 text-[#167a4d]">
+                            <Check className="h-3 w-3" aria-hidden="true" />
+                          </span>
+                          {check}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="mt-8 flex items-center justify-between border-t border-[#eeebe3] pt-5">
+                    <span className="font-mono text-xs text-[#625e56]">
+                      Skill: {activeLoop.skill}
+                    </span>
+                    <Link
+                      href={`/docs/${activeLoop.skill}`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-[#0d0d0c] px-4 py-2 font-mono text-xs font-medium text-[#f6f4ef] transition-colors hover:bg-[#c83216]"
+                    >
+                      Open Skill Spec
+                      <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
 
