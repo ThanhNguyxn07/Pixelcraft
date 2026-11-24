@@ -189,9 +189,7 @@ export function GalleryView() {
                             alt={demo.coverAlt}
                             width={1360}
                             height={765}
-                            className={`h-full w-full transition-transform duration-700 group-hover:scale-[1.02] ${
-                              demo.slug === 'kinetic-04' ? 'object-contain p-3 sm:p-5' : 'object-cover'
-                            }`}
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                           />
                         </div>
                       </a>

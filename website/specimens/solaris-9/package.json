@@ -1,5 +1,5 @@
 {
-  "name": "kinetic-04-svelte5",
+  "name": "solaris-9-vue3-gowasm-webgl2",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -8,10 +8,11 @@
     "build": "vite build"
   },
   "dependencies": {
-    "svelte": "^5.28.0"
+    "vue": "^3.5.13"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "^5.7.3",
     "vite": "^6.2.0"
   }
 }
