@@ -101,18 +101,33 @@ export function GalleryView() {
 
                 {/* Split Showcase */}
                 <div className="grid grid-cols-1 lg:grid-cols-12">
-                  <Link
-                    href={`/gallery/${demo.slug}`}
-                    className="group relative block aspect-[16/10] overflow-hidden bg-[#ded8cb] lg:col-span-6 lg:aspect-auto lg:border-r lg:border-[#d8d2c6]"
-                  >
-                    <img
-                      src={demo.coverImage}
-                      alt={demo.coverAlt}
-                      width={1200}
-                      height={800}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    />
-                  </Link>
+                  {demo.href ? (
+                    <a
+                      href={demo.href}
+                      className="group relative block aspect-[16/10] overflow-hidden bg-[#ded8cb] lg:col-span-6 lg:aspect-auto lg:border-r lg:border-[#d8d2c6]"
+                    >
+                      <img
+                        src={demo.coverImage}
+                        alt={demo.coverAlt}
+                        width={1200}
+                        height={800}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    </a>
+                  ) : (
+                    <Link
+                      href={`/gallery/${demo.slug}`}
+                      className="group relative block aspect-[16/10] overflow-hidden bg-[#ded8cb] lg:col-span-6 lg:aspect-auto lg:border-r lg:border-[#d8d2c6]"
+                    >
+                      <img
+                        src={demo.coverImage}
+                        alt={demo.coverAlt}
+                        width={1200}
+                        height={800}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    </Link>
+                  )}
 
                   <div className="flex flex-col justify-between p-6 sm:p-8 lg:col-span-6">
                     <div>
@@ -200,12 +215,21 @@ export function GalleryView() {
                         <span className="font-mono text-[11px] text-[#59554d]">
                           Verified states: {demo.evidence.states}
                         </span>
-                        <Link
-                          href={`/gallery/${demo.slug}`}
-                          className="inline-flex min-h-10 items-center gap-2 bg-[#141311] px-4 py-2 font-mono text-xs font-medium text-[#faf8f3] transition-colors hover:bg-[#b82d12]"
-                        >
-                          Open Live Demo ↗
-                        </Link>
+                        {demo.href ? (
+                          <a
+                            href={demo.href}
+                            className="inline-flex min-h-10 items-center gap-2 bg-[#141311] px-4 py-2 font-mono text-xs font-medium text-[#faf8f3] transition-colors hover:bg-[#b82d12]"
+                          >
+                            Open Live Demo ↗
+                          </a>
+                        ) : (
+                          <Link
+                            href={`/gallery/${demo.slug}`}
+                            className="inline-flex min-h-10 items-center gap-2 bg-[#141311] px-4 py-2 font-mono text-xs font-medium text-[#faf8f3] transition-colors hover:bg-[#b82d12]"
+                          >
+                            Open Live Demo ↗
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </div>

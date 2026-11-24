@@ -1,0 +1,17 @@
+{
+  "name": "kinetic-04-svelte5",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "svelte": "^5.28.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "vite": "^6.2.0"
+  }
+}
