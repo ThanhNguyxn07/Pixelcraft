@@ -76,4 +76,32 @@ export const DEMOS: DemoEntry[] = [
       responsive: '390 / 768 / 1440px',
     },
   },
+  {
+    slug: 'chronos',
+    href: '/gallery/chronos/',
+    code: '03',
+    title: 'CHRONOS — Swiss Mechanical Tourbillon Atelier',
+    subtitle:
+      'Compiled Svelte 5 Runes horology showcase featuring a 60fps HiDPI Canvas 2D mechanical flying tourbillon, 4 Hz oscillating balance wheel with breathing hairspring, meshing 18K rose-gold gear train, X-Ray Skeleton mode, crown winding, and working chronograph.',
+    category: 'Haute Horlogerie / Kinematics',
+    mode: 'Experience / Persuade',
+    theme: 'dark',
+    coverImage: '/gallery/chronos/cover.png',
+    coverAlt: 'CHRONOS Swiss mechanical flying tourbillon timepiece with 18K rose gold bezel, midnight enamel dial, exposed 4 Hz balance wheel, and horological controls',
+    techStack: ['Svelte 5 Runes', 'Canvas 2D Kinematics', 'Vite 6', 'Cormorant Garamond'],
+    skillsUsed: ['pixelcraft-web', 'pixelcraft-direction', 'pixelcraft-craft', 'pixelcraft-accessibility'],
+    swatches: [
+      { name: 'Midnight Enamel', hex: '#0a0c10' },
+      { name: '18K Rose Gold', hex: '#d9a76a' },
+      { name: 'Heat-Blued Steel', hex: '#5a9bff' },
+      { name: 'Ruby Bearing', hex: '#e03c5a' },
+    ],
+    prompt:
+      'Use pixelcraft, pixelcraft-web (svelte reference), pixelcraft-direction, pixelcraft-craft, and pixelcraft-accessibility from https://github.com/ThanhNguyxnOrg/Pixelcraft. Build a standalone compiled Svelte 5 Runes Geneva haute horlogerie showcase named "CHRONOS — Calibre 09". Render a real-time 60fps HiDPI Canvas 2D mechanical flying tourbillon with a 4 Hz (28,800 vph) oscillating balance wheel, breathing concentric hairspring, Côtes de Genève mainplate, meshing spoked rose-gold & rhodium gears, ruby jewel bearings, 72h power-reserve sub-dial, working blued-steel chronograph, X-Ray Skeleton reveal, and 0.25x escapement slow-motion inspection.',
+    evidence: {
+      contrast: 'WCAG AA',
+      states: '3 Modes + Chrono + Crown Wind',
+      responsive: '390 / 768 / 1440px',
+    },
+  },
 ];

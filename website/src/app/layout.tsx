@@ -19,7 +19,7 @@ const cormorant = Cormorant_Garamond({
   weight: ['400', '500', '600', '700'],
   style: ['normal', 'italic'],
   variable: '--font-cormorant',
-  display: 'swap',
+  display: 'optional',
 });
 
 const jakarta = Plus_Jakarta_Sans({

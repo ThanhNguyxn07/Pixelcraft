@@ -290,33 +290,39 @@ export function DocsShell({
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f1ea] text-[#141311]">
-      {/* Masthead */}
-      <header className="sticky top-0 z-40 border-b border-[#d8d2c6] bg-[#f4f1ea]/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-14 max-w-[1380px] items-center justify-between px-4 sm:px-8">
+    <div className="min-h-screen bg-[#f7f5f0] text-[#0d0d0c]">
+      {/* Floating Atelier Masthead (unified with Home & Gallery) */}
+      <header className="sticky top-0 z-40 px-3 pt-3 sm:px-6">
+        <div className="mx-auto flex h-14 max-w-[1320px] items-center justify-between rounded-full border border-[#ded9ce] bg-[#f7f5f0]/90 px-4 shadow-[0_8px_30px_rgba(13,13,12,0.06)] backdrop-blur-md sm:px-6">
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex items-center gap-2.5 font-display text-sm font-bold tracking-[0.14em] text-[#141311] uppercase"
+              className="flex items-center gap-2.5 font-display text-sm font-bold tracking-[0.14em] text-[#0d0d0c] uppercase"
             >
-              <span aria-hidden="true" className="inline-block h-2.5 w-2.5 bg-[#c23114]" />
+              <img
+                src="/brand/logo-256.png"
+                alt="Pixelcraft logo"
+                width={28}
+                height={28}
+                className="h-7 w-7 rounded-md object-contain"
+              />
               PIXELCRAFT
             </Link>
-            <span className="border-l border-[#d8d2c6] pl-3 font-mono text-[11px] uppercase tracking-[0.1em] text-[#b82d12]">
+            <span className="hidden rounded-full border border-[#ded9ce] bg-[#ffffff] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.08em] text-[#c83216] sm:inline-block">
               Docs
             </span>
           </div>
 
-          <nav aria-label="Primary" className="flex items-center gap-5 sm:gap-7">
+          <nav aria-label="Primary" className="flex items-center gap-4 sm:gap-6">
             <Link
               href="/"
-              className="text-xs font-medium text-[#524e47] transition-colors hover:text-[#141311]"
+              className="text-xs font-medium text-[#4a4741] transition-colors hover:text-[#0d0d0c]"
             >
               Overview
             </Link>
             <Link
               href="/gallery"
-              className="text-xs font-medium text-[#524e47] transition-colors hover:text-[#141311]"
+              className="text-xs font-medium text-[#4a4741] transition-colors hover:text-[#0d0d0c]"
             >
               Gallery
             </Link>

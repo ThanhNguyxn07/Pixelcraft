@@ -42,12 +42,13 @@ export function GalleryView() {
               href="/"
               className="flex items-center gap-2.5 font-display text-sm font-bold tracking-[0.14em] text-[#0d0d0c] uppercase"
             >
-              <span
-                aria-hidden="true"
-                className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-[#0d0d0c]"
-              >
-                <span className="h-2 w-2 rounded-xs bg-[#ff6542]" />
-              </span>
+              <img
+                src="/brand/logo-256.png"
+                alt="Pixelcraft logo"
+                width={28}
+                height={28}
+                className="h-7 w-7 rounded-md object-contain"
+              />
               PIXELCRAFT
             </Link>
             <span className="hidden rounded-full border border-[#ded9ce] bg-[#ffffff] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.08em] text-[#c83216] sm:inline-block">

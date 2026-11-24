@@ -1,0 +1,56 @@
+:root {
+  --bg: #0a0c10;
+  --surface: #11141c;
+  --surface-elev: #181c26;
+  --border: #252b38;
+  --border-gold: rgba(217, 167, 106, 0.35);
+  --ink: #f4efe6;
+  --ink-muted: #9da4b3;
+  --gold: #d9a76a;
+  --gold-bright: #f2cf9e;
+  --blued: #5a9bff;
+  --ruby: #e03c5a;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgba(217, 167, 106, 0.25);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

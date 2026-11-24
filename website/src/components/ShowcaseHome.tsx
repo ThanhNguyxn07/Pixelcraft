@@ -145,6 +145,7 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
   const [copiedSwatch, setCopiedSwatch] = useState<string | null>(null);
   const [deviceMode, setDeviceMode] = useState<(typeof DEVICE_MODES)[number]['id']>('desktop');
   const [activeLoopIdx, setActiveLoopIdx] = useState(0);
+  const [activeDemoIdx, setActiveDemoIdx] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -152,6 +153,7 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
   const activeDevice = DEVICE_MODES.find((d) => d.id === deviceMode) ?? DEVICE_MODES[0];
   const activeLoop = LOOP_STAGES[activeLoopIdx] ?? LOOP_STAGES[0];
   const featuredDemo = DEMOS[0];
+  const previewDemo = DEMOS[activeDemoIdx] ?? DEMOS[0];
 
   const categories = useMemo(() => {
     const unique = Array.from(new Set(skills.map((s) => s.category)));
@@ -201,12 +203,13 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
               href="/"
               className="flex items-center gap-2.5 font-display text-sm font-bold tracking-[0.14em] text-[#0d0d0c] uppercase"
             >
-              <span
-                aria-hidden="true"
-                className="inline-flex h-5 w-5 items-center justify-center rounded-md bg-[#0d0d0c]"
-              >
-                <span className="h-2 w-2 rounded-xs bg-[#ff6542]" />
-              </span>
+              <img
+                src="/brand/logo-256.png"
+                alt="Pixelcraft logo"
+                width={28}
+                height={28}
+                className="h-7 w-7 rounded-md object-contain"
+              />
               PIXELCRAFT
             </Link>
             <span className="hidden rounded-full border border-[#ded9ce] bg-[#ffffff] px-2.5 py-0.5 font-mono text-[10px] tracking-[0.06em] text-[#4a4741] sm:inline-block">
@@ -682,39 +685,77 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
               </Link>
             </div>
 
+            {/* Specimen Switcher */}
+            <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label="Featured gallery specimens">
+              {DEMOS.map((demo, idx) => {
+                const active = idx === activeDemoIdx;
+                return (
+                  <button
+                    key={demo.slug}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setActiveDemoIdx(idx)}
+                    className={`rounded-full border px-4 py-2 font-mono text-xs transition-colors ${
+                      active
+                        ? 'border-[#ff6542] bg-[#ff6542] text-[#0c0c0e] font-semibold'
+                        : 'border-[#27272d] bg-[#151519] text-[#a7a49c] hover:border-[#52525b] hover:text-[#f6f4ef]'
+                    }`}
+                  >
+                    {demo.code} · {demo.techStack[0]}
+                  </button>
+                );
+              })}
+            </div>
+
             <div className="grid grid-cols-1 overflow-hidden rounded-[26px] border border-[#27272d] bg-[#151519] lg:grid-cols-12">
-              <Link
-                href={`/gallery/${featuredDemo.slug}`}
-                className="group relative aspect-[16/10] overflow-hidden bg-[#1e1e24] lg:col-span-6 lg:aspect-auto"
-              >
-                <img
-                  src={featuredDemo.coverImage}
-                  alt={featuredDemo.coverAlt}
-                  width={1200}
-                  height={800}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-                />
-              </Link>
+              {previewDemo.href ? (
+                <a
+                  href={previewDemo.href}
+                  className="group relative aspect-[16/10] overflow-hidden bg-[#1e1e24] lg:col-span-6 lg:aspect-auto"
+                >
+                  <img
+                    src={previewDemo.coverImage}
+                    alt={previewDemo.coverAlt}
+                    width={1200}
+                    height={800}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                </a>
+              ) : (
+                <Link
+                  href={`/gallery/${previewDemo.slug}`}
+                  className="group relative aspect-[16/10] overflow-hidden bg-[#1e1e24] lg:col-span-6 lg:aspect-auto"
+                >
+                  <img
+                    src={previewDemo.coverImage}
+                    alt={previewDemo.coverAlt}
+                    width={1200}
+                    height={800}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+                </Link>
+              )}
 
               <div className="flex flex-col justify-between p-7 sm:p-9 lg:col-span-6">
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] uppercase tracking-[0.1em] text-[#a7a49c]">
                     <span className="text-[#ff6542]">
-                      PIECE {featuredDemo.code} · {featuredDemo.category}
+                      PIECE {previewDemo.code} · {previewDemo.category}
                     </span>
-                    <span>{featuredDemo.mode}</span>
+                    <span>{previewDemo.techStack[0]}</span>
                   </div>
 
                   <h3 className="mt-3 font-serif text-3xl font-medium text-[#f6f4ef]">
-                    {featuredDemo.title}
+                    {previewDemo.title}
                   </h3>
                   <p className="mt-3 text-sm leading-[1.72] text-[#a7a49c]">
-                    {featuredDemo.subtitle}
+                    {previewDemo.subtitle}
                   </p>
 
                   {/* Click-to-copy Swatches */}
                   <div className="mt-5 flex flex-wrap gap-2">
-                    {featuredDemo.swatches.map((swatch) => (
+                    {previewDemo.swatches.map((swatch) => (
                       <button
                         key={swatch.hex}
                         type="button"
@@ -736,19 +777,29 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
                       Verbatim Skill Prompt
                     </p>
                     <p className="mt-2 line-clamp-3 font-mono text-xs leading-relaxed text-[#d6d3cb]">
-                      {featuredDemo.prompt}
+                      {previewDemo.prompt}
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-7 flex flex-wrap items-center gap-3 border-t border-[#27272d] pt-5">
-                  <Link
-                    href={`/gallery/${featuredDemo.slug}`}
-                    className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#f6f4ef] px-5 py-2.5 text-sm font-semibold text-[#0c0c0e] transition-colors hover:bg-[#ff6542] hover:text-[#f6f4ef]"
-                  >
-                    Launch Live Demo
-                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
+                  {previewDemo.href ? (
+                    <a
+                      href={previewDemo.href}
+                      className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#f6f4ef] px-5 py-2.5 text-sm font-semibold text-[#0c0c0e] transition-colors hover:bg-[#ff6542] hover:text-[#f6f4ef]"
+                    >
+                      Launch Live Demo
+                      <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    </a>
+                  ) : (
+                    <Link
+                      href={`/gallery/${previewDemo.slug}`}
+                      className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#f6f4ef] px-5 py-2.5 text-sm font-semibold text-[#0c0c0e] transition-colors hover:bg-[#ff6542] hover:text-[#f6f4ef]"
+                    >
+                      Launch Live Demo
+                      <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                    </Link>
+                  )}
                   <Link
                     href="/gallery"
                     className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[#3a3a42] px-5 py-2.5 text-sm font-medium text-[#f6f4ef] transition-colors hover:border-[#f6f4ef]"
@@ -872,9 +923,18 @@ export function ShowcaseHome({ skills }: { skills: SkillDoc[] }) {
       {/* Footer */}
       <footer className="border-t border-[#ded9ce] bg-[#ffffff]">
         <div className="mx-auto flex max-w-[1320px] flex-col justify-between gap-4 px-4 py-8 sm:flex-row sm:items-center sm:px-8">
-          <p className="font-mono text-xs text-[#4a4741]">
-            PIXELCRAFT · MIT License · ThanhNguyxnOrg/Pixelcraft
-          </p>
+          <div className="flex items-center gap-2.5">
+            <img
+              src="/brand/logo-256.png"
+              alt="Pixelcraft logo"
+              width={22}
+              height={22}
+              className="h-5 w-5 object-contain"
+            />
+            <p className="font-mono text-xs text-[#4a4741]">
+              PIXELCRAFT · MIT License · ThanhNguyxnOrg/Pixelcraft
+            </p>
+          </div>
           <div className="flex flex-wrap items-center gap-6 font-mono text-xs text-[#4a4741]">
             <Link href="/gallery" className="hover:text-[#0d0d0c]">
               Gallery
