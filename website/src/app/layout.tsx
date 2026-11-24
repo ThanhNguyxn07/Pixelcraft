@@ -6,6 +6,7 @@ import {
   JetBrains_Mono,
 } from 'next/font/google';
 import './globals.css';
+import { ScrollProgress } from '@/components/ScrollProgress';
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin', 'vietnamese'],
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${spaceGrotesk.variable} ${cormorant.variable} ${jakarta.variable} ${jetbrains.variable}`}
     >
       <body>
+        <ScrollProgress />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:bg-[#141311] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-[#faf8f3]"
