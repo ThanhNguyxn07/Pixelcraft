@@ -1,4 +1,4 @@
-// Custom Raw WebGL2 GLSL Atmospheric Planetary Raymarcher & Orbital Ring Renderer
+// Custom Raw WebGL2 GLSL High-Detail Atmospheric Planetary Raymarcher & 3D Orbital Ring
 const VERTEX_SHADER = `#version 300 es
 in vec2 a_pos;
 out vec2 v_uv;
@@ -43,12 +43,26 @@ float noise(vec3 x) {
   );
 }
 
-float fbm(vec3 p) {
+// 7-octave crisp terrain FBM
+float fbmTerrain(vec3 p) {
   float v = 0.0;
-  float a = 0.52;
-  for (int i = 0; i < 5; i++) {
+  float a = 0.5;
+  for (int i = 0; i < 7; i++) {
     v += a * noise(p);
-    p = p * 2.04 + vec3(13.1, 7.7, 5.3);
+    p = p * 2.12 + vec3(11.3, 7.1, 4.9);
+    a *= 0.49;
+  }
+  return v;
+}
+
+// Ridged multifractal for sharp mountain ranges & cloud filaments
+float fbmRidged(vec3 p) {
+  float v = 0.0;
+  float a = 0.5;
+  for (int i = 0; i < 6; i++) {
+    float n = 1.0 - abs(noise(p) * 2.0 - 1.0);
+    v += a * n * n;
+    p = p * 2.18 + vec3(5.7, 13.4, 8.2);
     a *= 0.48;
   }
   return v;
@@ -62,48 +76,47 @@ mat2 rot(float a) {
 void main() {
   vec2 uv = (gl_FragCoord.xy - 0.5 * u_res) / min(u_res.x, u_res.y);
 
-  // Camera framed so the entire planet + inclined orbital ring sit cleanly inside viewport
-  vec3 ro = vec3(0.0, 0.0, 3.62);
-  vec3 rd = normalize(vec3(uv, -1.72));
+  vec3 ro = vec3(0.0, 0.0, 3.65);
+  vec3 rd = normalize(vec3(uv, -1.75));
 
-  // Rotate world by user drag yaw/pitch
+  // Camera orbit rotation
   ro.yz *= rot(u_pitch);
   rd.yz *= rot(u_pitch);
   ro.xz *= rot(u_yaw);
   rd.xz *= rot(u_yaw);
 
-  // Deep space background with pinpoint circular stars (zero square artifacts)
-  vec3 col = vec3(0.012, 0.018, 0.032);
-  vec2 starUv = vec2(atan(rd.x, rd.z) * 1.5915, asin(clamp(rd.y, -1.0, 1.0)) * 1.5915) * 42.0;
+  // Clean deep space + crisp pinpoint starfield
+  vec3 col = vec3(0.010, 0.015, 0.026);
+  vec2 starUv = vec2(atan(rd.x, rd.z) * 1.5915, asin(clamp(rd.y, -1.0, 1.0)) * 1.5915) * 48.0;
   vec2 sCell = floor(starUv);
   vec2 sFrac = fract(starUv) - 0.5;
   float sSeed = hash(vec3(sCell, 1.7));
-  if (sSeed > 0.965) {
-    vec2 sOff = vec2(hash(vec3(sCell, 3.1)) - 0.5, hash(vec3(sCell, 5.9)) - 0.5) * 0.65;
+  if (sSeed > 0.962) {
+    vec2 sOff = vec2(hash(vec3(sCell, 3.1)) - 0.5, hash(vec3(sCell, 5.9)) - 0.5) * 0.68;
     float d = length(sFrac - sOff);
-    float pinpoint = exp(-d * d * 180.0);
-    float twinkle = 0.72 + 0.28 * sin(u_time * 2.2 + sSeed * 80.0);
-    col += mix(vec3(0.75, 0.87, 1.0), vec3(1.0, 0.91, 0.78), fract(sSeed * 37.0)) * pinpoint * twinkle * 0.95;
+    float pinpoint = exp(-d * d * 240.0);
+    float twinkle = 0.78 + 0.22 * sin(u_time * 2.0 + sSeed * 80.0);
+    col += mix(vec3(0.76, 0.88, 1.0), vec3(1.0, 0.92, 0.80), fract(sSeed * 37.0)) * pinpoint * twinkle * 0.9;
   }
 
-  // Sun direction
-  vec3 sunDir = normalize(vec3(0.78, 0.34, 0.52));
+  // Sun angled so ~68% of Earth is crisply illuminated, ~32% shows night city lights
+  vec3 sunDir = normalize(vec3(0.68, 0.30, 0.67));
 
-  // Ray-sphere intersection for planet (radius 1.0)
+  // Ray-sphere intersection for Earth (radius = 1.0)
   float b = dot(ro, rd);
   float c = dot(ro, ro) - 1.0;
   float h = b * b - c;
 
-  // Atmospheric outer halo (radius 1.18)
-  float ca = dot(ro, ro) - 1.18 * 1.18;
+  // Crisp outer Rayleigh atmosphere halo (radius = 1.14)
+  float ca = dot(ro, ro) - 1.14 * 1.14;
   float ha = b * b - ca;
   if (ha > 0.0) {
     float tA = max(0.0, -b - sqrt(ha));
     float tB = -b + sqrt(ha);
     float distClosest = length(ro + rd * clamp(-b, tA, tB));
-    float rim = exp(-max(0.0, distClosest - 0.985) * 9.5);
-    float sunAlign = clamp(dot(normalize(ro + rd * max(0.0, -b)), sunDir) * 0.65 + 0.45, 0.0, 1.0);
-    col += u_atmoColor * rim * sunAlign * 0.72;
+    float rim = exp(-max(0.0, distClosest - 0.992) * 15.0);
+    float sunAlign = smoothstep(-0.35, 0.85, dot(normalize(ro + rd * max(0.0, -b)), sunDir));
+    col += u_atmoColor * rim * (0.18 + 0.82 * sunAlign) * 0.82;
   }
 
   float tPlanet = 1e9;
@@ -113,81 +126,112 @@ void main() {
       vec3 pos = ro + rd * tPlanet;
       vec3 n = normalize(pos);
 
-      // Slow planetary axial rotation
+      // Axial spin
       vec3 pRot = pos;
-      pRot.xz *= rot(u_time * 0.045);
+      pRot.xz *= rot(u_time * 0.038);
 
-      float continents = fbm(pRot * 2.65);
-      float detail = fbm(pRot * 7.2);
-      float clouds = fbm(pRot * 3.8 + vec3(u_time * 0.025, 0.0, -u_time * 0.015));
+      // High-frequency crisp continental & mountain elevation
+      float macro = fbmTerrain(pRot * 2.35);
+      float ridge = fbmRidged(pRot * 6.5);
+      float elev = macro * 0.78 + ridge * 0.22;
 
-      float isLand = smoothstep(0.505, 0.545, continents);
-      vec3 oceanCol = mix(vec3(0.025, 0.085, 0.19), vec3(0.05, 0.17, 0.31), detail);
-      vec3 landCol = mix(vec3(0.11, 0.21, 0.16), vec3(0.45, 0.39, 0.29), smoothstep(0.54, 0.74, continents));
-      vec3 polar = vec3(0.84, 0.89, 0.94);
-      float iceMask = smoothstep(0.78, 0.93, abs(pRot.y) + (detail - 0.5) * 0.16);
+      // Sharp coastline transition (eliminates blurry landmass edges)
+      float isLand = smoothstep(0.515, 0.528, elev);
+      float shallowSea = smoothstep(0.475, 0.518, elev) * (1.0 - isLand);
 
+      // Deep realistic ocean + turquoise continental shelf
+      vec3 deepOcean = vec3(0.022, 0.075, 0.175);
+      vec3 shelfOcean = vec3(0.045, 0.21, 0.34);
+      vec3 oceanCol = mix(deepOcean, shelfOcean, shallowSea);
+
+      // Rich realistic land biomes (forest -> arid highlands -> alpine peaks)
+      float lat = abs(pRot.y);
+      vec3 forest = vec3(0.09, 0.23, 0.14);
+      vec3 desert = vec3(0.54, 0.45, 0.31);
+      vec3 mountain = vec3(0.36, 0.34, 0.31);
+      vec3 snow = vec3(0.90, 0.93, 0.97);
+
+      float aridMask = smoothstep(0.15, 0.48, lat) * smoothstep(0.54, 0.68, macro);
+      vec3 landCol = mix(forest, desert, aridMask * 0.72);
+      landCol = mix(landCol, mountain, smoothstep(0.62, 0.76, elev));
+      landCol = mix(landCol, snow, smoothstep(0.75, 0.86, elev));
+
+      float polarIce = smoothstep(0.80, 0.90, lat + (macro - 0.5) * 0.12);
       vec3 surface = mix(oceanCol, landCol, isLand);
-      surface = mix(surface, polar, iceMask);
+      surface = mix(surface, snow, polarIce);
 
-      float ndl = dot(n, sunDir);
-      float day = smoothstep(-0.14, 0.22, ndl);
-      float twilight = exp(-pow((ndl + 0.03) * 7.5, 2.0));
+      // Subtle finite-difference bump shading on land for crisp mountain relief
+      float eps = 0.008;
+      float ex = fbmTerrain((pRot + vec3(eps, 0.0, 0.0)) * 2.35) - macro;
+      float ey = fbmTerrain((pRot + vec3(0.0, eps, 0.0)) * 2.35) - macro;
+      vec3 nBumped = normalize(n + vec3(ex, ey, 0.0) * isLand * 1.45);
 
-      // Specular glint on ocean
+      float ndl = dot(nBumped, sunDir);
+      float diffuse = smoothstep(-0.08, 0.18, ndl) * max(ndl, 0.0);
+
+      // Sharp ocean specular glint
       vec3 halfVec = normalize(sunDir - rd);
-      float spec = pow(max(dot(n, halfVec), 0.0), 48.0) * (1.0 - isLand) * (1.0 - iceMask) * day;
+      float spec = pow(max(dot(n, halfVec), 0.0), 72.0) * (1.0 - isLand) * (1.0 - polarIce) * smoothstep(0.0, 0.25, ndl);
 
-      // Cloud layer
-      float cloudMask = smoothstep(0.55, 0.78, clouds);
-      vec3 litSurface = surface * (0.045 + 0.955 * max(ndl, 0.0));
-      litSurface += vec3(0.95, 0.97, 1.0) * cloudMask * (0.08 + 0.92 * max(ndl, 0.0)) * 0.68;
-      litSurface += vec3(1.0, 0.88, 0.72) * spec * 0.55;
+      // Crisp swirling cloud filaments (warped domain)
+      vec3 warp = vec3(
+        noise(pRot * 3.2 + vec3(0.0, u_time * 0.015, 0.0)),
+        noise(pRot * 3.2 + vec3(4.1, 0.0, -u_time * 0.012)),
+        0.0
+      );
+      float cloudField = fbmTerrain(pRot * 4.4 + warp * 0.65 + vec3(u_time * 0.02, 0.0, 0.0));
+      float cloudMask = smoothstep(0.56, 0.72, cloudField);
 
-      // Subtle golden terminator scattering
-      litSurface += vec3(0.98, 0.56, 0.24) * twilight * 0.12;
+      vec3 lit = surface * (0.032 + 1.05 * diffuse);
+      // Crisp white sunlit clouds with subtle shadow depth
+      lit = mix(lit, vec3(0.95, 0.97, 1.0) * (0.04 + 0.98 * max(dot(n, sunDir), 0.0)), cloudMask * 0.72);
+      lit += vec3(1.0, 0.93, 0.82) * spec * 0.58;
 
-      // Crisp night-side city lights on land
-      float cityNoise = smoothstep(0.67, 0.78, fbm(pRot * 19.0));
-      float nightMask = smoothstep(0.05, -0.24, ndl) * isLand * (1.0 - iceMask) * (1.0 - cloudMask * 0.65);
-      litSurface += vec3(1.0, 0.78, 0.42) * cityNoise * nightMask * 0.92;
+      // Crisp night-side coastal city lights (clean golden pinpoints)
+      float cityDetail = smoothstep(0.69, 0.78, fbmRidged(pRot * 20.0));
+      float nightMask = smoothstep(0.02, -0.18, dot(n, sunDir)) * isLand * (1.0 - polarIce) * (1.0 - cloudMask * 0.75);
+      lit += vec3(1.0, 0.80, 0.44) * cityDetail * nightMask * 0.95;
 
-      // Fresnel Rayleigh rim
-      float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), 3.2);
-      litSurface += u_atmoColor * fresnel * (0.35 + 1.05 * day);
+      // Clean blue-white Fresnel Rayleigh atmospheric limb (zero muddy brown stripe)
+      float fresnel = pow(1.0 - max(dot(n, -rd), 0.0), 3.8);
+      lit += u_atmoColor * fresnel * (0.16 + 0.95 * smoothstep(-0.1, 0.5, dot(n, sunDir)));
 
-      col = litSurface;
+      col = lit;
     }
   }
 
-  // 3D Inclined Orbital Ring + Live Go-WASM Spacecraft Beacon
+  // Crisp 3D Inclined Orbital Trajectory Ring (renders both front & unobstructed back arc)
   float inc = radians(u_inclination);
   vec3 planeN = normalize(vec3(0.0, cos(inc), sin(inc)));
   float denom = dot(rd, planeN);
   if (abs(denom) > 0.0005) {
     float tRing = -dot(ro, planeN) / denom;
-    if (tRing > 0.0 && tRing < tPlanet) {
+    if (tRing > 0.0 && (tPlanet > 1e8 || tRing < tPlanet)) {
       vec3 hit = ro + rd * tRing;
       float r = length(hit);
       float ringRadius = u_orbitScale;
-      float ringLine = exp(-abs(r - ringRadius) * 145.0);
-      col += u_accentColor * ringLine * 0.78;
+      float ringLine = exp(-abs(r - ringRadius) * 210.0);
 
-      // Spacecraft position along orbital plane from Go WASM true anomaly
       vec3 uAxis = vec3(1.0, 0.0, 0.0);
       vec3 vAxis = normalize(cross(planeN, uAxis));
+      float angleHit = atan(dot(hit, vAxis), dot(hit, uAxis));
+      float angleDiff = mod(u_trueAnomaly - angleHit + 6.2831853, 6.2831853);
+      float trail = 0.28 + 0.72 * exp(-angleDiff * 1.15);
+
+      col += u_accentColor * ringLine * trail * 0.92;
+
+      // Sharp glowing spacecraft beacon
       vec3 satPos = (cos(u_trueAnomaly) * uAxis + sin(u_trueAnomaly) * vAxis) * ringRadius;
       float dSat = length(hit - satPos);
-      float beacon = exp(-dSat * 42.0) + exp(-dSat * 11.0) * 0.45;
-      col += mix(u_accentColor, vec3(1.0, 0.98, 0.92), 0.65) * beacon * 1.4;
+      float core = exp(-dSat * 75.0);
+      float halo = exp(-dSat * 16.0) * 0.45;
+      col += mix(u_accentColor, vec3(1.0, 0.99, 0.95), 0.78) * (core * 1.6 + halo);
     }
   }
 
-  // Filmic tone-mapping & subtle vignette
-  col = col / (col + vec3(0.85));
-  col = pow(col, vec3(0.95));
-  float vig = 1.0 - dot(uv * 0.42, uv * 0.42);
-  col *= clamp(vig, 0.55, 1.0);
+  // Clean ACES-like filmic curve for crisp contrast
+  col = (col * (2.51 * col + 0.03)) / (col * (2.43 * col + 0.59) + 0.14);
+  col = pow(clamp(col, 0.0, 1.0), vec3(0.96));
 
   outColor = vec4(col, 1.0);
 }
